@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    const serverUrl = 'https://olierlagrace.ngrok.app/';
+    const serverUrl = 'https://8c31be54e6fac00f.ngrok.app/';
 
 // ===============================================
     // PLATFORM DETECTION

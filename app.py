@@ -37,7 +37,7 @@ except Exception as e:
 
 # Initialize Meilisearch Client
 meili_client = meilisearch.Client('http://127.0.0.1:7700')
-meili_index_name = 'auromira4c_index'
+meili_index_name = 'auromira4d_index'
 
 def initialize_meilisearch():
     try:
@@ -54,7 +54,7 @@ HTML_DIRECTORY = os.path.join(app.static_folder, 'static', 'HTML')
 INDEX_DATA = {}
 
 def load_index_data():
-    jsonl_path = "/home/olier/Olierdev/merged_auromira.jsonl"
+    jsonl_path = "/home/olier/Olierclone/merged_auromira.jsonl"
     if not os.path.exists(jsonl_path):
         raise FileNotFoundError(f"{jsonl_path} not found")
 
@@ -130,7 +130,7 @@ async def keyword_search():
         processed_hits = []
         for hit in search_results['hits']:
             book_title = hit.get('book_title', '')
-            file_path = f"/home/olier/Olierdev/www/static/HTML/{book_title}_modified.html"
+            file_path = f"/home/olier/Olierclone/www/static/HTML/{book_title}_modified.html"
             highlighted_text = hit.get('_formatted', {}).get('text', hit.get('text', ''))
 
             processed_hits.append({
@@ -364,4 +364,4 @@ async def generate_flux_image():
         return jsonify({"error": f"An error occurred while generating the image: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    app.run(debug=False, port=8502)
+    app.run(debug=False, port=8503)
