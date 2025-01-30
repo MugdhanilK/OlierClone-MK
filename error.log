@@ -1,0 +1,61 @@
+[2024-10-15 15:32:25 +0000] [447927] [INFO] Starting gunicorn 23.0.0
+[2024-10-15 15:32:25 +0000] [447927] [INFO] Listening at: unix:/tmp/gunicorn.sock (447927)
+[2024-10-15 15:32:25 +0000] [447927] [INFO] Using worker: gthread
+[2024-10-15 15:32:25 +0000] [447928] [INFO] Booting worker with pid: 447928
+[2024-10-15 15:32:26 +0000] [447929] [INFO] Booting worker with pid: 447929
+[2024-10-15 15:32:26 +0000] [447930] [INFO] Booting worker with pid: 447930
+[2024-10-15 15:32:26 +0000] [447931] [INFO] Booting worker with pid: 447931
+[2024-10-15 15:32:26 +0000] [447963] [INFO] Booting worker with pid: 447963
+[2024-10-15 15:32:26 +0000] [447964] [INFO] Booting worker with pid: 447964
+[2024-10-15 15:32:26 +0000] [447996] [INFO] Booting worker with pid: 447996
+[2024-10-15 15:32:26 +0000] [447997] [INFO] Booting worker with pid: 447997
+[2024-10-15 15:32:26 +0000] [447998] [INFO] Booting worker with pid: 447998
+[2024-10-15 15:32:26 +0000] [448061] [INFO] Booting worker with pid: 448061
+[2024-10-15 15:32:26 +0000] [448093] [INFO] Booting worker with pid: 448093
+[2024-10-15 15:32:26 +0000] [448125] [INFO] Booting worker with pid: 448125
+[2024-10-15 15:32:26 +0000] [448157] [INFO] Booting worker with pid: 448157
+[2024-10-15 15:32:26 +0000] [448189] [INFO] Booting worker with pid: 448189
+[2024-10-15 15:32:26 +0000] [448190] [INFO] Booting worker with pid: 448190
+[2024-10-15 15:32:26 +0000] [448222] [INFO] Booting worker with pid: 448222
+[2024-10-15 15:32:26 +0000] [448223] [INFO] Booting worker with pid: 448223
+[2024-10-15 15:32:26 +0000] [448286] [INFO] Booting worker with pid: 448286
+[2024-10-15 15:32:26 +0000] [448287] [INFO] Booting worker with pid: 448287
+[2024-10-15 15:32:26 +0000] [448288] [INFO] Booting worker with pid: 448288
+[2024-10-15 15:32:27 +0000] [448320] [INFO] Booting worker with pid: 448320
+[2024-10-15 15:32:27 +0000] [448321] [INFO] Booting worker with pid: 448321
+[2024-10-15 15:32:27 +0000] [448384] [INFO] Booting worker with pid: 448384
+[2024-10-15 15:32:27 +0000] [448385] [INFO] Booting worker with pid: 448385
+[2024-10-15 15:32:27 +0000] [448417] [INFO] Booting worker with pid: 448417
+[2024-10-15 15:32:27 +0000] [448418] [INFO] Booting worker with pid: 448418
+[2024-10-15 15:32:27 +0000] [448419] [INFO] Booting worker with pid: 448419
+[2024-10-15 15:32:27 +0000] [448482] [INFO] Booting worker with pid: 448482
+[2024-10-15 15:36:50 +0000] [447927] [INFO] Handling signal: int
+[2024-10-15 15:36:50 +0000] [448320] [INFO] Worker exiting (pid: 448320)
+[2024-10-15 15:36:50 +0000] [448223] [INFO] Worker exiting (pid: 448223)
+[2024-10-15 15:36:50 +0000] [448384] [INFO] Worker exiting (pid: 448384)
+[2024-10-15 15:36:50 +0000] [448093] [INFO] Worker exiting (pid: 448093)
+[2024-10-15 15:36:50 +0000] [448287] [INFO] Worker exiting (pid: 448287)
+[2024-10-15 15:36:50 +0000] [447928] [INFO] Worker exiting (pid: 447928)
+[2024-10-15 15:36:50 +0000] [448190] [INFO] Worker exiting (pid: 448190)
+[2024-10-15 15:36:50 +0000] [448385] [INFO] Worker exiting (pid: 448385)
+[2024-10-15 15:36:50 +0000] [447929] [INFO] Worker exiting (pid: 447929)
+[2024-10-15 15:36:50 +0000] [448288] [INFO] Worker exiting (pid: 448288)
+[2024-10-15 15:36:50 +0000] [448419] [INFO] Worker exiting (pid: 448419)
+[2024-10-15 15:36:50 +0000] [448482] [INFO] Worker exiting (pid: 448482)
+[2024-10-15 15:36:50 +0000] [448418] [INFO] Worker exiting (pid: 448418)
+[2024-10-15 15:36:50 +0000] [448286] [INFO] Worker exiting (pid: 448286)
+[2024-10-15 15:36:50 +0000] [448125] [INFO] Worker exiting (pid: 448125)
+[2024-10-15 15:36:50 +0000] [448061] [INFO] Worker exiting (pid: 448061)
+[2024-10-15 15:36:50 +0000] [447963] [INFO] Worker exiting (pid: 447963)
+[2024-10-15 15:36:50 +0000] [447930] [INFO] Worker exiting (pid: 447930)
+[2024-10-15 15:36:50 +0000] [447931] [INFO] Worker exiting (pid: 447931)
+[2024-10-15 15:36:50 +0000] [447997] [INFO] Worker exiting (pid: 447997)
+[2024-10-15 15:36:50 +0000] [447998] [INFO] Worker exiting (pid: 447998)
+[2024-10-15 15:36:50 +0000] [447996] [INFO] Worker exiting (pid: 447996)
+[2024-10-15 15:36:50 +0000] [447964] [INFO] Worker exiting (pid: 447964)
+[2024-10-15 15:36:50 +0000] [448157] [INFO] Worker exiting (pid: 448157)
+[2024-10-15 15:36:50 +0000] [448189] [INFO] Worker exiting (pid: 448189)
+[2024-10-15 15:36:50 +0000] [448417] [INFO] Worker exiting (pid: 448417)
+[2024-10-15 15:36:50 +0000] [448321] [INFO] Worker exiting (pid: 448321)
+[2024-10-15 15:36:50 +0000] [448222] [INFO] Worker exiting (pid: 448222)
+[2024-10-15 15:36:51 +0000] [447927] [INFO] Shutting down: Master

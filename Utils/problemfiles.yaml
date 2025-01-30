@@ -1,0 +1,26 @@
+Files without a single p-num (no anchor pages, so minimal changes):
+ - The Secret of the Veda_modified.html
+ - Early Cultural Writings_modified.html
+ - Translations_modified.html
+ - Notes on the Way_modified.html
+ - Collected Plays and Stories_modified.html
+ - Hymns to the Mystic Fire_modified.html
+ - Bande Mataram_modified.html
+ - Collected Poems_modified.html
+
+Files with repeated or out-of-order page numbering after transformation:
+ - Some Answers from the Mother_modified.html
+    * Duplicate page number encountered: 241
+ - Savitri_modified.html
+    * Out-of-order page transition: 350 -> 349
+ - The Renaissance in India_modified.html
+    * Duplicate page number encountered: 97
+ - Words of the Mother III_modified.html
+    * Out-of-order page transition: 191 -> 189
+    * Out-of-order page transition: 286 -> 285
+ - Words of Long Ago_modified.html
+    * Duplicate page number encountered: 119
+ - Autobiographical Notes_modified.html
+    * Duplicate page number encountered: 511
+ - The Synthesis of Yoga_modified.html
+    * Duplicate page number encountered: 545

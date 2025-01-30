@@ -1,0 +1,2080 @@
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Marcellus&display=swap");
+
+/* Main Body */
+
+* {
+    margin: 0;
+    padding: 0;
+    text-transform: none;
+}
+
+/* styles.css */
+
+html {
+    -webkit-text-size-adjust: 100%;
+    font-size: 16px; /* Set default font size */
+    margin: 0;
+    padding: 0;
+}
+
+/* Apply smoothing and font settings to body */
+body {
+    min-height: 100vh; /* Full viewport height */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content horizontally */
+    align-items: center;    /* Center content vertically */
+    background-image: url('/static/dawn12.jpg');
+    background-size: cover;           /* Make background cover the viewport */
+    background-repeat: no-repeat;    
+    background-position: bottom center; /* Center the background image */
+    background-attachment: fixed;     /* Optional: Fix background during scrolling */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Josefin Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.supercontainer {
+    display: flex;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 767px) {
+    body {
+        background-image: url('/static/dawn13.jpg');
+        background-position: top center; /* Center the image */
+    }
+}
+
+
+
+
+/* Dynamic and Global Styling */
+    /* Button styles */
+    button {
+        transition: all 0.2s ease-in-out;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: transparent;
+    }
+
+    button:active {
+        background-color: transparent;
+        transform: scale(0.9); /* Slightly scale down the button */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+        /* /* background-color: #e0e0e0; Change background color to indicate pressing */
+    } 
+
+    button:focus {
+        outline: none;
+        box-shadow:none;
+    }
+
+
+
+.container {
+ 
+    flex-basis: 80%;  
+    margin: auto;
+    background-attachment: fixed; /* Optional: makes the background stay in place during scrolling */
+    text-align: center;
+    background-repeat: no-repeat;  
+    background-size: cover;
+    background-position: center;
+    background-image: url('/static/dawn12.jpg');
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    border-radius: 17px;
+    display: flex;
+    flex-direction: column;
+    padding-top: 0;
+    margin-top: 0 !important;
+}
+
+
+/* Mobile Adjustments */
+@media (max-width: 767px) {
+    .container {
+        flex-basis: 100%;       /* Full width on mobile */
+        padding: 20px;
+        flex-shrink: 0;
+        background-image: url('/static/puredawn4.jpg');
+        background-position: center; 
+        background-attachment: fixed;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Keep original shadow for mobile */
+        border-radius: 10px; /* Keep original border radius for mobile */   
+    }
+}
+
+/* Add this to www/static/styles.css */
+
+/* Class to hide the container without leaving space */
+.container.closed {
+    display: none;
+    height: 0;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+
+
+/* Class to hide the searchSpace */
+.search-space.closed {
+    display: none; /* Hide the searchSpace completely */
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+
+/* SEARCH */
+
+/* Sample Questions Container */
+.sample-questions {
+    margin-top: 20px;
+    text-align: center;
+}
+
+
+/* Grid Layout for Buttons */
+.questions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    gap: 15px; /* Space between buttons */
+    max-width: 600px; /* Optional: Limit the width */
+    margin: 0 auto; /* Center the grid */
+}
+
+/* Styling for Sample Question Buttons */
+.sample-question {
+background-color: #f0f0f0;
+border: 1px solid #ccc;
+border-radius: 8px;
+padding: 12px 20px;
+font-size: 0.8rem;
+color: #4b4a4a; /* Font color */
+cursor: pointer;
+transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+width: 100%; /* Make buttons stretch to fill grid cell */
+text-align: center; /* Center text within buttons */
+}
+
+/* Hover Effect: Slight Scale-Up and Darker Background */
+.sample-question:hover {
+background-color: #e0e0e0 !important;
+transform: scale(1.05) !important;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+color: #333 !important; /* Ensure font color remains the same */
+border: 1px solid #ccc !important; /* Ensure border remains the same */
+}
+
+/* Active Effect: Slight Scale-Down and Inset Shadow */
+.sample-question:active {
+background-color: #d0d0d0 !important;
+transform: scale(0.95) !important;
+box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+color: #333 !important; /* Ensure font color remains the same */
+border: 1px solid #ccc !important; /* Ensure border remains the same */
+}
+
+/* Styling for the buttons (grid layout retained for consistency) */
+.questions-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr); /* Two columns */
+gap: 15px; /* Space between buttons */
+max-width: 600px;
+margin: 0 auto;
+}
+
+
+
+/* Style for "Match" button in blue */
+#search-btn.match-mode {
+background-color: #007BFF !important;
+border-color: #007BFF !important;
+color: white !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767px) {
+.sample-question {
+padding: 10px 15px;
+font-size: 0.7rem;
+}
+.questions-grid {
+grid-template-columns: 1fr 1fr; 
+}
+}
+
+
+
+/* Styling for the slider toggle */
+.switch {
+position: relative;
+display: inline-block;
+width: 50px;
+height: 24px;
+margin: 0 auto; /* Center the toggle */
+}
+
+.switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+
+.slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #ccc;
+transition: 0.4s;
+border-radius: 34px;
+}
+
+.slider:before {
+position: absolute;
+content: "";
+height: 18px;
+width: 18px;
+left: 4px;
+bottom: 3px;
+background-color: white;
+transition: 0.4s;
+border-radius: 50%;
+}
+
+input:checked + .slider {
+background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+transform: translateX(26px);
+}
+
+
+
+
+/* Search */
+
+#search-btn {
+    border-radius: 25px;
+    padding: 10px 20px;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Increased shadow size and intensity */
+    background-color: #f06c26;
+    transition: box-shadow 0.3s ease; /* Smooth transition for shadow changes */
+}
+
+/* Optional: Add a hover effect for the button */
+#search-btn:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); /* Even more shadow on hover */
+}
+
+
+/* Font Change Buttons Container */
+.font-change-container {
+    position: absolute;
+    left: 10px; /* Adjust as needed */
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center;
+    gap: 10px; /* Space between the buttons */
+    background: none;
+    text-decoration: none;
+}
+
+/* Styles for each font change button */
+.font-change-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px; /* Increase padding for a larger clickable area */
+}
+
+/* Remove any hover effects from the button itself */
+.font-change-btn:hover {
+    background: none;
+    box-shadow: none;
+}
+
+/* Styles for the big A */
+.font-change-btn .big-A {
+    font-size: 24px;
+    transition: color 0.2s; /* Smooth color transition */
+}
+
+/* Styles for the small A */
+.font-change-btn .small-A {
+    font-size: 16px;
+    transition: color 0.2s; /* Smooth color transition */
+}
+
+/* Hover effects for the letters */
+.font-change-btn .big-A:hover,
+.font-change-btn .small-A:hover {
+    color: #007BFF;
+}
+
+
+/* Add this to your existing CSS file */
+#feedback-btn {
+    display: block;
+    margin-top: 10px;
+    border-radius: 25px;
+    padding: 5px 15px;
+    border: none;
+    background-color: #67af4d; /* Olive green */
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+    font-size: 0.7rem;
+}
+
+
+#feedback-btn:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+#results {
+    margin-top: 20px;
+}
+.result-item {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.result-item:hover {
+    background-color: #f1f1f1;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+.result-item p {
+    margin: 0;
+    text-align: justify;
+    color: #333;
+    max-height: 4.5rem; Display only 3 lines
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Search Results */
+    
+    .book-title {
+        font-style: italic;
+    }
+    
+    .chapter-title {
+        font-weight: normal;
+    }
+    
+    
+    /* Container for each result item */
+    .result-item {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+    }
+    
+
+      /* Increase specificity by prefixing with parent classes or IDs */
+  .result-preview em {
+    background-color: rgb(211, 216, 211);
+    font-style: normal;
+}
+
+ /* Apply styles to .result-preview and all nested elements */
+.result-preview,
+.result-preview * {
+    font-size: 1rem;  /* Adjust to desired font size */
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 10px; /* Adjust the margin as needed */
+}
+
+@media (max-width: 767px) {
+    .result-preview,
+    .result-preview * {
+        font-size: 1rem;  /* Adjust to desired font size for mobile */
+    }
+}
+    
+    /* Metadata (author, book title, chapter title) */
+    .result-metadata,
+    .result-score {
+        font-size: 0.7rem !important;
+        color: #666;
+        margin-bottom: 10px;
+    }
+    
+    /* Container for action buttons */
+    .result-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Space between buttons */
+    }
+    
+    /* Style for the Oli button */
+    .oli-button {
+        font-family: 'Pacifico', cursive;
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 5px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+    
+    .oli-button:hover {
+        background-color: #45a049;
+    }
+    
+    /* Styles for the View Detail Button */
+    .view-detail-link {
+        /* font-family: 'Pacifico', cursive; Match font family */
+        background-color: #007BFF; /* Blue background */
+        border: none; /* Remove border */
+        color: white; /* White text color */
+        padding: 5px; /* Match padding */
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px; /* Match font size */
+        cursor: pointer;
+        border-radius: 5px; /* Match border radius */
+        margin-left: 5px; /* Adjust margin as needed */
+        display: inline-block;
+        transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+    }
+    
+    /* Hover effect for the View Detail Button */
+    .view-detail-link:hover {
+        background-color: #0056b3; /* Darker shade for hover effect */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+        text-decoration: none; /* Remove underline on hover */
+    }
+    
+    /* Unified Mobile Styles */
+    @media (max-width: 768px) {
+        .oli-button,
+        .view-detail-link {
+            font-size: 0.95rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+    
+        .oli-button,
+        .view-detail-link {
+            font-size: 14px;
+        }
+    }
+    
+    /* Styles for the Oli Button Wrapper */
+    .oli-button-wrapper {
+        font-size: initial; /* Prevent inheritance issues */
+    }
+    
+    /* Styles for the Oli Button Wrapper */
+    .oli-button-wrapper {
+        font-size: initial; /* Prevent inheritance issues */
+    }
+    
+    /* Styles for the Oli Button */
+    .oli-button-paragraph {
+        font-family: 'Pacifico', cursive;
+        background-color: transparent; /* No background color */
+        border: none;
+        color: #4CAF50; /* Font color */
+        padding: 4px 4px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 0.7rem;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-left: 5px;
+        display: inline-block;
+        transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+    }
+    
+    /* Hover effect for the Oli Button */
+    .oli-button-paragraph:hover {
+        background-color: #4CAF50; /* Green background */
+        color: white; /* White font color */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    }
+    
+        /* Loader Container Styles for View Detail */
+        #view-detail-loader-container {
+            position: fixed; /* Fixed position relative to the viewport */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Center the loader */
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 9999; /* High z-index to overlay content */
+            background-color: transparent; /* Semi-transparent background */
+            padding: 20px;
+            border-radius: 8px;
+        }
+    
+        /* Loader Overlay Styles for View Detail */
+        #view-detail-loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+            z-index: 9998; /* Just below the loader container */
+            display: none; /* Hidden by default */
+        }
+    
+        /* Styling for the loader icon */
+        .book-loader i {
+            font-size: 2.25rem;
+            color: #228B22;
+        }
+    
+ 
+        /* Results Scrolling Styling */
+        @keyframes subtlePulse {
+            0%, 100% { background-color: rgba(150, 150, 150, 0.4); }
+            50% { background-color: rgba(150, 150, 150, 0.2); }
+        }
+    
+        .highlight-pulse {
+            animation: subtlePulse 2s ease-in-out infinite;
+            background-color: #E0E0E0;
+        }
+    
+
+
+/* FULL TEXT INTERFACE */
+
+/* Base styles for #full-text (Mobile First) */
+/* Styles for #full-text */
+#full-text {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    overflow-x: hidden;
+    font-size: 1rem; /* Base font size for mobile */
+    line-height: 1.6; /* Improves readability */
+    display: none;
+    flex-grow: 1;
+}
+
+/* Adjust font size for larger screens (desktop) */
+@media (min-width: 768px) {
+    #full-text {
+        font-size: 1rem; 
+    }
+}
+
+/* Ensure images and media are responsive */
+#full-text img,
+#full-text video,
+#full-text iframe {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto; /* Center the media */
+}
+
+/* Ensure tables are responsive */
+#full-text table {
+    width: 100%;
+    table-layout: fixed;
+    word-wrap: break-word;
+    overflow-x: auto;
+}
+
+/* Handle preformatted text and code blocks */
+#full-text pre,
+#full-text code {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Acknowledgement container styles */
+.acknowledgement-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.7rem;
+    color:#a9a7a7;
+    margin: 0;
+}
+
+/* Optional: Adjust font size for acknowledgement on larger screens */
+@media (max-width: 767px) {
+    .acknowledgement-container {
+        font-size: 0.6rem;
+    }
+}
+
+
+.highlight {
+    background-color: yellow;
+}
+h1 {
+    margin-bottom: 30px;
+    font-weight: bold;
+    color: #333;
+}
+
+
+.inline-btn {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.inline-btn .btn {
+    padding: 9px 15px;
+}
+
+#bg-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%; 
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -1;
+    background-size: cover;
+    transition: 1s opacity;
+    opacity: 0.7; /* Adjust the opacity as needed */
+}
+
+.inline-btn {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.inline-btn .btn {
+    padding: 9px 15px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: none;
+    background-color: #f06c26;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.inline-btn .btn svg {
+    fill: white;
+}
+
+.inline-btn .btn:hover {
+    background-color: #f09f26;
+}
+
+
+/* CHATBOT */
+
+/* Chatbox Styles */
+
+#chatbox {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    z-index: 1000;
+    background-color: white;
+    border-left: 1px solid #ccc;
+    box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding-top: 0px;
+    background: url('/static/chatbotbackgroundA.png') no-repeat center center / cover;
+    right: 0;
+    top: 0;
+    transition: transform 0.3s ease-in-out; /* Only transition transform */
+    transform: translateX(100%);
+    touch-action: pan-y;
+}
+
+ 
+/* Top Chatbox Styles */
+.top-chatbox {
+    position: relative; /* Needed for absolute positioning of child elements */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the h2 element */
+    padding: 10px 10px;
+    background-color: transparent;
+    border: none;
+}
+
+/* Header Title (h2) */
+.top-chatbox h2 {
+    font-family: 'Pacifico', cursive;
+    color: #228B22 !important;
+    font-size: 32px; /* Set font size */
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Style for the "Olier" button */
+#chat-history-btn {
+    background: none;
+    border: none;
+    font-size: inherit; /* Inherit font size from h2 */
+    cursor: pointer;
+    color: inherit;
+    display: flex;
+    align-items: flex-end; /* Align dropdown icon to the bottom */
+}
+
+/* Style for the dropdown icon */
+#chat-history-btn .dropdown-icon {
+    margin-left: 5px;
+    font-size: 24px; /* Adjust size as needed */
+    line-height: 1;
+}
+
+
+/* Styles for the Chat History Dropdown */
+.chat-history-dropdown {
+    position: absolute;
+    top: 100%; /* Position it directly below the top-chatbox */
+    left: 50%; /* Center it horizontally */
+    transform: translateX(-50%); /* Adjust to center */
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    width: 80%; /* Set width to 80% of the parent */
+    max-width: 600px; /* Optional: Set a max width */
+    max-height: 60vh; /* Set max height to 60% of the viewport height */
+    overflow-y: auto; /* Enable vertical scrolling if content overflows */
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    display: block;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.chat-history-dropdown.active {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Style for the dropdown header */
+.dropdown-header {
+    text-align: center;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    color: #f06c26; 
+    font-size: 0.875rem; 
+}
+
+/* Style for individual chat items */
+.chat-history-dropdown .dropdown-item {
+    display: flex; /* Use flex to align items */
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    border: 1px solid #ddd; /* Add subtle border */
+    border-radius: 4px; /* Optional: Add border radius */
+    cursor: pointer;
+    background: transparent;
+    transition: background 0.3s;
+    margin-bottom: 10px; /* Add margin to create spacing */
+}
+
+.chat-history-dropdown .dropdown-item:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.chat-history-dropdown .chat-title {
+    flex-grow: 1;    /* Take up remaining space */
+    flex-shrink: 1;  /* Allow shrinking */
+    min-width: 0;    /* Allow the element to shrink below its content size */
+    text-align: left;
+    overflow-wrap: break-word; /* Allow content to wrap to the next line */
+    white-space: normal; /* Allow text to wrap */
+    font-size: 0.875rem; 
+}
+
+/* Style for buttons container */
+.chat-history-dropdown .buttons-container {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+}
+/* Style for icons */
+.chat-history-dropdown .delete-chat,
+.chat-history-dropdown .download-chat {
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+    font-size: 0.9em; /* Slightly smaller than the default font size */
+}
+
+.chat-history-dropdown .delete-chat:hover,
+.chat-history-dropdown .download-chat:hover {
+    opacity: 1;
+}
+
+/* Specific style for download icon to ensure it's slightly smaller */
+.chat-history-dropdown .download-chat.fas.fa-download {
+    font-size: 0.85em; /* Even slightly smaller than the delete icon */
+}
+
+/* Style for 'No Chats Saved' message */
+.chat-history-dropdown .no-chats {
+    padding: 10px 15px;
+    color: #888;
+    text-align: center;
+}
+
+
+/* Close Button Styles */
+
+
+.close-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none !important;
+    border: none !important;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    border-radius: 50%; /* For a perfect circle */
+}
+
+/* Close Icon Image */
+.close-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    }
+
+
+.close-icon:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Save Button Styles */
+#save-chat-btn {
+    position: absolute;
+    right: 10px; /* Adjust as needed */
+    top: 50%;
+    transform: translateY(-50%); /* Vertically center the button */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#save-chat-btn:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Style for the Save button icon */
+.save-icon {
+    width: 35px; /* Adjust size as needed */
+    height: 35px; /* Adjust size as needed */
+}
+
+
+
+/* Messages container adapts to available space */
+#messages {
+    overflow-y: auto;
+    padding: 10px;
+}
+
+#messages .empty-div {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 230px;
+    height: 230px;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.empty-div img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.messages img {
+    max-width: 270px;
+    border-radius: 0 10px 10px 0;
+}
+
+/* Messages Box */
+.messages-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 100%;
+    gap: 5px;
+}
+
+/* Common styles for all messages */
+.messages-box .box .messages {
+    background-color: #fff;
+    padding: 10px 15px;
+    display: inline-block;
+    border-radius: 0 10px 10px 0;
+    border-left: 1px solid #1febb1;
+    line-height: 1.4;
+    font-size: 1rem !important; 
+}
+
+.messages-box .box.right {
+    text-align: right;
+}
+
+.messages-box .box.right .messages {
+    background-color: #f0fff0;
+    border-radius: 10px 0 0 10px;
+    border-right: 1px solid #1febb1;
+    border-left: none;
+}
+
+/* Resizer Handle Styles */
+#chatbox-resizer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -2px; /* Slight overlap to make it easier to grab */
+    width: 5px;
+    background-color: transparent;
+    cursor: ew-resize;
+}
+
+#chatbox-resizer:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Extend touch area on touch devices without visual feedback */
+@media (pointer: coarse) and (hover: none) {
+    #chatbox-resizer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: -30px; /* Extend touch area to the left */
+        right: -30px; /* Extend touch area to the right */
+        /* No background, so no visual feedback */
+    }
+}
+
+/* Optional: Hide resizer on mobile devices */
+@media (max-width: 767px) {
+    #chatbox-resizer {
+        display: none;
+    }
+
+    /* Mobile font size adjustment for messages */
+    .messages-box .box .messages {
+        font-size: 1rem !important; /* Adjust font size for mobile */
+    }
+}
+
+
+
+
+/* Box Image */
+.box.img {
+    width: 100%;
+    padding: 0;
+    margin-bottom: 10px;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+/* Send Button and Image Styles */
+#send-btn,
+#img-btn {
+    width: 15%;
+    padding: 5px;
+}
+
+/* Style tables within messages */
+.messages table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+/* Style table headers and cells */
+.messages th, .messages td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+/* Add background color to even table rows */
+.messages tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Style table header */
+.messages th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50; /* Choose a color you like */
+    color: white;
+}
+
+
+    /* Scrollbar styling */
+    #messages::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #messages::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    #messages::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+    }
+
+    .loading-message {
+        font-style: italic;
+        color: #888;
+        text-align: center;
+        margin: 10px 0;
+    }
+
+
+/* Chat Input */
+
+#chat-input-container {
+    flex-shrink: 0;
+    margin-top: auto;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: #f0fff0; /* Very subtle green */
+    border: 1px solid #b3ffb3; /* Light green border for a gentle look */
+    border-radius: 4px;         /* Rounded corners for a smoother appearance */
+    padding: 8px 12px;          /* Adjusted padding for better text spacing */
+}
+
+/* Adjust chat input container when keyboard is open */
+body.keyboard-open #chat-input-container {
+    position: absolute;
+    bottom: auto;
+}
+
+/* Optional: Hide resizer on mobile devices */
+@media (max-width: 767px) {
+    #chatbox-resizer {
+        display: none;
+    }
+}
+
+/* Chat Input Field */
+#chat-input {
+    box-sizing: border-box;      /* Include padding and border in height calculations */
+    flex: 1 1 0%;
+    max-height: 120px;
+    min-height: 40px;
+    margin-right: 10px;
+    background-color: #f0fff0;   /* Very subtle green */
+    border-radius: 4px;  
+    padding: 10px 15px;          /* Adjusted padding */
+    font-size: 1rem;             /* Adjusted font size */
+    color: #333;                 /* Ensure text remains readable */
+    resize: none;                /* Prevent manual resizing */
+    overflow-y: hidden;
+    border: none;          /* Hide scrollbar */
+  }
+
+  #chat-input:focus {
+    outline: none;
+    border: none;
+}
+
+/* Media Queries for Mobile Adjustments */
+@media (max-width: 767px) {
+    /* Adjust chatbox width to 100% on mobile */
+    #chatbox {
+        width: 100%;
+    }
+
+    /* Hide main content when chatbox is open on mobile */
+    .container.chatbox-open {
+        display: none;
+    }
+}
+
+ /* Updated Scroll to Bottom Button Styles */
+ #scroll-to-bottom-btn {
+    position: absolute;
+    bottom: 80px; /* Position above chat input; adjust as needed */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    width: 18px; /* Smaller button width */
+    height: 18px; /* Smaller button height */
+    background-color: rgba(34, 139, 34, 0.8);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.75rem; /* Smaller triangle */
+    display: none; /* Hidden by default */
+    /* Center the triangle inside the button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margin */
+    line-height: 1; /* Reset line height */
+    z-index: 1000;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    display: none; /* Hidden by default */
+    /* Removed hover and active effects */
+}
+
+/* Adjust the bottom position if needed for responsiveness */
+@media (max-width: 600px) {
+    #scroll-to-bottom-btn {
+        bottom: 100px;
+        right: 15px;
+    }
+}
+
+
+    /* Copy Button */
+
+    .copy-button {
+        opacity: 0.6;
+        transition: opacity 0.3s;
+    }
+    
+    .copy-button:hover {
+        opacity: 1;
+    }
+    
+    .copy-icon {
+        width: 14px;
+        height: 14px;
+        position: relative;
+    }
+    
+    .copy-icon::before,
+    .copy-icon::after {
+        content: '';
+        position: absolute;
+        border: 1px solid #000;
+        border-radius: 2px;
+        width: 10px;
+        height: 10px;
+    }
+    
+    .copy-icon::before {
+        top: 0;
+        left: 0;
+        background-color: white;
+    }
+    
+    .copy-icon::after {
+        top: 4px;
+        left: 4px;
+        background-color: white;
+    }
+    @media (max-width: 600px) {
+        .content_para,
+        .pseudo-content_para {
+        font-size: 1.5 rem !important;
+        line-height: 1.5 !important;               /* Optional: Improve readability */
+        }
+    }
+
+
+/* Buttons */
+
+#chat-input-container #send-btn,
+#chat-input-container #img-btn {
+    background-color: #f06c26;
+    border: none;
+    padding: 10px;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+
+
+
+/* Main Menu Dropdown */
+.main-menu-dropdown {
+    position: fixed;
+    top: 0px; /* Positioned higher: adjust as needed */
+    left: 10%; /* Centers the menu if width is 80% */
+    width: 80%;
+    height: 92vh; /* Set height to 80% of viewport height on desktop */
+    background-image: url('/static/oceanbackground4.jpg'); /* Set background image */
+    background-size: cover; /* Ensure the image covers the entire area */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
+    background-color: rgba(255, 255, 255, 0.95); /* Fallback color with slight transparency */
+    border-right: 1px solid #ccc;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    display: none;
+    z-index: 2000; /* Ensures it's on top */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, top 0.3s ease;
+    border-radius: 0; /* Remove any unnecessary margins or paddings */
+    margin: 0; /* Added to ensure no default margins */
+    padding: 0;
+}
+
+/* When active, position and visibility changes */
+.main-menu-dropdown.active {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Main Menu Header */
+/* Main Menu Header */
+.main-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 20px;
+    background-color: rgba(173, 216, 230, 0.9); /* Light blue, semi-transparent */
+    border-bottom: 1px solid #ddd;
+    color: #333;
+    position: relative; /* Add this */
+}
+
+.header-text {
+    flex-grow: 1;
+    text-align: center;
+    padding-right: 2.5rem; /* Add padding to prevent text from getting too close to the button */
+}
+
+.header-actions {
+    position: absolute; /* Position absolutely within the header */
+    right: 0.6rem; /* Adjust this value to move the button more to the right */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.close-menu-btn {
+    background: none;
+    border: 1px solid #5b5a5a;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #333;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s ease;
+}
+
+.close-menu-btn i {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.close-menu-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.close-menu-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1) inset;
+}
+
+
+/* Menu list styles */
+.main-menu-dropdown ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Hide the author books by default */
+.main-menu-dropdown .author-books {
+    display: none;
+}
+
+/* Hide nested lists by default */
+.main-menu-dropdown .nested-list {
+    display: none;
+}
+
+/* Styles indicating expanded items */
+.author-item.expanded > .author-books {
+    display: block;
+}
+
+/* When a book-item is expanded, display all nested lists under it */
+.book-item.expanded .nested-list {
+    display: block;
+}
+
+/* Apply alternating colors to menu items */
+/* For top-level author headers */
+
+.main-menu-dropdown .author-item:nth-of-type(odd) > .author-header {
+    background-color: rgba(173, 216, 230, 0.9); /* Light blue */
+}
+
+.main-menu-dropdown .author-item:nth-of-type(even) > .author-header {
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-opaque white */
+}
+
+/* For book titles under each author */
+.main-menu-dropdown .author-books .book-item:nth-of-type(odd) > .book-title {
+    background-color: rgba(173, 216, 230, 0.9); /* Light blue */
+}
+
+.main-menu-dropdown .author-books .book-item:nth-of-type(even) > .book-title {
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-opaque white */
+}
+
+/* For part titles */
+.main-menu-dropdown .nested-list .part-title:nth-of-type(odd) {
+    background-color: rgba(173, 216, 230, 0.9); /* Light blue */
+}
+
+.main-menu-dropdown .nested-list .part-title:nth-of-type(even) {
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-opaque white */
+}
+
+/* For chapter links under each book */
+.main-menu-dropdown .nested-list .chapter-item:nth-of-type(odd) > .chapter-link {
+    background-color: rgba(173, 216, 230, 0.9); /* Light blue */
+}
+
+.main-menu-dropdown .nested-list .chapter-item:nth-of-type(even) > .chapter-link {
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-opaque white */
+}
+/* Styles for author headers */
+.author-header {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #000; /* Black text for better contrast */
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 20px;
+    transition: background 0.3s;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+/* Hover effect */
+.author-header:hover {
+    background: rgba(0, 123, 255, 0.3); /* Slightly darker blue on hover */
+}
+
+/* Styles for book titles */
+.book-title {
+    font-weight: bold;
+    font-size: 1rem;
+    color: #000; /* Black text for better contrast */
+    cursor: pointer;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    transition: background 0.3s;
+}
+
+/* Hover effect */
+.book-title:hover {
+    background: rgba(0, 123, 255, 0.3); /* Slightly darker blue on hover */
+}
+
+/* Styles for part titles */
+.part-title {
+    font-weight: normal;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: #000; /* Black text for better contrast */
+    cursor: default; /* Not clickable */
+    padding: 8px 40px; /* Increase padding for indentation */
+    text-align: center; /* Center the text */
+}
+
+/* No hover effect for part titles */
+.part-title:hover {
+    background: none;
+}
+
+/* Styles for cover and chapter links */
+.cover-link,
+.chapter-link {
+    display: block;
+    font-weight: normal;
+    font-size: 0.9rem !important;
+    color: #000; /* Black text for better contrast */
+    text-decoration: none;
+    padding: 8px 60px; /* Increase padding for indentation */
+    transition: background 0.3s;
+    cursor: pointer;
+    text-align: center; /* Center the text */
+}
+
+/* Hover effect for links */
+.cover-link:hover,
+.chapter-link:hover {
+    background: rgba(0, 123, 255, 0.3); /* Slightly darker blue on hover */
+    text-decoration: underline;
+}
+
+/* Adjust expand icons */
+.expand-icon {
+    margin-left: auto;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid #333;
+    border-bottom: 2px solid #333;
+    transform: rotate(45deg); /* Initial arrow pointing to the right */
+    transition: transform 0.3s;
+}
+
+/* Rotate expand icon when expanded */
+.author-item.expanded > .author-header .expand-icon,
+.book-item.expanded > .book-title .expand-icon {
+    transform: rotate(135deg); /* Arrow pointing down when expanded */
+}
+
+/* Hide expand icon for part titles */
+.part-title .expand-icon {
+    display: none;
+}
+
+
+/* Override Hover Styles for Main Menu Button */
+#main-menu-btn:hover,
+#main-menu-btn:focus,
+#main-menu-btn:active {
+    background: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Optional: Scrollbar styling for dropdown */
+.main-menu-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.main-menu-dropdown::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.main-menu-dropdown::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-menu-dropdown {
+        max-height: 93vh;
+        left: 0;
+        top: 0px;
+        width: 100%;
+    }
+    .header-actions {
+        right: 1rem;
+    }
+    .main-menu-header,
+    .author-header {
+        font-size: 1.1rem;
+        padding: 12px;
+    }
+    .close-menu-btn {
+        width: 1.1rem;
+        height: 1.1rem;
+    }
+    .close-menu-btn i {
+        font-size: 0.8rem;
+    }
+    
+    /* Proportional font sizes */
+    .book-title {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+    .part-title {
+        font-size: 0.8rem;
+        padding: 6px 32px;
+    }
+    .cover-link,
+    .chapter-link {
+        font-size: 0.8rem !important;
+        padding: 6px 48px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-menu-header,
+    .author-header {
+        font-size: 1rem;
+        padding: 10px;
+    }
+    .header-actions {
+        right: 1.2rem !important;
+    }
+    .close-menu-btn {
+        width: 0.9rem;
+        height: 0.9rem;
+    }
+    .close-menu-btn i {
+        font-size: 0.6rem;
+    }
+    
+    /* Proportional font sizes for smaller screens */
+    .book-title {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+    .part-title {
+        font-size: 0.7rem;
+        padding: 5px 24px;
+    }
+    .cover-link,
+    .chapter-link {
+        font-size: 0.7rem !important;
+        padding: 5px 36px;
+    }
+}
+
+
+.search-image {
+    position: relative;
+    text-align: center;
+    top: 0;
+    background-color: rgb(247, 243, 243);
+    z-index: 1000;
+    padding: 5px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    order: -1;
+}
+
+#main-menu-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.olier-logo {
+    position: relative;
+    display: inline-block;
+}
+
+.olier-logo img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.lier-text {
+    font-family: 'Pacifico', cursive;
+    font-size: 48px;
+    color: #3498db;
+    position: absolute;
+    margin-left: 10px; 
+    left: 80%;
+    top: 50%;
+    transform: translateY(-50%) rotate(-5deg);
+    transition: all 0.3s ease;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 480px) {
+    .olier-logo img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .lier-text {
+        font-size: 40px;
+    }
+}
+
+
+
+/* Search Input Styles */
+#query {
+    font-size: 1rem; /* Default for desktop */
+    color: #333;
+    width: 100%;
+    margin-bottom: 10px;
+    text-align: center;
+    margin-right: 10px;
+    border-radius: 25px;
+    padding: 10px 20px;
+    border: 1px solid #ced4da;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 767px) {
+    #query {
+        font-size: 0.7rem; /* Adjust for mobile */
+    }
+}
+
+/* Search Button Styles */
+#search-btn {
+    font-size: 22px;
+    padding: 5px 10px;
+    align-self: center;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 767px) {
+    #search-btn {
+        font-size: 18px;
+    }
+}
+
+
+/* Open Chatbot Button */
+
+.open_chatbot {
+    all: unset;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    transform: translateY(0);
+    opacity: 1;
+    padding: 0;
+    margin: 0;
+}
+
+.open_chatbot:not(.in-flex-box) {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+.open_chatbot:not(.in-flex-box).hidden {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.open_chatbot.in-flex-box {
+    /* When inside the flex box */
+    position: static;
+    width: 40px;
+    height: 40px;
+    margin: 0; /* Remove margin to align it to the edge */
+    flex-shrink: 0; /* Ensure it doesn't shrink */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.open_chatbot.in-flex-box:hover {
+    transform: scale(1.1); /* Slightly enlarge the button on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
+}
+
+.open_chatbot.in-flex-box:active {
+    transform: scale(0.95); /* Slightly shrink the button on press */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) inset; /* Inset shadow on press */
+}
+
+.open_chatbot.hidden {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.open_chatbot.vanish {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Zoom to Top Button */
+
+.zoom_to_top {
+    all: unset;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    transform: translateY(0);
+    opacity: 1;
+    margin: 0;
+
+    /* Ensure it can receive pointer events when visible */
+    pointer-events: auto;
+}
+
+.zoom_to_top:not(.in-flex-box) {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+}
+
+.zoom_to_top.in-flex-box {
+    /* When inside the flex box */
+    position: static;
+    width: 40px;
+    height: 40px;
+    margin: 0; /* Remove margin to align it to the edge */
+    /* Ensure it doesn't shrink */
+    flex-shrink: 0;
+}
+
+.zoom_to_top.hidden {
+    transform: translateY(100%);
+    opacity: 0;
+
+    /* Disable pointer events when hidden */
+    pointer-events: none;
+}
+
+.zoom_to_top.vanish {
+    opacity: 0;
+    /* Disable pointer events when hidden */
+    pointer-events: none;
+}
+/* Button Logos */
+
+/* www/static/styles.css */
+
+.zoom-logo {
+    width: 80px;
+    height: auto;
+    transition: transform 0.2s ease;
+}
+
+.chatbot-logo {
+    width: 60px;
+    height: auto;
+    transition: transform 0.2s ease;
+}
+
+.in-flex-box .chatbot-logo {
+    width: 40px; /* Smaller size when inside the flex box */
+}
+
+.in-flex-box .zoom-logo {
+    width: 60px; /* Larger size when inside the flex box */
+    /* Adjust the width to your desired size */
+}
+
+/* Toggle Reading Mode Button (Only Inside Flex Box) */
+
+.toggle_search.in-flex-box {
+    all: unset;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    transform: translateY(0);
+    opacity: 1;
+    margin: 0; /* Remove margin to align it to the edge */
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+
+
+.toggle_search.in-flex-box:active {
+    transform: scale(0.95); /* Slightly shrink the button on press */
+}
+
+.toggle_search.in-flex-box.hidden {
+    transform: translateY(100%);
+    opacity: 0;
+}
+
+/* Button Logos */
+
+/* Updated logo class for Toggle Reading Mode */
+.toggle-search-logo {
+    width: 60px; /* Adjust size as needed inside flex box */
+    height: auto;
+    transition: transform 0.2s ease;
+}
+
+
+/* Flex Box at the Bottom */
+
+#bottom-flex-box {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px; /* Adjust the height as needed */
+    background-color: rgb(247, 243, 243); /* Subtle background */
+    display: none; /* Hidden by default */
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 20px;
+    z-index: 999; /* Ensure it's above other content */
+    transition: opacity 0.3s ease-in-out;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+#bottom-flex-box.visible {
+    display: flex; /* Show the flex box */
+}
+
+
+/* Hide the buttons inside the flex box by default */
+.in-flex-box.hidden {
+    display: none;
+}
+
+/* Flex Container Adjustments */
+.flex-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Keep side buttons centered vertically */
+    padding: 0;
+}
+/* styles.css */
+
+
+/* Central Button Styles */
+.flex-box-center-content {
+    flex: 0 0 70%; /* Fixed width at 70% of the viewport */
+    max-width: 70vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 0 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    align-self: stretch; /* Added: Make the button stretch vertically */
+    height: auto;        /* Ensure height is controlled by flex */
+}
+
+/* Hover effect */
+.flex-box-center-content:hover {
+    background-color: #e8e8e8;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Add a new rule for the active state */
+.flex-box-center-content:active {
+    background-color: #d8d8d8;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transform: translateY(1px);
+}
+
+/* Inner Text Styles */
+#flex-box-book-title,
+#flex-box-chapter-title {
+    color: #333;
+    overflow: hidden;          /* Hide overflow if necessary */
+    text-overflow: ellipsis;   /* Add ellipsis if text overflows */
+    white-space: nowrap;       /* Prevent text from wrapping */
+    margin: 0;                 /* Remove default margins */
+}
+
+/* Default styles for desktop */
+#flex-box-book-title {
+    font-size: 1rem;
+}
+
+#flex-box-chapter-title {
+    font-size: 0.8rem;
+}
+
+/* Styles for mobile (screens narrower than 768px) */
+@media (max-width: 767px) {
+    #flex-box-book-title {
+        font-size: 0.7rem;
+    }
+
+    #flex-box-chapter-title {
+        font-size: 0.55rem;
+    }
+}
+
+/* Adjust button widths if necessary */
+.in-flex-box {
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+.save-image-button {
+    display: inline-block;
+    margin-top: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem; /* Smaller icon size */
+    color: #808080; /* Grey color */
+    float: right; /* Align to the right */
+    transition: transform 0.1s ease, color 0.1s ease; /* Smooth transition */
+}
+
+.save-image-button:hover {
+    color: #606060; /* Darker grey on hover */
+}
+
+.save-image-button:active {
+    transform: scale(0.8); /* Pressing effect */
+}
+
+/* Full Text */
+
+.pagenum_text {
+    font-size: 0.9em; /* Slightly smaller than main text */
+    color: #777; /* Light gray color */
+    font-style: italic;
+    margin: 20px 0; /* Add some vertical spacing */
+    border-bottom: 1px solid #eee; /* Light bottom border */
+    padding-bottom: 10px; /* Space below the text */
+}
+
+.book_label {
+    font-size: 1rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    margin-top: 3rem; /* Add space above the book_label */
+}
+
+.book_title {
+    font-size: 3rem;
+    color: #333;
+    font-weight: 300;
+    margin-top: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e0e0e0;
+    display: inline-block;
+    margin-top: 3rem; /* Add space above the book_label */
+}
+/* #send-btn {
+    background-color: #f06c26;
+    border: none;
+    padding: 9px 15px;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} */
+/* 
+#send-btn svg {
+    fill: white;
+}
+
+#send-btn:hover {
+    background-color: #f06c26;
+} */

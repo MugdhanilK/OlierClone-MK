@@ -1,0 +1,5 @@
+Method,Name,Error,Occurrences
+POST,/api/keyword-search,CatchResponseError('Keyword search failed with status 0'),8
+GET,/api/full-text?file_path=Letters%20on%20Yoga%20IV_modified.html,CatchResponseError('Full text load failed with status 0'),5
+POST,/api/send-message,CatchResponseError('Chat failed with status 0'),16
+POST,/api/search,CatchResponseError('Search failed with status 0'),10
