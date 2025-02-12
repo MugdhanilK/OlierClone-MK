@@ -2200,7 +2200,7 @@ body.keyboard-open #chat-input-container {
     height: 120px;
     border-radius: 50%;
     /* Use the background image instead of an <img> src */
-    background-image: url('oliersearch.png');
+    background-image: url('Original/oliersearch.png');
     background-size: cover;         /* Adjust as needed (cover, contain, etc.) */
     background-position: center;
     background-repeat: no-repeat;
@@ -2390,23 +2390,29 @@ body.keyboard-open #chat-input-container {
 }
 /* Button Logos */
 
-/* www/static/styles.css */
 
 .zoom-logo {
     width: 80px;
     height: auto;
     transition: transform 0.2s ease;
 }
-
+/* Default Chatbot Logo */
 .chatbot-logo {
     width: 60px;
-    height: auto;
+    height: 60px;  /* Set a fixed height so the image displays correctly */
+    background-image: url('Original/Olierbutton.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
     transition: transform 0.2s ease;
 }
 
+/* Smaller Chatbot Logo when inside a flex container */
 .in-flex-box .chatbot-logo {
-    width: 40px; /* Smaller size when inside the flex box */
+    width: 40px;
+    height: 40px;
 }
+
 
 .in-flex-box .zoom-logo {
     width: 60px; /* Larger size when inside the flex box */
@@ -2414,7 +2420,6 @@ body.keyboard-open #chat-input-container {
 }
 
 /* Toggle Reading Mode Button (Only Inside Flex Box) */
-
 .toggle_search.in-flex-box {
     all: unset;
     background: none;
@@ -2429,11 +2434,10 @@ body.keyboard-open #chat-input-container {
     transform: translateY(0);
     opacity: 1;
     margin: 0; /* Remove margin to align it to the edge */
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     flex-shrink: 0;
 }
-
 
 .toggle_search.in-flex-box:active {
     transform: scale(0.95); /* Slightly shrink the button on press */
@@ -2448,8 +2452,12 @@ body.keyboard-open #chat-input-container {
 
 /* Updated logo class for Toggle Reading Mode */
 .toggle-search-logo {
-    width: 60px; /* Adjust size as needed inside flex box */
-    height: auto;
+    width: 60px;           /* Adjust size as needed inside flex box */
+    height: 60px;          /* Define height for the empty div */
+    background-image: url('Original/oliersearchactual.png');
+    background-size: contain;    /* Scale the image to fit the container */
+    background-position: center;
+    background-repeat: no-repeat;
     transition: transform 0.2s ease;
 }
 

@@ -215,19 +215,22 @@
             <div class="flex-container">
                 <!-- Toggle Search Button (Inside Flex Box) -->
                 <button aria-label="Toggle Search" class="toggle_search in-flex-box" type="button">
-                    <img alt="Toggle Search" class="toggle-search-logo" src="static/oliersearchactual.png" />
-                </button>
+                    <div class="toggle-search-logo" role="img" aria-label="Toggle Search"></div>
+                  </button>
+                  
 
                 <!-- Center Content Button -->
                 <button class="in-flex-box flex-box-center-content" aria-label="Open Main Menu" type="button">
                     <span id="flex-box-book-title">Book Title</span>
                     <span id="flex-box-chapter-title">Chapter Title</span>
-                </button>
+                </button> 
 
                 <!-- Open Chatbot Button (Inside Flex Box) -->
-                <button aria-label="Open Chatbot" class="open_chatbot in-flex-box" type="button">
-                    <img alt="Olier" class="chatbot-logo" src="static/Olierbutton.png" />
-                </button>
+            <!-- Open Chatbot Button (Inside Flex Box) -->
+            <button aria-label="Open Chatbot" class="open_chatbot in-flex-box" type="button">
+                <div class="chatbot-logo" role="img" aria-label="Olier"></div>
+            </button>
+
             </div>
         </div>
     </div> <!-- END of .container -->
@@ -311,9 +314,10 @@
 
     <!-- Open Chatbot Button (Outside Flex Box) -->
     <button aria-label="Open Chatbot" class="open_chatbot" type="button">
-        <img alt="Olier" class="chatbot-logo" src="static/Olierbutton.png" />
+        <div class="chatbot-logo" role="img" aria-label="Olier"></div>
         <span class="chatbot-text">Chat</span>
     </button>
+    
 
     <!-- Zoom to Top Button (Outside Flex Box) -->
     <button aria-label="Zoom to Top" class="zoom_to_top" id="zoom-to-top-btn" type="button">
