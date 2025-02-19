@@ -29,6 +29,7 @@ body {
     font-family: 'Josefin Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 1rem;
     font-weight: 500;
+    padding-top: 10px; 
 }
 
 
@@ -45,8 +46,6 @@ body.non-ios-device {
     background-repeat: no-repeat;
     background-position: bottom center;
     background-attachment: fixed;
-    padding-top: 10px; /* or any small value you want */
-
 }
 
 /* Mobile Adjustments for non-iOS devices */
@@ -59,7 +58,6 @@ body.non-ios-device {
 
 /* For iOS devices, use pseudo-element on body */
 body.ios-device {
-    padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
@@ -2188,25 +2186,18 @@ body.keyboard-open #chat-input-container {
     transform: scale(0.97);
 }
 
-/* Olier Logo Container */
 .olier-logo {
     position: relative;
     display: inline-block;
 }
 
-/* Replace .olier-logo img with .olier-logo .round-image */
-.olier-logo .round-image {
+.olier-logo img {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    /* Use the background image instead of an <img> src */
-    background-image: url('Original/oliersearch.png');
-    background-size: cover;         /* Adjust as needed (cover, contain, etc.) */
-    background-position: center;
-    background-repeat: no-repeat;
+    object-fit: cover;
 }
 
-/* The text remains unchanged */
 .lier-text {
     font-family: 'Pacifico', cursive;
     font-size: 48px;
@@ -2221,10 +2212,11 @@ body.keyboard-open #chat-input-container {
 
 /* Media query for smaller screens */
 @media (max-width: 480px) {
-    .olier-logo .round-image {
+    .olier-logo img {
         width: 120px;
         height: 120px;
     }
+
     .lier-text {
         font-size: 42px;
     }
@@ -2390,29 +2382,23 @@ body.keyboard-open #chat-input-container {
 }
 /* Button Logos */
 
+/* www/static/styles.css */
 
 .zoom-logo {
     width: 80px;
     height: auto;
     transition: transform 0.2s ease;
 }
-/* Default Chatbot Logo */
+
 .chatbot-logo {
     width: 60px;
-    height: 60px;  /* Set a fixed height so the image displays correctly */
-    background-image: url('Original/Olierbutton.png');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
+    height: auto;
     transition: transform 0.2s ease;
 }
 
-/* Smaller Chatbot Logo when inside a flex container */
 .in-flex-box .chatbot-logo {
-    width: 40px;
-    height: 40px;
+    width: 40px; /* Smaller size when inside the flex box */
 }
-
 
 .in-flex-box .zoom-logo {
     width: 60px; /* Larger size when inside the flex box */
@@ -2420,6 +2406,7 @@ body.keyboard-open #chat-input-container {
 }
 
 /* Toggle Reading Mode Button (Only Inside Flex Box) */
+
 .toggle_search.in-flex-box {
     all: unset;
     background: none;
@@ -2434,10 +2421,11 @@ body.keyboard-open #chat-input-container {
     transform: translateY(0);
     opacity: 1;
     margin: 0; /* Remove margin to align it to the edge */
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
     flex-shrink: 0;
 }
+
 
 .toggle_search.in-flex-box:active {
     transform: scale(0.95); /* Slightly shrink the button on press */
@@ -2452,12 +2440,8 @@ body.keyboard-open #chat-input-container {
 
 /* Updated logo class for Toggle Reading Mode */
 .toggle-search-logo {
-    width: 60px;           /* Adjust size as needed inside flex box */
-    height: 60px;          /* Define height for the empty div */
-    background-image: url('Original/oliersearchactual.png');
-    background-size: contain;    /* Scale the image to fit the container */
-    background-position: center;
-    background-repeat: no-repeat;
+    width: 60px; /* Adjust size as needed inside flex box */
+    height: auto;
     transition: transform 0.2s ease;
 }
 
