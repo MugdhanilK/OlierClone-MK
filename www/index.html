@@ -10234,16 +10234,64 @@
                 </li>
 
                 <!--Mother's Agenda-->
-                <div class="author-item">
-                    <div class="author-header">
-                        <span>
-                            Mother's Agenda [1951 - 1973]
-                        </span>
-                        <span class="expand-icon">
-                        </span>
-                    </div>
+                <style>
+                    /* Hide sub-lists by default */
+                    .author-books, .nested-list,
+                    .agenda-books {
+                      display: none; /* collapsed on load */
+                    }
+                    .open {
+                      display: block; /* toggles for .author-books / .nested-list */
+                    }
+                    .open-agenda {
+                      display: block; /* toggles specifically for .agenda-books */
+                    }
+                  </style>
 
-                    <ul class="author-books">
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll("li.author-item ul.author-books").forEach(function(list) {
+                  list.classList.remove("open");
+                });
+              });
+              document.querySelectorAll('.author-header').forEach(header => {
+                header.addEventListener('click', () => {
+                  const parent = header.closest('.author-item');
+                  if (!parent) return;
+                  const agendaBooks = parent.querySelector(':scope > .agenda-books');
+                  if (agendaBooks) {
+                    agendaBooks.classList.toggle('open-agenda');
+                  }
+                });
+              });
+              
+      // 2) Toggle .agenda-books by clicking .agenda-header
+      document.querySelectorAll('.agenda-header').forEach(header => {
+        header.addEventListener('click', event => {
+          // Stop click from bubbling to the .author-header
+          event.stopPropagation();
+  
+          const agendaParent = header.closest('.agenda-item');
+          if (!agendaParent) return;
+          // Toggle the .agenda-books
+          const agendaList = agendaParent.querySelector(':scope > .agenda-books');
+          if (agendaList) {
+            agendaList.classList.toggle('open-agenda');
+          }
+        });
+      });
+    </script>
+                
+                    <!--Mother's Agenda 1951-60-->
+                    <li class="author-item" role="menuitem">
+                        <div class="author-header" tabindex="0">
+                            <span style="text-align: center;">
+                                Mother's Agenda [1951 - 1973]
+                            </span>
+                            <span class="expand-icon">
+                            </span>
+                        </div>
+                        <ul class="agenda-books">  
                     <!--Mother's Agenda 1951-60-->
                     <li class="book-item" data-file-path="static/HTML/Mother’s Agenda 1951-1960_modified.html"
                         role="menuitem">
@@ -18836,10 +18884,9 @@
 
                     <!--End of Mother's Agenda-->
                 </ul>
-
-            </div>
+            </li>
         </ul>
-    </div>
+</div>
        
 
 
