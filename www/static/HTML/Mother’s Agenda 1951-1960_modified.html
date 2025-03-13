@@ -15,6 +15,49 @@
     display: inline-block;
     text-align: left;
 	}
+	.container {
+      max-width: 80%; /* Controls overall width */
+      margin: 20px auto; /* Centers the container */
+      padding: 20px; /* Adds space on left & right */
+    }
+	.summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px auto;
+      font-family: Arial, sans-serif;
+      /* Use fixed table layout to help with consistent cell widths */
+      table-layout: fixed;
+    }
+    .summary-table th, .summary-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      /* Allow text to wrap */
+      white-space: normal;
+      word-wrap: break-word; /* For legacy support */
+      overflow-wrap: break-word; /* Modern browsers */
+    }
+    .summary-table th {
+      background-color: #f4f4f4;
+      font-size: 18px;
+    }
+    /* Optionally, you can set specific widths for columns */
+    .summary-table td:first-child {
+      font-weight: bold;
+      width: 20%;
+    }
+    .summary-table td:nth-child(2) {
+      font-weight: bold;
+      width: 80%;
+    }
+    .summary-table td a {
+      color: #0066cc;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .summary-table td a:hover {
+      text-decoration: underline;
+    }
 </style>
 </head>
 <body>
@@ -143,8 +186,8 @@ This tremendous document — 6,000 pages in 13 volumes — is the day-to-day acc
 <h2 class="sub-hd">Chronology of World Events</h2>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table50_51" style="border-collapse: collapse" width="70%">
-<tr><td colspan="3"><h3 style="text-align: center;"><a name="1950">1950</a></h3></td></tr>
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
+<tr><td colspan="3"><h3 style="text-align: center;">1950</h3></td></tr>
 <tr><td><p class="Ps"><b>1950</b></p></td><td>January 26</td><td>
 	Proclamation of the Republic of India.</td></tr>
 <tr><td><p class="Ps"><b>1950</b></p></td><td>January 31</td><td>
@@ -165,9 +208,12 @@ This tremendous document — 6,000 pages in 13 volumes — is the day-to-day acc
 <tr><td><p class="Ps"><b>1950</b></p></td><td>November 26</td><td>
 	Communist Chinese forces shatter an American-U.N. offensive in Korea. President Truman threatens use of the atomic bomb if necessary.</td></tr>
 <tr><td><p class="Ps"><b>1950</b></p></td><td>December 5</td><td>
-	Sri Aurobindo leaves his body.</td></tr>
+	Sri Aurobindo leaves his body.</td></tr></table></div>
+<!--Chronology of World Events Table-->
+<div align="center">
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">	
 <tr>
-<td colspan="3"><h3 style="text-align: center;"><a name="1951">1951</a></h3></td>
+<td colspan="3"><h3 style="text-align: center;">1951</h3></td>
 </tr>
 <tr><td><p class="Ps"><b>1951</b></p></td><td>February 1</td><td>
 	The U.N. General Assembly finds Communist China responsible for aggression in Korea.</td></tr>
@@ -181,7 +227,7 @@ This tremendous document — 6,000 pages in 13 volumes — is the day-to-day acc
 	state of war with Germany.</td></tr>
 <tr><td><p class="Ps"><b>1951</b></p></td><td>July 
 	20</td><td>King Abdul ibn Hussein of Jordan is assassinated.</td></tr>
-<tr><td><p class="Ps"><b>1951</b></p></td><td nowrap="">September 4</td><td>
+<tr><td><p class="Ps"><b>1951</b></p></td><td>September 4</td><td>
 	First U.S. transcontinental television broadcast.</td></tr>
 <tr><td><p class="Ps"><b>1951</b></p></td><td>September 
 	8</td><td>48 nations sign Japanese peace treaty in San Francisco.</td></tr>
@@ -196,9 +242,9 @@ This tremendous document — 6,000 pages in 13 volumes — is the day-to-day acc
 <p class="p-num" id="page26">Page 26</p>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table52" style="border-collapse: collapse" width="70%">
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
 <tr>
-<td colspan="3"><h3 style="text-align: center;"><a name="1952">1952</a></h3></td>
+<td colspan="3"><h3 style="text-align: center;">1952</h3></td>
 </tr>
 <tr><td><p class="Ps"><b>1952</b></p></td><td>February 6</td><td>
 	Elizabeth II ascends the British throne on the death of George VI.</td></tr>
@@ -281,9 +327,9 @@ disciples<a class="fn-ref" data-fn="5" href="#">1</a> are largely responsible fo
 <h2 class="sub-hd">Chronology of World Events</h2>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table53" style="border-collapse: collapse" width="70%">
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
 <tr>
-<td colspan="3"><h3 style="text-align: center;"><a name="1953">1953</a></h3></td>
+<td colspan="3"><h3 style="text-align: center;">1953</h3></td>
 </tr>
 <tr><td><p class="Ps"><b>1953</b></p></td><td>January 13</td><td>
 	Tito is elected President of Yugoslavia.</td></tr>
@@ -320,9 +366,9 @@ disciples<a class="fn-ref" data-fn="5" href="#">1</a> are largely responsible fo
 <p class="p-num" id="page32">Page 32</p>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table54" style="border-collapse: collapse" width="70%">
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
 <tr>
-<td colspan="3"><h3 style="text-align: center;"><a name="1954">1954</a></h3></td>
+<td colspan="3"><h3 style="text-align: center;">1954</h3></td>
 </tr>
 <tr><td><p class="Ps"><b>1954</b></p></td><td>January 1</td><td>
 	The Nautilus, the first atomic submarine, is launched in Connecticut.</td></tr>
@@ -330,7 +376,7 @@ disciples<a class="fn-ref" data-fn="5" href="#">1</a> are largely responsible fo
 	Secretary of State Dulles advocates a policy of “massive retaliation” to deter aggression.</td></tr>
 <tr><td><p class="Ps"><b>1954</b></p></td><td>February 22</td><td>
 	Indian Prime Minister Nehru appeals for Indochmese cease-fire.</td></tr>
-<tr><td><p class="Ps"><b>1954</b></p></td><td nowrap="">February 25</td><td>
+<tr><td><p class="Ps"><b>1954</b></p></td><td>February 25</td><td>
 	U.S. announces military aid to Pakistan despite Indian opposition.</td></tr>
 <tr><td><p class="Ps"><b>1954</b></p></td><td>February 26</td><td>
 	West Germany modifies its constitution to permit rearmament.</td></tr>
@@ -350,7 +396,7 @@ disciples<a class="fn-ref" data-fn="5" href="#">1</a> are largely responsible fo
 	President Eisenhower signs the Atomic Energy Act of 1954 which authorizes private nuclear development and the extension of information to friendly countries.</td></tr>
 <tr><td><p class="Ps"><b>1954</b></p></td><td>September 8</td><td>
 	The Southeast Asia Treaty Organization is created in Manila by the U.S. and seven other countries.</td></tr>
-<tr><td><p class="Ps"><b>1954</b></p></td><td nowrap="">September 26</td><td>
+<tr><td><p class="Ps"><b>1954</b></p></td><td>September 26</td><td>
 	Japanese ferry Toya Maru sinks in Tsugaru Strait claiming 1,172 lives.</td></tr>
 <tr><td><p class="Ps"><b>1954</b></p></td><td>October 13</td><td>
 	U.S. Air Force orders first supersonic bomber, the B-58.</td></tr>
@@ -511,9 +557,9 @@ disciples<a class="fn-ref" data-fn="5" href="#">1</a> are largely responsible fo
 <h2 class="sub-hd">Chronology of World Events</h2>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table3" style="border-collapse: collapse" width="70%">
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
 <tr>
-<td colspan="3"><h3 style="text-align: center;"><a name="1955">1955</a></h3></td>
+<td colspan="3"><h3 style="text-align: center;">1955</h3></td>
 </tr>
 <tr><td><p class="Ps"><b>1955</b></p></td><td>January 25</td><td><p class="Ps">The U.S.S.R. ends its state of war with Germany.</p></td></tr>
 <tr><td><p class="Ps"><b>1955</b></p></td><td>March 1</td><td><p class="Ps">Sir Winston Churchill says his government's decision to make the hydrogen bomb is the “only sane policy” for the West.</p></td></tr>
@@ -696,9 +742,9 @@ disciples<a class="fn-ref" data-fn="5" href="#">1</a> are largely responsible fo
 <h2 class="sub-hd">Chronology of World Events</h2>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table56_1" style="border-collapse: collapse" width="70%">
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
 <tr>
-<td colspan="3"><h3 style="text-align: center;"><a name="1956">1956</a></h3></td>
+<td colspan="3"><h3 style="text-align: center;">1956</h3></td>
 </tr>
 <tr><td><p class="Ps"><b>1956</b></p></td><td>January 1</td><td>The 
 	Sudan becomes an independent state.</td></tr>
@@ -784,7 +830,7 @@ disciples<a class="fn-ref" data-fn="5" href="#">1</a> are largely responsible fo
 <p class="p-num" id="page62">Page 62</p>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table56_2" style="border-collapse: collapse" width="70%">
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
 <tr>
 <td><p class="Ps"><b>1956</b></p></td><td>October 31</td><td>
 		Great Britain and France start bombing Egyptian air-ports in a bid for 
@@ -1326,9 +1372,9 @@ have come from <span class="D_BIG_LETTERS">so FAR</span> away, I have come from 
 <h2 class="sub-hd">Chronology of World Events</h2>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table57_1" style="border-collapse: collapse" width="70%">
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
 <tr>
-<td colspan="3"><h3 style="text-align: center;"><a name="1957">1957</a></h3></td>
+<td colspan="3"><h3 style="text-align: center;">1957</h3></td>
 </tr>
 <tr>
 <td><p class="Ps"><b>1957</b></p></td><td>January 10</td><td>
@@ -1405,7 +1451,7 @@ have come from <span class="D_BIG_LETTERS">so FAR</span> away, I have come from 
 <p class="p-num" id="page98">Page 98</p>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table57_2" style="border-collapse: collapse" width="70%">
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
 <tr><td><p class="Ps"><b>1957</b></p></td><td>July 26</td><td>President 
 			Carlos Castillo Armas of Guatamala is assassinated by one of his own guards.</td></tr>
 <tr><td><p class="Ps"><b>1957</b></p></td><td>August 27</td><td>The 
@@ -1425,9 +1471,9 @@ have come from <span class="D_BIG_LETTERS">so FAR</span> away, I have come from 
 			Communist parties of 64 nations meeting in Moscow adopt a resolution 
 			emphasizing “the unity of viewpoints on all questions discussed.” Yugoslavia 
 			refuses to sign.</td></tr>
-<tr><td><p class="Ps"><b>1957</b></p></td><td nowrap="">December 13-17</td><td>
+<tr><td><p class="Ps"><b>1957</b></p></td><td>December 13-17</td><td>
 			Earthquakes in Iran kill nearly 1,500 persons.</td></tr>
-<tr><td><p class="Ps"><b>1957</b></p></td><td nowrap="">December 17</td><td>
+<tr><td><p class="Ps"><b>1957</b></p></td><td>December 17</td><td>
 			Successful testing of “Atlas,” American short-range intercontinental 
 			ballistic missile.</td></tr>
 </table></div>
@@ -1768,101 +1814,101 @@ is restrained or <span class="D_BIG_LETTERS">CHECKED</span>, as it were, by the 
 <h2 class="sub-hd">Chronology of World Events</h2>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table58_1" style="border-collapse: collapse" width="70%">
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
 <tr>
-<td colspan="3"><h3 style="text-align: center;"><a name="1958">1958</a></h3></td>
+<td colspan="3"><h3 style="text-align: center;">1958</h3></td>
 </tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">January 13</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>January 13</td><td>
 		9,325 scientists from 43 nations sign a petition to the U.N. Secretary 
 		General urging an immediate halt to nuclear weapons tests.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">January 31</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>January 31</td><td>
 <i>Explorer I</i>, the first U.S. satellite, is launched.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">February 2</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>February 2</td><td>
 		54 members, among them three ministers, are excluded from the National 
 		People's Congress of Communist China for showing “rightist” opinions.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">March 27</td><td>N. 
+<tr><td><p class="Ps"><b>1958</b></p></td><td>March 27</td><td>N. 
 		Khrushchev is elected Premier of the U.S.S.R. upon Bulganin's resignation.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">March 28</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>March 28</td><td>
 		Gromyko announces the U.S.S.R.'s unilateral decision to halt all nuclear 
 		testing and calls on U.S. and Great Britain to do the same.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">April 1</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>April 1</td><td>
 		Rebel leader Fidel Castro opens hostilities against the regime of President 
 		Batista in Cuba.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">April 17</td><td>In 
+<tr><td><p class="Ps"><b>1958</b></p></td><td>April 17</td><td>In 
 		Paris, the Defense Ministers of all NATO countries approve the Norstad Plan 
 		providing for thirty divisions equipped with strategic atomic weapons.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">April 23</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>April 23</td><td>
 		The U.S. Air Force launches a two-stage missile with a 5,000 mile range.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">April 28</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>April 28</td><td>
 		Nobel prize-winner Dr. Linus Pauling says that radio-activity already in the 
 		air from nuclear weapons will cause 5 million genetically defective births 
 		and millions of leukemia and cancer cases in the future.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">April 28 – May 15</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>April 28 – May 15</td><td>
 		Vice-President Nixon, on a goodwill tour of South America, is widely 
 		attacked and abused.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">May 13</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>May 13</td><td>
 		French troops in Algeria rebel against the Paris government, seize control 
 		of Algiers and demand return of General de Gaulle as French premier and 
 		leader of a government of public safety.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">June 1</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>June 1</td><td>
 		General de Gaulle becomes French Premier as a result of the Algerian crisis.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">June 18</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>June 18</td><td>
 		Explosion of the most powerful American hydrogen bomb to date, in Eniwetok, 
 		the Marshall Islands.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">July 14</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>July 14</td><td>
 		Iraqi monarchy is overthrown by a military revolt. King Faisal, his uncle 
 		the Crown Prince, and the Premier are assassinated.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">July 15</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>July 15</td><td>
 		U.S. marines begin landing at Beirut, Lebanon, in support of the government 
 		of President Chamoun.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">July 26</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>July 26</td><td>
 		Successful launching of “Explorer IV,” the fourth successful U.S. earth 
 		satellite.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">July 29</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>July 29</td><td>
 		President Eisenhower signs bill creating the National Aeronautic and Space 
 		Administration.</td></tr>
 </table></div>
 <p class="p-num" id="page130">Page 130</p>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table58_2" style="border-collapse: collapse" width="70%">
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">August 1</td><td>
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
+<tr><td><p class="Ps"><b>1958</b></p></td><td>August 1</td><td>
 		U.S. missile-borne atomic weapon is detonated at high altitude over the 
 		Pacific, followed by a second warhead on the 12th.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">August 7</td><td>2 
+<tr><td><p class="Ps"><b>1958</b></p></td><td>August 7</td><td>2 
 		American atomic submarines cross the North Pole under the icecap.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">August 20</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>August 20</td><td>
 		In Brazzaville, General de Gaulle offers French African Territories either 
 		complete independence or a part in a “federal community” under French 
 		leadership.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">August 22</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>August 22</td><td>
 		The United States and Great Britain propose a joint ban on all nuclear 
 		weapons tests for one year.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">August 23</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>August 23</td><td>
 		The Chinese Communists begin their full-scale shelling of Quemoy, lasting 6 
 		weeks.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">September 19</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>September 19</td><td>
 		A new series of U.S. nuclear tests is inaugurated in Nevada.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">October 2</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>October 2</td><td>
 		The Republic of Guinea is proclaimed.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">October 9</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>October 9</td><td>
 		Death of Pope Pius XII.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">October 23</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>October 23</td><td>
 		Boris Pasternak wins the Nobel Prize for literature but is forced to refuse 
 		the award on the 29th due to the hostile reaction of Soviet leaders.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">October 28</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>October 28</td><td>
 		Election of Pope John XXIII.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">November 8</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>November 8</td><td>
 		The third moon rocket, launched at Cape Canaveral, disintegrates after 
 		reaching an altitude of only 1,000 miles.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">November 17</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>November 17</td><td>
 		Military coup in the Sudan.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">December 6</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>December 6</td><td>
 		U.S., Britain and U.S.S.R. agree at Geneva on the first article of a 
 		proposed nuclear weapons tests ban treaty.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">December 13</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>December 13</td><td>
 		A “Jupiter” rocket with a monkey aboard is launched from Cape Canaveral.</td></tr>
-<tr><td><p class="Ps"><b>1958</b></p></td><td nowrap="">December 21</td><td>
+<tr><td><p class="Ps"><b>1958</b></p></td><td>December 21</td><td>
 		General de Gaulle is overwhelmingly elected President of the Fifth Republic.</td></tr>
 </table></div>
 <!-- End of Chapter -->
@@ -3330,130 +3376,130 @@ empoisoned water is thrown out. (I tell you all this because I prefer that you k
 <h2 class="sub-hd">Chronology of World Events</h2>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table59_1" style="border-collapse: collapse" width="70%">
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
 <tr>
-<td colspan="3"><h3 style="text-align: center;"><a name="1959">1959</a></h3></td>
+<td colspan="3"><h3 style="text-align: center;">1959</h3></td>
 </tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">January 1</td><td>
+<tr><td><p class="Ps"><b>1959</b></p></td><td>January 1</td><td>
 		Cuban rebel forces led by Fidel Castro seize power throughout the island; 
 		dictator Fulgencio Batista flees.<p>The 6-nation European Economic Community 
 		(Common Market) and Atomic Energy Community (Euratom) come into effect.</p></td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">January 2</td><td>
+<tr><td><p class="Ps"><b>1959</b></p></td><td>January 2</td><td>
 		The U.S.S.R. launches the first lunar rocket. On January 7, it goes into 
 		orbit around the sun and thus becomes the first man-made planet.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">January 3</td><td>
+<tr><td><p class="Ps"><b>1959</b></p></td><td>January 3</td><td>
 		Alaska becomes the forty-ninth American state.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">January 8</td><td>General Charles de Gaulle 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>January 8</td><td>General Charles de Gaulle 
 		becomes the first President of France's Fifth Republic.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">February 14</td><td>Joint U.S.S.R.-Communist China 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>February 14</td><td>Joint U.S.S.R.-Communist China 
 		statement proclaims “unbreakable unity” of the 2 countries.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">February 18</td><td>French troops enter Congo 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>February 18</td><td>French troops enter Congo 
 		Republic at request of the government to suppress rioting in Brazzaville.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">February 26</td><td>Extension of fighting 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>February 26</td><td>Extension of fighting 
 		throughout Central Africa. State of emergency is proclaimed in Southern 
 		Rhodesia, and 435 nationalist leaders are arrested.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">March 4</td><td>“Pioneer IV,” U.S. lunar probe, 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>March 4</td><td>“Pioneer IV,” U.S. lunar probe, 
 		passes the moon and heads into orbit around the sun.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">March 11</td><td>President Eisenhower refuses to 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>March 11</td><td>President Eisenhower refuses to 
 		rule out a nuclear war if hostilities should develop over Berlin.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">March 19-23</td><td>Armed Tibetan revolt against 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>March 19-23</td><td>Armed Tibetan revolt against 
 		Communist Chinese occupation forces. On the 28th, China dissolves the 
 		Tibetan local government of the Dalai Lama, who escapes to India on the 
 		31st.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">March 27</td><td>A cyclone ravages Madagascar, 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>March 27</td><td>A cyclone ravages Madagascar, 
 		more than 160,000 victims.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">April 8</td><td>NASA presents to the U.S. Congress 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>April 8</td><td>NASA presents to the U.S. Congress 
 		a long-range program for space exploration. On the 9th, the first seven 
 		“astronauts” are selected.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">May 4</td><td>Negotiations in Geneva to ban 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>May 4</td><td>Negotiations in Geneva to ban 
 		nuclear weapons tests resume.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">May 8</td><td>Prime Minister Nehru warns Communist 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>May 8</td><td>Prime Minister Nehru warns Communist 
 		China against “warlike speeches” threatening India.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">May 17</td><td>Nationalist China's Matsu Islands 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>May 17</td><td>Nationalist China's Matsu Islands 
 		undergo large-scale artillery bombardment from the Communist mainland.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">May 18</td><td>Foreign Ministers' Conference in 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>May 18</td><td>Foreign Ministers' Conference in 
 		Geneva deadlocked over conflicting East-West proposals for settling German 
 		security problems.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">May 18-23</td><td>Third Congress of Soviet 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>May 18-23</td><td>Third Congress of Soviet 
 		writers. The delegates complain of the “grayness” of their literature and 
 		the lack of responsibility among writers.</td></tr>
 </table></div>
 <p class="p-num" id="page266">Page 266</p>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table59_2" style="border-collapse: collapse" width="70%">
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">May 24</td><td>Death of John Foster Dulles.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">June 9</td><td>Launching of the “George 
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
+<tr><td><p class="Ps"><b>1959</b></p></td><td>May 24</td><td>Death of John Foster Dulles.</td></tr>
+<tr><td><p class="Ps"><b>1959</b></p></td><td>June 9</td><td>Launching of the “George 
 		Washington,” the first atomic submarine with ballistic missiles.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">June 11</td><td>President Eisenhower announces 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>June 11</td><td>President Eisenhower announces 
 		plans to equip Greece with nuclear weapons and to train Greek troops in 
 		their use.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">June 15</td><td>U.S. Congress authorizes $230 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>June 15</td><td>U.S. Congress authorizes $230 
 		million for construction of 8 nuclear power plants.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">July 28</td><td>Continued clashes in the Congo 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>July 28</td><td>Continued clashes in the Congo 
 		claim 35 lives</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">August 1</td><td>Fifth World Conference against 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>August 1</td><td>Fifth World Conference against 
 		atomic weapons in Hiroshima.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">August 4</td><td>Rebellion in Laos; the government 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>August 4</td><td>Rebellion in Laos; the government 
 		declares a state of emergency on September 5.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">August 20</td><td>Severe typhoon on the China 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>August 20</td><td>Severe typhoon on the China 
 		coast kills 2,334 persons.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">August 21</td><td>Hawaii becomes the fiftieth 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>August 21</td><td>Hawaii becomes the fiftieth 
 		state.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">August 25</td><td>The United States grants 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>August 25</td><td>The United States grants 
 		economic and military aid to Laos because of North Vietnamese “aggression.”</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">August 28</td><td>U.S.S.R. extends nuclear test 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>August 28</td><td>U.S.S.R. extends nuclear test 
 		ban on the condition that U.S. and Britain do the same.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">August 29</td><td>Prime Minister Nehru tells 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>August 29</td><td>Prime Minister Nehru tells 
 		Indian Parliament of “continuing cases of aggression” by the Chinese in 
 		North India.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">September 15-27</td><td>Premier Khrushchev on 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>September 15-27</td><td>Premier Khrushchev on 
 		official visit to the U.S.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">September 16</td><td>President de Gaulle gives 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>September 16</td><td>President de Gaulle gives 
 		Algeria the right to choose its political future by referendum.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">September 18</td><td>Khrushchev proposes to the 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>September 18</td><td>Khrushchev proposes to the 
 		U.N. General Assembly that all nations abolish their weapons and armed 
 		forces within 4 years.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">September 22</td><td>Inauguration of the first 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>September 22</td><td>Inauguration of the first 
 		underwater telephone cable between Europe and the United States.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">September 25</td><td>Prime Minister S.W.R.D. 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>September 25</td><td>Prime Minister S.W.R.D. 
 		Bandaranaike of Ceylon is assassinated by Buddhist monks.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">September 26</td><td>Typhoon “Vera” devastates 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>September 26</td><td>Typhoon “Vera” devastates 
 		Japan, 5,000 persons killed</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">October 1</td><td>Premier Khrushchev, attending 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>October 1</td><td>Premier Khrushchev, attending 
 		China's 10th anniversary celebrations, advises Communist world against 
 		testing the solidity of the capitalist regime by force.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">October 6</td><td>Lunik-III, the third Soviet 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>October 6</td><td>Lunik-III, the third Soviet 
 		lunar missile, circles the moon and photographs the far side of the moon for 
 		the first time.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">October 10</td><td>First round-the-world jet 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>October 10</td><td>First round-the-world jet 
 		passenger service is inaugurated.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">October 20</td><td>Chinese forces kill 17 Indian 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>October 20</td><td>Chinese forces kill 17 Indian 
 		border police along the Sino-Indian border in Ladakh (Kashmir).</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">October 30</td><td>Communist China makes public 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>October 30</td><td>Communist China makes public 
 		its claim to more than 6,000 sq. miles of Indian-controlled territory in 
 		Ladakh.</td></tr>
 </table></div>
 <p class="p-num" id="page267">Page 267</p>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table59_3" style="border-collapse: collapse" width="70%">
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">November 12</td><td>State of emergency in Ruanda 
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
+<tr><td><p class="Ps"><b>1959</b></p></td><td>November 12</td><td>State of emergency in Ruanda 
 		due to tribal warfare.<p>Pakistan and U.S. sign treaty of friendship and 
 		commerce.</p></td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">November 20</td><td>U.S.-U.S.S.R. resolution for 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>November 20</td><td>U.S.-U.S.S.R. resolution for 
 		“general and complete disarmament” unanimously adopted by U.N. general 
 		assembly.<p>U.N. resolution sponsored by Arab-Asian nations asks France to 
 		cancel its projected nuclear tests in the Sahara.</p></td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">December 3</td><td>President Eisenhower leaves for 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>December 3</td><td>President Eisenhower leaves for 
 		a 3 week goodwill tour of 11 countries in Asia, North Africa and Europe.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">December 10</td><td>President Eisenhower tells 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>December 10</td><td>President Eisenhower tells 
 		Indian Parliament that U.S. will defend its friends and allies against 
 		aggression.</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">December 21</td><td>Nehru rejects proposal by 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>December 21</td><td>Nehru rejects proposal by 
 		Premier Chou En-lai for Indian-Chinese summit talks on border dispute until 
 		an “opportune time.”</td></tr>
-<tr><td><p class="Ps"><b>1959</b></p></td><td nowrap="">December 29</td><td>U.S. announces it reserves the 
+<tr><td><p class="Ps"><b>1959</b></p></td><td>December 29</td><td>U.S. announces it reserves the 
 		right to resume nuclear testing after December 31, 1959.</td></tr>
 </table></div>
 <!-- End of Chapter -->
@@ -5000,266 +5046,266 @@ in early September, you must go. We shall manage. My finances are in an almost d
 <h2 class="sub-hd">Chronology of World Events</h2>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table60_1" style="border-collapse: collapse" width="70%">
-<td colspan="3"><h3 style="text-align: center;"><a name="1960">1960</a></h3></td>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">January 1</td><td>
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
+<td colspan="3"><h3 style="text-align: center;">1960</h3></td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>January 1</td><td>
 		Independence of Cameroon marked by renewed violence.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">January 21</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>January 21</td><td>
 		Soviet rocket fired nearly 8,000 miles to within 1 1/2 miles of its target 
 		in the central Pacific.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">January 24</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>January 24</td><td>
 		State of siege is declared in Algiers as result of rebellion by rightist 
 		European residents in favor of a French Algeria.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">February 1</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>February 1</td><td>
 		Communist win 40% of the popular vote in elections in the state of Kerala, 
 		India.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">February 2</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>February 2</td><td>
 		Negroes begin a series of sit-in demonstrations to desegregate lunch 
 		counters and similar facilities in southern U.S.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">February 13</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>February 13</td><td>
 		Successful explosion of a French plutonium bomb at Reggan in the French 
 		Sahara.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">February 17</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>February 17</td><td>
 		Khrushchev and Nehru pledge continued U.S.S.R.-Indian cooperation for 
 		economic development, disarmament and peace.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">February 21</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>February 21</td><td>
 		President Eisenhower asserts that the U.S. has “an indestructible force of 
 		incalculable power.”</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">February 29</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>February 29</td><td>
 		Violent earthquakes followed by tidal waves virtually destroy Moroccan city 
 		of Agadir, 20,000 dead.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">March 2</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>March 2</td><td>
 		General Norstad reveals the formation of an integrated NATO task force armed 
 		with conventional and nuclear weapons.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">March 15</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>March 15</td><td>
 		Geneva disarmament conference of 10 nations opens.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">March 21</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>March 21</td><td>
 		Violent riots in South Africa, more than 50 dead.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">April 1</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>April 1</td><td>
 		Explosion of France's second nuclear device in Reggan Official protests from 
 		Japan, Ghana and the Sudan.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">April 7</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>April 7</td><td>
 		South African police arrest more than 1,500 Africans.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">April 9</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>April 9</td><td>
 		Assassination attempt against Hendrik Verwoerd, Prime Minister of South 
 		Africa.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">April 24</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>April 24</td><td>
 		Violent earthquakes in Iran. The town of Ler is destroyed.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">April 25</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>April 25</td><td>
 		Chou-Nehru talks on the border dispute between China and India fail.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">April 27</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>April 27</td><td>
 		Independence of Togo.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">May 5</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>May 5</td><td>
 		Premier Khrushchev announces that a U.S. U-2 plane used for photographic 
 		reconnaissance was shot down inside Soviet territory on May 1. On May 7, he 
 		announces the capture of the pilot.</td></tr>
-<tr><td><p class="Ps"><b>1960</b></p></td><td nowrap="">May 6</td><td>
+<tr><td><p class="Ps"><b>1960</b></p></td><td>May 6</td><td>
 		President Eisenhower signs the Civil Rights Act of 1960 providing for 
 		federal referees to register Negro voters.</td></tr>
 </table></div>
 <p class="p-num" id="page354">Page 354</p>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table60_2" style="border-collapse: collapse" width="70%">
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">May 10</td><td>The 
+<td><p class="Ps"><b>1960</b></p></td><td>May 10</td><td>The 
 		U.S. atomic submarine Triton ends its round the world tour in eighty-four 
 		days after surfacing twice.<p>U.S. government pledges to defend its allies 
 		if attacked by Soviet missiles.</p></td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">May 16</td><td>The 
+<td><p class="Ps"><b>1960</b></p></td><td>May 16</td><td>The 
 		Big Four summit conference in Paris disbands at the outset due to 
 		Khrushchev's refusal to participate without an American apology for the U-2 
 		incident.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">May 20</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>May 20</td><td>
 		Atlas ICBM fired more than 9,000 miles from Cape Canaveral to the Indian 
 		Ocean.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">May 21-27</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>May 21-27</td><td>
 		Violent earthquakes and volcanic eruptions ravage Chili and provoke a tidal 
 		wave that batters Pacific coastal areas. More than 6,000 dead in Chile, 
 		Hawaii and Japan, $600 million damage.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">May 23</td><td>Top 
+<td><p class="Ps"><b>1960</b></p></td><td>May 23</td><td>Top 
 		Nazi murderer Adolf Eichmann is captured in Argentina by Israelis and taken 
 		to Israel for trial.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">June 2</td><td>53 
+<td><p class="Ps"><b>1960</b></p></td><td>June 2</td><td>53 
 		French youth movements take a common position for the first time, asking for 
 		the Algerian War to cease.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">June 20</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>June 20</td><td>
 		Independence of Mali.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">June 23</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>June 23</td><td>
 		Patrice Lumumba named to form the first government of the Belgian Congo in 
 		Leopoldville.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">June 26</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>June 26</td><td>
 		Independence of Somaliland.<p>Independence of the Malagasy Republic.</p></td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">June 27</td><td>The 
+<td><p class="Ps"><b>1960</b></p></td><td>June 27</td><td>The 
 		ten-nation East-West disarmament conference in Geneva fails when Soviet and 
 		four East European delegations walk out.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">June 30</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>June 30</td><td>
 		Independence of the Republic of The Congo (formerly Belgian Congo).</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">July 2</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>July 2</td><td>
 		State of emergency in the Dominican Republic.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">July 11</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>July 11</td><td>
 		Katanga declared independent by Moise Tshombe, its premier.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">July 12</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>July 12</td><td>
 		Congolese government asks for U.N. forces to intervene as mutiny by 
 		Congolese troops continues; Europeans flee the Congo in large numbers.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">July 14</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>July 14</td><td>
 		John F. Kennedy is named Democratic candidate for U.S. President.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">July 20</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>July 20</td><td>
 		Ceylon's “Freedom Party” wins in general election. Mme. Sirimavo 
 		Bandaranaike sworn in as Ceylon's first woman prime minister.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">July 27</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>July 27</td><td>
 		Richard M. Nixon is named Republican candidate for President.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">August 1</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>August 1</td><td>
 		Independence of Dahomey.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">August 3</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>August 3</td><td>
 		Independence of Niger.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">August 5</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>August 5</td><td>
 		Independence of Upper Volta.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">August 7</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>August 7</td><td>
 		Fidel Castro nationalizes U.S. property and enterprises in Cuba worth 
 		$770,000,000.<p>Independence of the Ivory Coast.</p></td>
 </tr></table></div>
 <p class="p-num" id="page355">Page 355</p>
 <!--Chronology of World Events Table-->
 <div align="center">
-<table border="0" cellpadding="3" id="table60_3" style="border-collapse: collapse" width="70%">
+<table border="0" cellpadding="8" cellspacing="0" class="summary-table">
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">August 11</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>August 11</td><td>
 		Independence of Chad.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">August 13</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>August 13</td><td>
 		Independence of the Central African Republic.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">August 15</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>August 15</td><td>
 		Independence of the former French Congo.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">August 16</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>August 16</td><td>
 		Independence of Cyprus.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">August 17</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>August 17</td><td>
 		Independence of Gabon.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">September 3</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>September 3</td><td>
 		Violent fighting in the Congo between the followers of Lumumba and of 
 		Kasavubu.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">September 8</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>September 8</td><td>
 		East Germany announces permanent restriction on entry of West Germans into 
 		East Berlin.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">September 9-12</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>September 9-12</td><td>
 		Most destructive hurricane in U.S. history ravages the east coast.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">September 14</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>September 14</td><td>
 		Colonel Mobutu, chief of staff of the Congolese Army, seizes power and 
 		orders arrest of Premier Lumumba.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">September 20</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>September 20</td><td>
 		Cyprus and 13 African states admitted to the U.N. General Assembly.<p>
 		Caretaker government of students takes over administration of the Congo 
 		under Mobutu.</p></td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">September 27</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>September 27</td><td>
 		3-power negotiations on banning of nuclear tests resumed in Geneva.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">October 1</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>October 1</td><td>
 		Independence of Nigeria.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">October 10-31</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>October 10-31</td><td>
 		Massive floods, cyclone and tidal waves in East Pakistan kill 10,000.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">November 8</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>November 8</td><td>
 		John F. Kennedy is elected President of the United States by a narrow 
 		margin.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">November 21</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>November 21</td><td>
 		Fighting breaks out between U.N. forces and the Congo army for the first 
 		time.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">November 28</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>November 28</td><td>
 		Independence of Mauritania.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">December 5</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>December 5</td><td>
 		In a Moscow manifesto, 81 Communist parties pledge Communist world victory 
 		by peaceful means, if possible, and by war if necessary.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">December 6</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>December 6</td><td>
 		President de Gaulle's plan for an independent atomic striking force becomes 
 		law without direct approval of the French senate and assembly.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">December 9-13</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>December 9-13</td><td>
 		Violent rioting in Algeria by European residents against President de 
 		Gaulle's Algeria policy on the occasion of his visit; more than 100 dead.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">December 19</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>December 19</td><td>
 		Signing of a Soviet-Cuban economic agreement.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">December 20</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>December 20</td><td>
 		Referendum on Algeria: President de Gaulle asks for “a frank and massive 
 		yes” concerning the self-determination of the Algerian people.</td>
 </tr>
 <tr>
-<td><p class="Ps"><b>1960</b></p></td><td nowrap="">December 27</td><td>
+<td><p class="Ps"><b>1960</b></p></td><td>December 27</td><td>
 		Explosion of the third French atomic bomb in Reggan.</td>
 </tr>
 </table></div>
@@ -5745,7 +5791,7 @@ I have the impression that it would go much faster if I could pick you up, put y
 <p class="p-num" id="page392">Page 392</p>
 <p class="PE"> So in my vision, my body was as big as the universe, and that 
 [the Ashram] was so tiny, so tiny.</p>
-<p class="sec-br">*<br> *   *<br/><br/></br></p>
+<p class="sec-br">*<br> *   *<br/><br/><br/></p>
 <p class="Ps"><em>(Soon afterwards, regarding an old “Question and Answer”)</em></p>
 <p class="P" search_id="MAV1_5-1961">Heaven and hell are at once true and false. They exist and don't exist. I've seen various people go to heavens or hells after their death, and it's very difficult to make them understand that it is not real. Once it took me more than a year to convince someone that his so-called hell was not hell, and to get him out of it.</p>
 <p class="P" search_id="MAV1_5-1962">But there is something else – the psychological condition that you yourself create, the asuric hell you live in when you cultivate an asuric nature within you.</p>
