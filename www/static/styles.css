@@ -29,6 +29,7 @@ body {
     font-family: 'Josefin Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 1rem;
     font-weight: 500;
+    padding-top: 10px; 
 }
 
 
@@ -45,8 +46,6 @@ body.non-ios-device {
     background-repeat: no-repeat;
     background-position: bottom center;
     background-attachment: fixed;
-    padding-top: 10px; /* or any small value you want */
-
 }
 
 /* Mobile Adjustments for non-iOS devices */
@@ -59,7 +58,6 @@ body.non-ios-device {
 
 /* For iOS devices, use pseudo-element on body */
 body.ios-device {
-    padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
@@ -496,7 +494,7 @@ transform: translateX(26px);
     margin: 0;
     text-align: justify;
     color: #333;
-    max-height: 4.5rem; /*Display only 3 lines*/
+    max-height: 4.5rem; Display only 3 lines
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -1914,16 +1912,20 @@ body.keyboard-open #chat-input-container {
     margin-top: 1rem;
 }
 
-
-/* Hide the author books by default */
-.main-menu-dropdown .author-books {
-    display: none;
-}
 /* Hide the author books by default */
 .main-menu-dropdown .agenda-books {
     display: none;
 }
 
+/* Styles indicating expanded items */
+.author-item.expanded > .agenda-books {
+    display: block;
+}
+
+/* Hide the author books by default */
+.main-menu-dropdown .author-books {
+    display: none;
+}
 
 /* Hide nested lists by default */
 .main-menu-dropdown .nested-list {
@@ -1934,18 +1936,11 @@ body.keyboard-open #chat-input-container {
 .author-item.expanded > .author-books {
     display: block;
 }
-/* Styles indicating expanded items */
-.author-item.expanded > .agenda-books {
-    display: block;
-}
 
 /* When a book-item is expanded, display all nested lists under it */
 .book-item.expanded .nested-list {
     display: block;
 }
-
-
-
 
 /* Apply alternating colors to menu items */
 /* For top-level author headers */
