@@ -1922,6 +1922,11 @@ body.keyboard-open #chat-input-container {
     display: block;
 }
 
+/* When a book-item is expanded, display all nested lists under it */
+.book-item.expanded .nested-list {
+    display: block;
+}
+
 /* Hide the author books by default */
 .main-menu-dropdown .author-books {
     display: none;
