@@ -94,7 +94,7 @@ async def re_rank_results(query, results):
 async def load_metadata(search_id):
     """Load metadata from merged_auromira.jsonl."""
     def find_entry():
-        path = '/home/olier/Olierdev/merged_auromira.jsonl'
+        path = '/home/olier/OlierClone/merged_auromira.jsonl'
         if not os.path.exists(path):
             return {}
         with open(path, 'r', encoding='utf-8') as f:
@@ -102,7 +102,7 @@ async def load_metadata(search_id):
                 entry = json.loads(line)
                 if entry['search_id'] == search_id:
                     book_title = entry.get('book_title', 'N/A').strip()
-                    file_path = f"/home/olier/Olierdev/www/static/HTML/{book_title}_modified.html"
+                    file_path = f"/home/olier/OlierClone/www/static/HTML/{book_title}_modified.html"
                     return {
                         "author": entry.get('author', 'N/A'),
                         "book_title": book_title,
