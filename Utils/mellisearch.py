@@ -15,8 +15,8 @@ if not FAL_KEY:
 
 # Initialize Meilisearch client
 MEILISEARCH_URL = 'http://127.0.0.1:7700'  # Update if different
-MEILI_INDEX_NAME = 'auromira4d_index'
-DATASET_PATH = '/home/olier/Olierdev/merged_auromira.jsonl'
+MEILI_INDEX_NAME = 'auromira4G_index'
+DATASET_PATH = '/home/olier/Olierclone/merged_auromira.jsonl'
 
 
 # If your Meilisearch instance requires an API key, uncomment and set it

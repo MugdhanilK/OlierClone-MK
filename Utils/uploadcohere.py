@@ -12,8 +12,8 @@ def chunkify(lst, chunk_size):
 
 def main():
     # Paths
-    input_filepath = "/home/olier/Olierdev/merged_auromira.jsonl"
-    output_filepath = "/home/olier/Olierdev/merged_auromira_embed.jsonl"
+    input_filepath = "/home/olier/Olierclone/merged_auromira.jsonl"
+    output_filepath = "/home/olier/Olierclone/merged_auromira_embed.jsonl"
 
     # 1. Get Cohere API key from environment
     cohere_api_key = os.environ.get("COHERE_API_KEY")

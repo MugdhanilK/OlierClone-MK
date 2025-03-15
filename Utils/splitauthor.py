@@ -6,9 +6,9 @@ import json
 
 def main():
     # Paths
-    input_filepath = "/home/olier/Olierdev/merged_auromira_embed.jsonl"
-    output_sri_aurobindo = "/home/olier/Olierdev/merged_sri_aurobindo_embed.jsonl"
-    output_the_mother = "/home/olier/Olierdev/merged_the_mother_embed.jsonl"
+    input_filepath = "/home/olier/Olierclone/merged_auromira_embed.jsonl"
+    output_sri_aurobindo = "/home/olier/Olierclone/merged_sri_aurobindo_embed.jsonl"
+    output_the_mother = "/home/olier/Olierclone/merged_the_mother_embed.jsonl"
 
     # 1. Check input file
     if not os.path.exists(input_filepath):

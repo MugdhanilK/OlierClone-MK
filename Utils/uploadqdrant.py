@@ -173,8 +173,8 @@ def main():
     dataset_identifier1 = 'aurocoherecomplete'
     dataset_identifier2 = 'mothercoherecomplete'
 
-    input_filepath1 = '/home/olier/Olierdev/merged_sri_aurobindo_embed.jsonl'
-    input_filepath2 = '/home/olier/Olierdev/merged_the_mother_embed.jsonl'
+    input_filepath1 = '/home/olier/Olierclone/merged_sri_aurobindo_embed.jsonl'
+    input_filepath2 = '/home/olier/Olierclone/merged_the_mother_embed.jsonl'
 
     process_dataset(input_filepath1, dataset_identifier1)
     process_dataset(input_filepath2, dataset_identifier2)
