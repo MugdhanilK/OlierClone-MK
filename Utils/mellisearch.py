@@ -15,7 +15,7 @@ if not FAL_KEY:
 
 # Initialize Meilisearch client
 MEILISEARCH_URL = 'http://127.0.0.1:7700'  # Update if different
-MEILI_INDEX_NAME = 'auromira4G_index'
+MEILI_INDEX_NAME = 'auromira4F_index'
 DATASET_PATH = '/home/olier/Olierclone/merged_auromira.jsonl'
 
 

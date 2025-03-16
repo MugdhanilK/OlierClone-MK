@@ -37,7 +37,7 @@ except Exception as e:
 
 # Initialize Meilisearch Client
 meili_client = meilisearch.Client('http://127.0.0.1:7700')
-meili_index_name = 'auromira4G_index'
+meili_index_name = 'auromira4F_index'
 
 def initialize_meilisearch():
     try:
