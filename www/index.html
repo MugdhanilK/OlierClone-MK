@@ -39919,6 +39919,15 @@
 https://cdn.jsdelivr.net/npm/bowser@2.11.0/es5.min.js
 "></script>
     <script src="static/scripts.js"></script>
+    <script>
+        function setDynamicVH() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        window.addEventListener('resize', setDynamicVH);
+        setDynamicVH();
+    </script>
+    
 </body>
 
 </html>
