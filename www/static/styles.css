@@ -1538,10 +1538,15 @@ body.keyboard-open #chat-input-container {
 /* Main Menu Dropdown */
 .main-menu-dropdown {
     position: fixed;
-    top: 0px;
+    top: 0;
     left: 10%;
     width: 80%;
-    height: 92vh;
+    
+    /* Updated height logic */
+    height: 92dvh; /* Better for iOS Safari */
+    max-height: 92dvh;
+    height: calc(var(--vh, 1vh) * 92); /* as a backup if needed */
+
     background-image: url('/static/oceanbackground4.jpg');
     background-size: cover;
     background-position: center;
@@ -1549,7 +1554,10 @@ body.keyboard-open #chat-input-container {
     background-color: rgba(255, 255, 255, 0.95);
     border-right: 1px solid #ccc;
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+
     display: none;
     z-index: 2000;
     opacity: 0;
@@ -1559,6 +1567,7 @@ body.keyboard-open #chat-input-container {
     margin: 0;
     padding: 0;
 }
+
 
 .main-menu-dropdown.active {
     display: block;
