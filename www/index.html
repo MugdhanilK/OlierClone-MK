@@ -18,133 +18,160 @@
 <body>
     <!-- Container start -->
 
+    
     <div class="container">
-        <!-- Modified Header Section with Main Menu Button -->
         <div class="search-space">
 
-            <!-- www/index.html -->
             <div class="search-image">
-                <!-- Olier Logo Button -->
                 <button aria-expanded="false" aria-haspopup="true" id="main-menu-btn">
                     <div class="olier-logo">
                         <img alt="Search Engine Logo" class="round-image" src="static/Original/oliersearch.png" />
                         <span class="lier-text">lier</span>
                     </div>
-                    
                 </button>
-                <!-- Olier - Introduction Video Play -->
                 <script>
-                    document.getElementById("main-menu-btn").addEventListener("click", function () {
-                        window.open("https://youtu.be/otECbl2kOuc&autoplay=1", "_blank");
-                    });
+                    // Ensure the button exists before adding listener
+                    const mainMenuBtn = document.getElementById("main-menu-btn");
+                    if (mainMenuBtn) {
+                        mainMenuBtn.addEventListener("click", function () {
+                            // Replace with your actual video link or functionality
+                            // window.open("YOUR_VIDEO_LINK_HERE", "_blank");
+                            console.log("Main menu button clicked - video link placeholder");
+                        });
+                    }
                 </script>
 
-                <!-- Settings Menu Button -->
                 <button aria-expanded="false" aria-haspopup="true" id="settings-menu-btn" class="open_settings_menu">
-                    <i class="fas fa-cog"></i>
+                    <i class="fas fa-cog"></i> 
                 </button>
             </div>
 
-            <!-- Settings Dropdown Menu -->
-            <div aria-labelledby="settings-menu-btn" class="settings-menu-dropdown" id="settings-menu-dropdown"
-                role="menu">
+            <div aria-labelledby="settings-menu-btn" class="settings-menu-dropdown" id="settings-menu-dropdown" role="menu">
                 <div class="main-menu-header">
                     <div class="header-text">Settings Menu</div>
                     <div class="header-actions">
                         <button class="close-menu-btn" aria-label="Close menu">
-                            <i class="fas fa-times"></i>
+                            <i class="fas fa-times"></i> 
                         </button>
                     </div>
                 </div>
 
-                <!-- AI Style Section -->
-                <div class="settings-section">
+                
+                <div class="settings-section"> 
                     <h2 class="section-title">AI Style</h2>
                     <ul>
                         <li>
-                            <label>
-                                <input type="radio" name="style" value="plain" checked />
-                                Plain Olier
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="style" value="plain" class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500" checked />
+                                <span>Plain Olier</span>
                             </label>
                         </li>
                         <li>
-                            <label>
-                                <input type="radio" name="style" value="poetic" />
-                                Poetic Olier
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="style" value="poetic" class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500" />
+                                <span>Poetic Olier</span>
                             </label>
                         </li>
-                        <br>
-                        <!-- Reflective Mode Checkbox & Description -->
-                        <li>
-                            <label>
-                                <input type="checkbox" name="reflective-mode" value="reflective" />
-                                Reflective Mode (Beta)
-                                <br>
-                                <em style="font-size: 0.7em;">
-                                    In reflective mode, Olier will think about your queries at length
-                                    before answering. This mode is automatically disabled for Oli button commentary.
-                                </em>
+                        <li class="mt-3">
+                            <label class="flex items-start space-x-2 cursor-pointer">
+                                <input type="checkbox" name="reflective-mode" value="reflective" class="form-checkbox h-4 w-4 text-blue-600 focus:ring-blue-500 mt-1" />
+                                <div>
+                                    <span>Reflective Mode (Beta)</span>
+                                    <br>
+                                    <em class="text-xs text-gray-600">
+                                        In reflective mode, Olier will think about your queries at length
+                                        before answering. This mode is automatically disabled for Oli button commentary.
+                                    </em>
+                                </div>
                             </label>
                         </li>
                     </ul>
                 </div>
 
+                
+                <div class="settings-section"> 
+                    <h2 class="section-title">Seek</h2> 
+                    <ul>
+                        <li>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="searchScope" value="all" class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500" checked>
+                                <span>All (Sri Aurobindo & The Mother)</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="searchScope" value="aurobindo" class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500">
+                                <span>Sri Aurobindo's Works Only</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="searchScope" value="mother" class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500">
+                                <span>The Mother's Works Only</span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
 
-                <!-- Aesthetic Style Section -->
+                
                 <div class="settings-section">
                     <h2 class="section-title">Customise Experience (Beta)</h2>
                     <ul>
                         <li>
-                            <label>
-                                <input type="radio" name="aesthetic-style" value="original" checked />
-                                Original
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="aesthetic-style" value="original" class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500" checked />
+                                <span>Original</span>
                             </label>
                         </li>
                         <li>
-                            <label>
-                                <input type="radio" name="aesthetic-style" value="indian" />
-                                Indian
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="aesthetic-style" value="indian" class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500" />
+                                <span>Indian</span>
                             </label>
                         </li>
                         <li>
-                            <label>
-                                <input type="radio" name="aesthetic-style" value="far-eastern" />
-                                Far Eastern
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="aesthetic-style" value="far-eastern" class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500" />
+                                <span>Far Eastern</span>
                             </label>
                         </li>
                         <li>
-                            <label>
-                                <input type="radio" name="aesthetic-style" value="modern" />
-                                Modern
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="aesthetic-style" value="modern" class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500" />
+                                <span>Modern</span>
                             </label>
                         </li>
                     </ul>
                 </div>
 
-                <!-- Font Size Section - Centered -->
+                
                 <div class="settings-section text-center">
                     <h2 class="section-title">Font Size</h2>
                     <div class="font-buttons-wrapper d-flex justify-content-center">
                         <button aria-label="Increase Font Size" class="font-change-btn" id="increase-font-btn">
-                            <span class="big-A">A</span>
+                            <span class="big-A">A</span> 
                         </button>
                         <button aria-label="Decrease Font Size" class="font-change-btn" id="decrease-font-btn">
-                            <span class="small-A">A</span>
+                            <span class="small-A">A</span> 
                         </button>
                     </div>
                 </div>
 
-                <!-- Feedback Section - Centered -->
+                
                 <div class="settings-section text-center">
                     <h2 class="section-title">Feedback</h2>
                     <div class="d-flex justify-content-center">
                         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfNGBBtCf87Y60o6q9kHG04-eYeKGaXEImdGNGjoqeRPMpmJQ/viewform"
-                            target="_blank" class="feedback-link">
-                            <button id="feedback-btn">Submit Feedback</button>
+                           target="_blank" class="feedback-link"> 
+                           <button id="feedback-btn">Submit Feedback</button> 
                         </a>
                     </div>
                 </div>
-            </div>
+
+            </div> 
+        </div> 
+
+    
 
             <!-- Search Container -->
             <div class="search-container mt-3">

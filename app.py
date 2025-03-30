@@ -87,20 +87,45 @@ async def get_content_by_id():
         "text": entry.get('text', '')
     })
 
+# In your main Quart app file (where @app.route('/api/search',...) is defined)
+# Make sure necessary imports like Quart, request, jsonify, logger,
+# and search_and_rank are present.
+
 @app.route('/api/search', methods=['POST'])
 async def search_endpoint():
-    form = await request.form
-    query = form.get('query', '').strip()
-    if not query:
-        return jsonify({'error': 'No query provided.'}), 400
-
+    """Handles vector search requests, now accepting a 'scope' parameter."""
     try:
-        # Make sure to await search_and_rank since it's async
-        results = await search_and_rank(query)
+        form = await request.form
+        query = form.get('query', '').strip()
+        # Get scope from form data, default to 'all', convert to lowercase
+        scope = form.get('scope', 'all').strip().lower()
+
+        # --- Input Validation ---
+        if not query:
+            logger.warning("Search request received with no query.")
+            return jsonify({'error': 'No query provided.'}), 400
+
+        # Validate scope parameter
+        valid_scopes = ['all', 'mother', 'aurobindo']
+        if scope not in valid_scopes:
+             logger.warning(f"Invalid scope '{scope}' received, defaulting to 'all'.")
+             scope = 'all' # Default to 'all' if scope is invalid
+        # --- End Input Validation ---
+
+        logger.info(f"Performing vector search for query: '{query}' with scope: '{scope}'")
+
+        # Call the updated search_and_rank function, passing the scope
+        results = await search_and_rank(query, scope=scope) # Pass scope here
+
+        logger.info(f"Search completed. Returning {len(results)} results.")
         return jsonify(results)
+
     except Exception as e:
-        logger.error(f"Error during vector search: {e}")
+        # Log the full error for debugging
+        logger.error(f"Error during vector search endpoint execution: {e}", exc_info=True)
+        # Return a generic error message to the client
         return jsonify({'error': 'An error occurred during the search.'}), 500
+
 
 
 @app.route('/api/keyword-search', methods=['POST'])

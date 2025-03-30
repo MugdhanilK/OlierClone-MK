@@ -151,6 +151,33 @@ let readingModeActivated = false; // Global flag to track if reading mode is act
 // SEARCH FUNCTIONS AND UI
 // ===============================================
 
+    // --- Load and Apply Saved Preferences ---
+    try {
+        const savedScope = localStorage.getItem('searchScopePreference');
+        if (savedScope && ['all', 'aurobindo', 'mother'].includes(savedScope)) {
+            $('input[name="searchScope"][value="' + savedScope + '"]').prop('checked', true);
+            console.log("Applied saved search scope:", savedScope);
+        } else {
+            $('input[name="searchScope"][value="all"]').prop('checked', true);
+            if (savedScope) console.warn("Invalid saved scope found ('"+ savedScope +"'), defaulting to 'all'.");
+            else console.log("No saved scope found, defaulting to 'all'.");
+        }
+    } catch (e) {
+        console.error("Error retrieving or applying saved scope preference:", e);
+        $('input[name="searchScope"][value="all"]').prop('checked', true);
+    }
+    // *** End Load Scope ***
+
+       // *** Save Scope Preference on Change (Reverted to this method) ***
+       $('input[name="searchScope"]').on('change', function() {
+        const selectedValue = $(this).val();
+        try {
+            localStorage.setItem('searchScopePreference', selectedValue);
+            console.log("Saved search scope preference:", selectedValue);
+        } catch (e) {
+            console.error("Error saving scope preference to localStorage:", e);
+        }
+    });
 // Initially hide the loader and the full-text section
 $("#loader-container").hide();
 $('#full-text').hide();
@@ -262,14 +289,57 @@ $('#search-btn').click(function() {
     // Add hidden class to other buttons if needed
     $('.open_chatbot:not(.in-flex-box), .zoom_to_top').addClass('hidden');
 
-    // Determine the search mode and set the appropriate URL
-    // Assume serverUrl is defined elsewhere
+
+    // --- Determine Search Type and Scope ---
     var isVectorSearch = !$('#searchToggle').is(':checked');
+    // Ensure serverUrl is defined in your script's scope
+    var serverUrl = 'https://8c31be54e6fac00f.ngrok.app/'; // Make sure this is correctly defined
     var searchUrl = isVectorSearch ? serverUrl + '/api/search' : serverUrl + '/api/keyword-search';
+    console.log("Search Type:", isVectorSearch ? "Vector" : "Keyword");
     console.log("Search URL:", searchUrl);
 
-    // Perform the search request
-    $.post(searchUrl, { query: query }, function(data) {
+    // *** Read the selected search scope from radio buttons ***
+    var selectedScope = $('input[name="searchScope"]:checked').val() || 'all'; // Default to 'all'
+    console.log("Selected Scope:", selectedScope);
+
+    // --- End Determine Search Type and Scope ---
+
+    // --- Prepare Request Data ---
+    // Create an object to hold the data to be sent
+    var requestData = {
+        query: query
+        // Scope will be added conditionally below
+    };
+
+    // *** Add scope ONLY if it's a Vector Search ***
+    if (isVectorSearch) {
+        requestData.scope = selectedScope;
+    }
+    console.log("Sending request data:", requestData);
+    // --- End Prepare Request Data ---
+
+    // --- Perform AJAX Request ---
+    // *** Send the requestData object ***
+    $.post(searchUrl, requestData, function(data) {
+        // --- Success Callback ---
+        console.log("Search results received", data);
+        stopLoaderAnimation(); // Stop loader
+
+        // Handle no results
+        if (!data || data.length === 0) {
+            $('#results').html('<p class="text-center text-gray-600 mt-4">No results found. Please try a different query or scope.</p>');
+            $('.sample-questions').show(); // Show sample questions again
+            $('#summarize-results-btn').hide();
+            $('#results').removeData('fullResultsData'); // Clear stored data
+            return;
+        }
+
+        // Store the full results data for potential summarization
+        $('#results').data('fullResultsData', data);
+        console.log("Stored full results data.");
+
+        var $resultsContainer = $('<div id="top-results" class="space-y-4"></div>'); // Add spacing
+
         // --- Success Callback ---
         console.log("Search results received", data);
         stopLoaderAnimation(); // Stop loader animation
