@@ -404,6 +404,51 @@ transform: translateX(26px);
 }
 
 
+/* Search */
+
+/* Styles for the original 'Seek' button */
+#search-btn {
+    border-radius: 25px; /* Rounded corners */
+    padding: 10px 20px; /* Button padding */
+    border: none; /* No border */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    background-color: #f06c26; /* Original orange color */
+    transition: box-shadow 0.3s ease; /* Smooth shadow transition on hover */
+    /* Text color is likely inherited from .btn or .btn-primary */
+    /* Add 'color: #fff;' if text isn't white */
+}
+
+/* Hover effect for the 'Seek' button */
+#search-btn:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); /* Increased shadow on hover */
+}
+
+/* **** UPDATED STYLES FOR SUMMARIZE BUTTON **** */
+/* Styles now match the .oli-button styles you provided */
+#summarize-results-btn {
+    /* Note: Ensure 'Pacifico' font is loaded in your HTML for this to work */
+    /* e.g., <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"> */
+    font-family: 'Pacifico', cursive;
+    background-color: #4CAF50; /* Green from .oli-button */
+    border: none;           /* Match .oli-button */
+    color: white;           /* Match .oli-button */
+    padding: 5px;           /* Match .oli-button (smaller padding) */
+    text-align: center;     /* Match .oli-button */
+    text-decoration: none;  /* Match .oli-button */
+    font-size: 16px;        /* Match .oli-button */
+    cursor: pointer;        /* Match .oli-button */
+    border-radius: 5px;     /* Match .oli-button (less rounded) */
+    /* Removed box-shadow and transition from previous version */
+    /* The button is initially hidden via an inline style in the HTML */
+}
+
+/* Hover effect for the 'Olier Summarize' button */
+#summarize-results-btn:hover {
+     /* Simple background darken on hover, as no hover was provided for .oli-button */
+    background-color: #45a049;
+}
+
+
 /* Font Change Buttons Container */
 .font-change-container {
     position: absolute;

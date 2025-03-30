@@ -184,37 +184,40 @@ $('<style>')
   `)
   .appendTo('head');
 
-// Variables and functions to handle the "loading" animation
+// Variables and functions to handle the "loading" animation for search
 let fadeInterval;
 
 /**
  * startLoaderAnimation:
- * Displays a loader container with a book icon (or any loader element).
- * The icon repeatedly fades in and out to indicate something is loading.
+ * Displays a loader container (#loader-container) with a book icon (.book-loader).
+ * The icon repeatedly fades in and out.
  */
 function startLoaderAnimation() {
-  // Show the loader container and center its contents
-  $("#loader-container").css({
-    'display': 'flex',
-    'justify-content': 'center',
-    'align-items': 'center',
-    'margin-top': '20px'
-  });
+    // Show the loader container and center its contents
+    $("#loader-container").css({
+        'display': 'flex',
+        'justify-content': 'center',
+        'align-items': 'center',
+        'margin-top': '20px'
+    });
 
-  // Style the loader icon
-  $(".book-loader").css({
-    'font-size': '36px',
-    'color': '#228B22',   // A green shade
-    'opacity': 1
-  });
+    // Style the loader icon
+    $(".book-loader").css({
+        'font-size': '36px',
+        'color': '#228B22',  // A green shade
+        'opacity': 1
+    });
 
-  // Start a fade animation: toggles between 1 and 0.6 opacity
-  let opacity = 1;
-  fadeInterval = setInterval(function() {
-    // Toggle opacity between 1 and 0.6
-    opacity = opacity > 0.6 ? 0.6 : 1;
-    $(".book-loader").animate({ 'opacity': opacity }, 600, 'linear'); // Faster transition
-  }, 700); // Shorter interval for faster fade timing
+    // Start a fade animation: toggles between 1 and 0.6 opacity
+    let opacity = 1;
+    // Clear any existing interval to prevent multiple animations
+    clearInterval(fadeInterval);
+    fadeInterval = setInterval(function() {
+        // Toggle opacity between 1 and 0.6
+        opacity = opacity > 0.6 ? 0.6 : 1;
+        // Animate the opacity change smoothly
+        $(".book-loader").animate({ 'opacity': opacity }, 600, 'linear'); // Faster transition
+    }, 700); // Shorter interval for faster fade timing
 }
 
 /**
@@ -222,131 +225,245 @@ function startLoaderAnimation() {
  * Stops the fade animation and hides the loader container.
  */
 function stopLoaderAnimation() {
-  // Clear the interval that toggles opacity
-  clearInterval(fadeInterval);
-  // Hide the entire loader container
-  $("#loader-container").hide();
+    // Clear the interval that toggles opacity
+    clearInterval(fadeInterval);
+    // Hide the entire loader container
+    $("#loader-container").hide();
 }
 
 
-// Handle clicks on sample questions
+// **** ADDED BACK: Handle clicks on sample questions ****
 $('.sample-question').click(function(e) {
     e.preventDefault(); // Prevent default link behavior
 
+    // Get the text of the clicked sample question
     var questionText = $(this).text().trim();
+    // Set the search input value to this text
     $('#query').val(questionText);
-    
 
-    // Trigger the search
+    // Programmatically trigger a click on the main search button
     $('#search-btn').click();
 });
-
-// Updated Search Button Click Handler 
-$searchBtn.click(function() {
-var query = $('#query').val();
-startLoaderAnimation();
-
-$('#results').empty(); // Clear previous results
-$('.sample-questions').hide(); // Hide sample questions when search is initiated
-
-// Add hidden class to open_chatbot button when not in flex-box and zoom_to_top button
-$('.open_chatbot:not(.in-flex-box), .zoom_to_top').addClass('hidden');
+// **** END OF ADDED BACK CODE ****
 
 
+// --- Search Button Click Handler (Modified) ---
+$('#search-btn').click(function() {
+    var query = $('#query').val();
+    startLoaderAnimation(); // Start loader animation
 
-// Determine the search mode and set the appropriate URL
-var isVectorSearch = !$searchToggle.is(':checked');
-var searchUrl = isVectorSearch ? serverUrl + '/api/search' : serverUrl + '/api/keyword-search';
-console.log("Search URL:", searchUrl);
+    $('#results').empty(); // Clear previous results display area
+    $('.sample-questions').hide(); // Hide sample questions section
 
-$.post(searchUrl, { query: query }, function(data) {
-    console.log("Search results received", data);
-    stopLoaderAnimation();
+    // ***** Hide summary button and container initially on new search *****
+    $('#summarize-results-btn').hide();
+    $('#ai-summary-container').hide().find('#ai-summary-content').empty(); // Hide and clear previous summary
 
-    // If no results are found, show a message and re-display sample questions
-    if (data.length === 0) {
-        $('#results').html('<p>No results found. Please try a different query.</p>');
-        $('.sample-questions').show();
-        return;
-    }
+    // Add hidden class to other buttons if needed
+    $('.open_chatbot:not(.in-flex-box), .zoom_to_top').addClass('hidden');
 
-    var $resultsContainer = $('<div id="top-results"></div>');
+    // Determine the search mode and set the appropriate URL
+    // Assume serverUrl is defined elsewhere
+    var isVectorSearch = !$('#searchToggle').is(':checked');
+    var searchUrl = isVectorSearch ? serverUrl + '/api/search' : serverUrl + '/api/keyword-search';
+    console.log("Search URL:", searchUrl);
 
-    data.forEach(function(result, index) {
-        // Use highlighted_text for preview, fallback to text if not available
-        var preview = result.highlighted_text || result.text;
-        preview = preview.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+    // Perform the search request
+    $.post(searchUrl, { query: query }, function(data) {
+        // --- Success Callback ---
+        console.log("Search results received", data);
+        stopLoaderAnimation(); // Stop loader animation
 
-        // Truncate the preview to approximately 100 words, preserving HTML tags
-        var previewWords = preview.split(" ");
-        if (previewWords.length > 100) {
-            preview = previewWords.slice(0, 100).join(" ") + "...";
+        // Handle no results
+        if (!data || data.length === 0) { // Added check for null/undefined data
+            $('#results').html('<p>No results found. Please try a different query.</p>');
+            $('.sample-questions').show(); // Show sample questions again
+            $('#summarize-results-btn').hide(); // Ensure button is hidden
+            // Clear any previously stored results data
+            $('#results').removeData('fullResultsData');
+            return;
         }
 
-        // Conditionally display the relevance score only for vector search
-        var relevanceScoreHtml = '';
-        if (isVectorSearch && result.relevance_score !== undefined) {
-            relevanceScoreHtml = `
-                <div class="result-score">
-                    Relevance Score: ${result.relevance_score.toFixed(2)}
+        // ***** Store the full results data *****
+        // Store the original array received from the server.
+        // We'll use this for the summary function later.
+        $('#results').data('fullResultsData', data);
+        console.log("Stored full results data."); // Debug log
+
+        var $resultsContainer = $('<div id="top-results"></div>');
+
+        // Loop through data to build HTML for display
+        data.forEach(function(result, index) {
+            // Use highlighted_text for preview, fallback to text if not available
+            var preview = result.highlighted_text || result.text || ''; // Added fallback for empty text
+            preview = preview.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+
+            // Truncate the preview for display purposes
+            var previewWords = preview.split(" ");
+            if (previewWords.length > 100) {
+                preview = previewWords.slice(0, 100).join(" ") + "...";
+            }
+
+            // Conditionally display the relevance score
+            var relevanceScoreHtml = '';
+            if (isVectorSearch && result.relevance_score !== undefined) {
+                relevanceScoreHtml = `
+                    <div class="result-score">
+                        Relevance Score: ${result.relevance_score.toFixed(2)}
+                    </div>
+                `;
+            }
+
+            // Build the HTML for one result item
+            var resultItem = `
+                <div class="result-item" data-search-id="${result.search_id || index}"> 
+                    <div class="result-preview">${preview}</div>
+                    <div class="result-metadata">
+                        ${result.author || 'Unknown Author'},
+                        ${result.book_title ? result.book_title.trim() : 'Unknown Book'},
+                        "${result.chapter_title ? result.chapter_title.trim() : 'Unknown Chapter'}"
+                    </div>
+                    ${relevanceScoreHtml}
+                    <div class="result-actions">
+                        <button class="view-detail-link"
+                                data-id="${result.search_id || index}"
+                                data-file-path="${result.file_path || ''}"
+                                data-book-title="${result.book_title ? result.book_title.trim() : 'Unknown Book'}"
+                                data-author="${result.author || 'Unknown Author'}"
+                                data-chapter-title="${result.chapter_title ? result.chapter_title.trim() : 'Unknown Chapter'}">
+                            Text
+                        </button>
+                        <button class="oli-button"
+                                data-full-text="${encodeURIComponent(result.text || '')}"
+                                data-author="${result.author || 'Unknown Author'}"
+                                data-chapter-title="${result.chapter_title ? result.chapter_title.trim() : 'Unknown Chapter'}"
+                                data-book-title="${result.book_title ? result.book_title.trim() : 'Unknown Book'}">
+                            Oli!
+                        </button>
+                    </div>
                 </div>
             `;
+            $resultsContainer.append(resultItem);
+        });
+
+        // Append the results container to the results section
+        $('#results').append($resultsContainer);
+
+        // ***** Show the Summarize button IF there are results *****
+        if (data.length > 0) {
+            $('#summarize-results-btn').show();
+            console.log("Summarize button shown."); // Debug log
         }
 
-        var resultItem = `
-            <div class="result-item">
-                <div class="result-preview">${preview}</div>
-                <div class="result-metadata">
-                    ${result.author || 'Unknown Author'}, 
-                    ${result.book_title ? result.book_title.trim() : 'Unknown Book'}, 
-                    "${result.chapter_title ? result.chapter_title.trim() : 'Unknown Chapter'}"
-                </div>
-                ${relevanceScoreHtml}
-                <div class="result-actions">
-                    <button class="view-detail-link" 
-                            data-id="${result.search_id}" 
-                            data-file-path="${result.file_path}" 
-                            data-book-title="${result.book_title ? result.book_title.trim() : 'Unknown Book'}" 
-                            data-author="${result.author || 'Unknown Author'}" 
-                            data-chapter-title="${result.chapter_title ? result.chapter_title.trim() : 'Unknown Chapter'}">
-                        Text
-                    </button>
-                    <button class="oli-button" 
-                            data-full-text="${encodeURIComponent(result.text)}" 
-                            data-author="${result.author || 'Unknown Author'}" 
-                            data-chapter-title="${result.chapter_title ? result.chapter_title.trim() : 'Unknown Chapter'}" 
-                            data-book-title="${result.book_title ? result.book_title.trim() : 'Unknown Book'}">
-                        Oli!
-                    </button>
-                </div>
-            </div>
-        `;
-
-        // Append the resultItem to the results container
-        $resultsContainer.append(resultItem);
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        // --- Failure Callback ---
+        console.log("Search request failed", textStatus, errorThrown);
+        stopLoaderAnimation(); // Stop loader animation
+        $('#results').prepend('<p>An error occurred while searching. Please try again.</p>');
+        $('.sample-questions').show(); // Show sample questions again
+        $('#summarize-results-btn').hide(); // Hide button on failure
+        // Clear any previously stored results data
+        $('#results').removeData('fullResultsData');
     });
-
-    // Append the results container to the results section
-    $('#results').append($resultsContainer);
-
-}).fail(function(jqXHR, textStatus, errorThrown) {
-    console.log("Search request failed", textStatus, errorThrown);
-    stopLoaderAnimation();
-    $('#results').prepend('<p>An error occurred while searching. Please try again.</p>');
-    // Show sample questions again if there was an error
-    $('.sample-questions').show();
-});
 });
 
 
-// Show sample questions if the search input is cleared
+// --- Clear Results/Button on Input Clear ---
 $('#query').on('input', function() {
     if ($(this).val().trim() === '') {
         $('#results').empty();
-        $('.sample-questions').show();
+        $('.sample-questions').show(); // Show sample questions when input is empty
+        $('#summarize-results-btn').hide(); // Hide button
+        $('#ai-summary-container').hide().find('#ai-summary-content').empty(); // Hide and clear summary
+        // Clear any previously stored results data
+        $('#results').removeData('fullResultsData');
     }
 });
 
+
+// --- Summarize Button Click Handler (MODIFIED TO SEND TO CHAT) ---
+$(document).on('click', '#summarize-results-btn', function() {
+    console.log("Summarize button clicked.");
+
+    // *** Get the original search query from the input field ***
+    const originalQuery = $('#query').val().trim();
+    console.log("Original Query:", originalQuery);
+
+    // 1. Retrieve the stored full results data
+    const fullResultsData = $('#results').data('fullResultsData') || [];
+    console.log("Retrieved full data for summary:", fullResultsData);
+
+    if (fullResultsData.length === 0) {
+        alert("No results data available to summarize.");
+        console.log("No data found for summarization.");
+        return;
+    }
+
+    // 2. Get the top 5 results (or fewer if less than 5)
+    const topFiveResults = fullResultsData.slice(0, 5);
+
+    // 3. Extract the *full text* for summarization
+    const textsToSummarize = topFiveResults.map(result => result.text || ''); // Use full text
+    console.log("Texts extracted for summary:", textsToSummarize);
+
+    if (textsToSummarize.length === 0 || textsToSummarize.every(t => t === '')) {
+         alert("Could not extract text from the top results to summarize.");
+         console.log("No text extracted for summarization.");
+         return;
+    }
+
+    // 4. Format the prompt for the chatbot (MODIFIED)
+    //    Include the original query in the request.
+    let promptString = `Olier, please formulate an answer to the question "${originalQuery}" by referring in detail to the following ${textsToSummarize.length} extracts from the works of Sri Aurobindo and the Mother :\n\n`;
+    textsToSummarize.forEach((text, index) => {
+        // Add numbering and separators for clarity
+        promptString += `--- Result ${index + 1} ---\n"${text}"\n\n`;
+    });
+    promptString = promptString.trim(); // Remove trailing newline
+
+    console.log("Formatted prompt for chat:", promptString);
+
+    // 5. Open chatbox if it's closed (assuming functions/variables are available)
+    // Note: Requires 'isMobile', 'openChatboxSimplified', 'openChatboxAndAdjustScroll'
+    // to be defined and accessible in the scope where this script runs.
+    if (typeof isMobile !== 'undefined' && !document.getElementById("chatbox").classList.contains("open")) {
+         console.log("Chatbox is closed, opening it...");
+         if (isMobile) {
+             if(typeof openChatboxSimplified === 'function') openChatboxSimplified();
+         } else {
+             if(typeof openChatboxAndAdjustScroll === 'function') openChatboxAndAdjustScroll();
+         }
+         // Add a small delay to ensure chatbox is open before setting value and clicking send
+         setTimeout(() => {
+             setInputValueAndSend(promptString);
+         }, 300); // Adjust delay if needed
+    } else {
+         // Chatbox is already open or mobile status unknown, proceed directly
+         setInputValueAndSend(promptString);
+    }
+
+});
+
+// Helper function to set input value and trigger send
+function setInputValueAndSend(prompt) {
+    const $chatInput = $('#chat-input');
+
+    // 6. Put the prompt into the chat input field
+    $chatInput.val(prompt);
+    // Manually trigger the 'input' event for auto-resizing if needed
+    $chatInput.trigger('input'); // Or use chatInput.dispatchEvent(new Event('input'));
+
+    // 7. Programmatically click the send button to trigger sendMessage()
+    console.log("Setting chat input and triggering send.");
+    $('#send-btn').click();
+}
+
+
+
+// --- Other existing code (platform detection, chatbox logic, etc.) ---
+// ... (Make sure the rest of your necessary code is included elsewhere in your project) ...
+// ... (Ensure isMobile, openChatboxSimplified, openChatboxAndAdjustScroll are defined) ...
+// ... (Ensure sendMessage function and #send-btn handler are defined as provided) ...
 
 
 // Hide the View Detail loader and overlay initially
