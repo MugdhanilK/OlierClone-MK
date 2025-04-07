@@ -308,6 +308,49 @@ async def send_message():
     return Response(event_stream(), mimetype='text/event-stream')
 
 
+
+
+
+# --- New Endpoint for Summarizing Search Results with Reference Markers ---
+@app.route('/api/summarize-results', methods=['POST'])
+async def summarize_results():
+    data = await request.get_json()
+    results = data.get('results', [])
+    if not results:
+        return jsonify({'error': 'No search results provided.'}), 400
+    # Build a reference list string from the provided results
+    references_text = ""
+    for result in results:
+        references_text += f"[REF:{result.get('search_id')}] - {result.get('author', 'Unknown Author')}, {result.get('book_title', 'Unknown Book')}, {result.get('chapter_title', 'Unknown Chapter')}\n"
+    prompt = (
+        f"Summarize the following search results by highlighting key insights. "
+        f"Embed clickable reference markers exactly in the format [REF:<search_id>] wherever relevant. "
+        f"Use the list below as reference:\n{references_text}\n"
+        f"Ensure that each marker corresponds to one of the provided results."
+    )
+    messages = [
+        {"role": "system", "content": system_message0},
+        {"role": "user", "content": prompt}
+    ]
+    try:
+        response = fireworks_client.chat.completions.create(
+            model=model,
+            messages=messages,
+            max_tokens=1000,
+            temperature=0.4,
+        )
+        summary = response.choices[0].message.content.strip()
+        return jsonify({'summary': summary})
+    except Exception as e:
+        logger.error(f"Error during summarization: {e}")
+        return jsonify({'error': 'An error occurred during summarization.'}), 500
+
+
+
+
+
+
+
 @app.route('/api/generate-description', methods=['POST'])
 async def generate_description():
     data = await request.get_json()
