@@ -425,27 +425,34 @@ transform: translateX(26px);
 
 /* **** UPDATED STYLES FOR SUMMARIZE BUTTON **** */
 /* Styles now match the .oli-button styles you provided */
-#summarize-results-btn {
-    /* Note: Ensure 'Pacifico' font is loaded in your HTML for this to work */
-    /* e.g., <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"> */
-    font-family: 'Pacifico', cursive;
-    background-color: #4CAF50; /* Green from .oli-button */
-    border: none;           /* Match .oli-button */
-    color: white;           /* Match .oli-button */
-    padding: 5px;           /* Match .oli-button (smaller padding) */
-    text-align: center;     /* Match .oli-button */
-    text-decoration: none;  /* Match .oli-button */
-    font-size: 16px;        /* Match .oli-button */
-    cursor: pointer;        /* Match .oli-button */
-    border-radius: 5px;     /* Match .oli-button (less rounded) */
-    /* Removed box-shadow and transition from previous version */
-    /* The button is initially hidden via an inline style in the HTML */
+/* New style for the overview summary container */
+#overview-summary {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
 }
 
-/* Hover effect for the 'Olier Summarize' button */
+/* Golden glow highlight effect */
+.highlight-golden {
+    box-shadow: 0 0 10px 3px gold;
+    transition: box-shadow 0.5s ease-out;
+}
+
+/* Style for reference links */
+.reference-link {
+    color: #007BFF;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* (Optional) Add a hover effect for the Olier Overview button */
+#summarize-results-btn {
+    transition: transform 0.2s ease;
+}
 #summarize-results-btn:hover {
-     /* Simple background darken on hover, as no hover was provided for .oli-button */
-    background-color: #45a049;
+    transform: scale(0.95);
 }
 
 

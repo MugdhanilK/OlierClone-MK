@@ -451,15 +451,15 @@ $('#query').on('input', function() {
 });
 
 
-// --- Summarize Button Click Handler (MODIFIED TO SEND TO CHAT) ---
+// --- Summarize Button Click Handler (Modified to send summary with reference links) ---
 $(document).on('click', '#summarize-results-btn', function() {
     console.log("Summarize button clicked.");
 
-    // *** Get the original search query from the input field ***
+    // 1. Retrieve the original search query from the input field
     const originalQuery = $('#query').val().trim();
     console.log("Original Query:", originalQuery);
 
-    // 1. Retrieve the stored full results data
+    // 2. Retrieve the stored full results data
     const fullResultsData = $('#results').data('fullResultsData') || [];
     console.log("Retrieved full data for summary:", fullResultsData);
 
@@ -469,64 +469,84 @@ $(document).on('click', '#summarize-results-btn', function() {
         return;
     }
 
-    // 2. Get the top 5 results (or fewer if less than 5)
+    // 3. Get the top 5 results (or fewer if less than 5)
     const topFiveResults = fullResultsData.slice(0, 5);
+    console.log("Top results to be summarized:", topFiveResults);
 
-    // 3. Extract the *full text* for summarization
-    const textsToSummarize = topFiveResults.map(result => result.text || ''); // Use full text
-    console.log("Texts extracted for summary:", textsToSummarize);
+    // 4. Prepare payload for the summarization endpoint.
+    const payload = { results: topFiveResults };
+    console.log("Payload for summarization:", payload);
 
-    if (textsToSummarize.length === 0 || textsToSummarize.every(t => t === '')) {
-         alert("Could not extract text from the top results to summarize.");
-         console.log("No text extracted for summarization.");
-         return;
-    }
+    // 5. Call the new summarization endpoint via AJAX
+    $.ajax({
+        url: serverUrl + 'api/summarize-results',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: function(response) {
+            let summary = response.summary;
+            console.log("Received summary:", summary);
 
-    // 4. Format the prompt for the chatbot (MODIFIED)
-    //    Include the original query in the request.
-    let promptString = `Olier, please formulate an answer to the question "${originalQuery}" by referring in detail to the following ${textsToSummarize.length} extracts from the works of Sri Aurobindo and the Mother :\n\n`;
-    textsToSummarize.forEach((text, index) => {
-        // Add numbering and separators for clarity
-        promptString += `--- Result ${index + 1} ---\n"${text}"\n\n`;
+            // 6. Replace reference markers (e.g., [REF:search_id]) with clickable HTML links
+            summary = replaceReferenceMarkers(summary);
+            console.log("Processed summary with reference links:", summary);
+
+            // 7. Display the processed summary in the overview summary container
+            $('#overview-summary').html(summary);
+
+            // 8. Open the chatbox if it's closed, then send the summary text via chat
+            if (typeof isMobile !== 'undefined' && !document.getElementById("chatbox").classList.contains("open")) {
+                console.log("Chatbox is closed, opening it...");
+                if (isMobile) {
+                    if (typeof openChatboxSimplified === 'function') openChatboxSimplified();
+                } else {
+                    if (typeof openChatboxAndAdjustScroll === 'function') openChatboxAndAdjustScroll();
+                }
+                setTimeout(() => {
+                    setInputValueAndSend(summary);
+                }, 300);
+            } else {
+                setInputValueAndSend(summary);
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log("Summarization request failed", textStatus, errorThrown);
+            alert("An error occurred during summarization. Please try again.");
+        }
     });
-    promptString = promptString.trim(); // Remove trailing newline
-
-    console.log("Formatted prompt for chat:", promptString);
-
-    // 5. Open chatbox if it's closed (assuming functions/variables are available)
-    // Note: Requires 'isMobile', 'openChatboxSimplified', 'openChatboxAndAdjustScroll'
-    // to be defined and accessible in the scope where this script runs.
-    if (typeof isMobile !== 'undefined' && !document.getElementById("chatbox").classList.contains("open")) {
-         console.log("Chatbox is closed, opening it...");
-         if (isMobile) {
-             if(typeof openChatboxSimplified === 'function') openChatboxSimplified();
-         } else {
-             if(typeof openChatboxAndAdjustScroll === 'function') openChatboxAndAdjustScroll();
-         }
-         // Add a small delay to ensure chatbox is open before setting value and clicking send
-         setTimeout(() => {
-             setInputValueAndSend(promptString);
-         }, 300); // Adjust delay if needed
-    } else {
-         // Chatbox is already open or mobile status unknown, proceed directly
-         setInputValueAndSend(promptString);
-    }
-
 });
 
-// Helper function to set input value and trigger send
+// Helper function to replace reference markers with clickable links
+function replaceReferenceMarkers(text) {
+    return text.replace(/\[REF:([^\]]+)\]/g, function(match, searchId) {
+        return `<a href="#" class="reference-link" data-search-id="${searchId}">CWSA Vol. ${searchId}</a>`;
+    });
+}
+
+// Helper function to set chat input value and trigger the send button
 function setInputValueAndSend(prompt) {
     const $chatInput = $('#chat-input');
-
-    // 6. Put the prompt into the chat input field
     $chatInput.val(prompt);
-    // Manually trigger the 'input' event for auto-resizing if needed
-    $chatInput.trigger('input'); // Or use chatInput.dispatchEvent(new Event('input'));
-
-    // 7. Programmatically click the send button to trigger sendMessage()
+    $chatInput.trigger('input'); // Trigger input event for auto-resize if needed
     console.log("Setting chat input and triggering send.");
     $('#send-btn').click();
 }
+
+// --- Event Listener for Reference Links ---
+$(document).on('click', '.reference-link', function(e) {
+    e.preventDefault();
+    const searchId = $(this).data('search-id');
+    const $result = $(`.result-item[data-id="${searchId}"]`);
+    if ($result.length) {
+        $('html, body').animate({
+            scrollTop: $result.offset().top - 20
+        }, 500);
+        $result.addClass('highlight-golden');
+        setTimeout(() => {
+            $result.removeClass('highlight-golden');
+        }, 3000);
+    }
+});
 
 
 
