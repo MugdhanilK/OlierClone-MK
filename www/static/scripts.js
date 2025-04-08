@@ -450,71 +450,76 @@ $('#query').on('input', function() {
     }
 });
 
+//Summarise
 
+//Changes done
 // --- Summarize Button Click Handler (Modified to send summary with reference links) ---
 $(document).on('click', '#summarize-results-btn', function() {
-    console.log("Summarize button clicked.");
-
-    // 1. Retrieve the original search query from the input field
-    const originalQuery = $('#query').val().trim();
-    console.log("Original Query:", originalQuery);
-
-    // 2. Retrieve the stored full results data
-    const fullResultsData = $('#results').data('fullResultsData') || [];
-    console.log("Retrieved full data for summary:", fullResultsData);
-
-    if (fullResultsData.length === 0) {
-        alert("No results data available to summarize.");
-        console.log("No data found for summarization.");
+    // 0. Ensure the chatbox is open
+    if (!$("#chatbox").hasClass("open")) {
+        // Trigger the open chatbox behavior.
+        // This assumes that your existing open_chatbot button click handler opens the chatbox.
+        $(".open_chatbot").first().trigger("click");
+    }
+    
+    // 1. Get the Olier chat messages area (inside the chatbox)
+    const messagesBox = document.querySelector("#messages .messages-box");
+    if (!messagesBox) {
+        console.error("Messages area not found.");
         return;
     }
+    
+    // 2. Create and append a new chat bubble (assistant message) with a placeholder message
+    let placeholderBubble = document.createElement("div");
+    placeholderBubble.classList.add("box", "ai-message"); // Use the same classes as your existing AI chat bubbles
 
-    // 3. Get the top 5 results (or fewer if less than 5)
-    const topFiveResults = fullResultsData.slice(0, 5);
-    console.log("Top results to be summarized:", topFiveResults);
+    let placeholderMessage = document.createElement("div");
+    placeholderMessage.classList.add("messages");
+    placeholderMessage.style.whiteSpace = "pre-wrap";
+    placeholderMessage.textContent = "Creating the Olier Overview..."; 
 
-    // 4. Prepare payload for the summarization endpoint.
-    const payload = { results: topFiveResults };
-    console.log("Payload for summarization:", payload);
+    placeholderBubble.appendChild(placeholderMessage);
+    messagesBox.appendChild(placeholderBubble);
 
-    // 5. Call the new summarization endpoint via AJAX
+    // Optional: scroll to the bottom if you have a function such as scrollToBottom()
+    // scrollToBottom();
+
+    // 3. Prepare the payload for the summarization API
+    const fullResultsData = $('#results').data('fullResultsData') || [];
+    if (fullResultsData.length === 0) {
+        placeholderMessage.textContent = "No results available for summarization.";
+        return;
+    }
+    
+    // Use the top five results (or fewer)
+    const topResults = fullResultsData.slice(0, 5);
+    const payload = { results: topResults };
+
+    // 4. Make the AJAX call to your summarization API endpoint
     $.ajax({
         url: serverUrl + 'api/summarize-results',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(payload),
         success: function(response) {
-            let summary = response.summary;
-            console.log("Received summary:", summary);
-
-            // 6. Replace reference markers (e.g., [REF:search_id]) with clickable HTML links
-            summary = replaceReferenceMarkers(summary);
-            console.log("Processed summary with reference links:", summary);
-
-            // 7. Display the processed summary in the overview summary container
-            $('#overview-summary').html(summary);
-
-            // 8. Open the chatbox if it's closed, then send the summary text via chat
-            if (typeof isMobile !== 'undefined' && !document.getElementById("chatbox").classList.contains("open")) {
-                console.log("Chatbox is closed, opening it...");
-                if (isMobile) {
-                    if (typeof openChatboxSimplified === 'function') openChatboxSimplified();
-                } else {
-                    if (typeof openChatboxAndAdjustScroll === 'function') openChatboxAndAdjustScroll();
-                }
-                setTimeout(() => {
-                    setInputValueAndSend(summary);
-                }, 300);
-            } else {
-                setInputValueAndSend(summary);
-            }
+            // When the summarization is successfully returned, update the placeholder chat bubble
+            let summary = response.summary || "(No summary received)";
+            
+            // Optionally, if you want to process reference markers, call your function here:
+            // summary = replaceReferenceMarkers(summary);
+            
+            // Update the chat bubble text. Use innerHTML if you need to render formatted HTML.
+            placeholderMessage.textContent = summary;
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            console.log("Summarization request failed", textStatus, errorThrown);
-            alert("An error occurred during summarization. Please try again.");
+            // If there is an error, update the bubble with an error message.
+            placeholderMessage.textContent = "Sorry, an error occurred while creating the Olier Overview. Please try again later.";
+            console.error("Summarization request failed:", textStatus, errorThrown);
         }
     });
 });
+//Changes finished
+
 
 // Helper function to replace reference markers with clickable links
 function replaceReferenceMarkers(text) {
