@@ -237,6 +237,8 @@ system_message0 = (
 
 reasoning_system_message = "You are a helpful assistant that provides concise reasoning steps to queries."
 
+    #Summarise 
+    
 @app.route('/api/send-message', methods=['POST'])
 async def send_message():
     data = await request.get_json()
