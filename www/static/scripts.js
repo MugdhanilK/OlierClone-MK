@@ -495,40 +495,38 @@ $(document).on('click', '#summarize-results-btn', function() {
     const topResults = fullResultsData.slice(0, 5);
     const payload = { results: topResults };
 
-    // 4. Make the AJAX call to your summarization API endpoint
+    // 4. Make the AJAX call to your summarization API endpoint.
     $.ajax({
         url: serverUrl + 'api/summarize-results',
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(payload),
         success: function(response) {
-            // When the summarization is successfully returned, update the placeholder chat bubble
             let summary = response.summary || "(No summary received)";
-            
-            // Optionally, if you want to process reference markers, call your function here:
-            // summary = replaceReferenceMarkers(summary);
-            
-            // Update the chat bubble text. Use innerHTML if you need to render formatted HTML.
-            placeholderMessage.textContent = summary;
+            // Process the summary to convert [REF:xxx] markers into clickable links.
+            let processedSummary = replaceReferenceMarkers(summary);
+            // Update the chat bubble with the processed summary.
+            placeholderMessage.innerHTML = processedSummary;
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            // If there is an error, update the bubble with an error message.
             placeholderMessage.textContent = "Sorry, an error occurred while creating the Olier Overview. Please try again later.";
             console.error("Summarization request failed:", textStatus, errorThrown);
         }
     });
 });
+
 //Changes finished
 
 
-// Helper function to replace reference markers with clickable links
+// --- Helper function to replace reference markers with clickable links ---
 function replaceReferenceMarkers(text) {
     return text.replace(/\[REF:([^\]]+)\]/g, function(match, searchId) {
-        return `<a href="#" class="reference-link" data-search-id="${searchId}">CWSA Vol. ${searchId}</a>`;
+        return `<a href="#" class="reference-link" data-search-id="${searchId}">${match}</a>`;
     });
 }
 
 // Helper function to set chat input value and trigger the send button
+// (Keep this if your overall code uses it; otherwise, you may remove or adjust it as needed.)
 function setInputValueAndSend(prompt) {
     const $chatInput = $('#chat-input');
     $chatInput.val(prompt);
@@ -541,7 +539,7 @@ function setInputValueAndSend(prompt) {
 $(document).on('click', '.reference-link', function(e) {
     e.preventDefault();
     const searchId = $(this).data('search-id');
-    // Update the selector to match the attribute name used in your search results (data-search-id)
+    // Use the correct attribute selector that matches your left-side search result elements.
     const $result = $(`.result-item[data-search-id="${searchId}"]`);
     if ($result.length) {
         $('html, body').animate({
