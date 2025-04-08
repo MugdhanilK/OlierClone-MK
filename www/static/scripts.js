@@ -541,7 +541,8 @@ function setInputValueAndSend(prompt) {
 $(document).on('click', '.reference-link', function(e) {
     e.preventDefault();
     const searchId = $(this).data('search-id');
-    const $result = $(`.result-item[data-id="${searchId}"]`);
+    // Update the selector to match the attribute name used in your search results (data-search-id)
+    const $result = $(`.result-item[data-search-id="${searchId}"]`);
     if ($result.length) {
         $('html, body').animate({
             scrollTop: $result.offset().top - 20
@@ -552,7 +553,6 @@ $(document).on('click', '.reference-link', function(e) {
         }, 3000);
     }
 });
-
 
 
 // --- Other existing code (platform detection, chatbox logic, etc.) ---
