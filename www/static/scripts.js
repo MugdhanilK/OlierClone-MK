@@ -462,6 +462,10 @@ $(document).on('click', '#summarize-results-btn', function() {
         $(".open_chatbot").first().trigger("click");
     }
     
+    // Hide the Olier Boy image (which is inside the .empty-div)
+    $("#messages .empty-div").hide();
+
+
     // 1. Get the Olier chat messages area (inside the chatbox)
     const messagesBox = document.querySelector("#messages .messages-box");
     if (!messagesBox) {
@@ -476,7 +480,9 @@ $(document).on('click', '#summarize-results-btn', function() {
     let placeholderMessage = document.createElement("div");
     placeholderMessage.classList.add("messages");
     placeholderMessage.style.whiteSpace = "pre-wrap";
-    placeholderMessage.textContent = "Creating the Olier Overview..."; 
+
+    // Change from plain text to a meditating-style message (adjust HTML/CSS as desired)
+    placeholderMessage.innerHTML = '<div class="meditating-message">Creating the Olier Overview...</div>';
 
     placeholderBubble.appendChild(placeholderMessage);
     messagesBox.appendChild(placeholderBubble);
@@ -539,7 +545,6 @@ function setInputValueAndSend(prompt) {
 $(document).on('click', '.reference-link', function(e) {
     e.preventDefault();
     const searchId = $(this).data('search-id');
-    // Use the correct attribute selector that matches your left-side search result elements.
     const $result = $(`.result-item[data-search-id="${searchId}"]`);
     if ($result.length) {
         $('html, body').animate({
@@ -551,7 +556,6 @@ $(document).on('click', '.reference-link', function(e) {
         }, 3000);
     }
 });
-
 
 // --- Other existing code (platform detection, chatbox logic, etc.) ---
 // ... (Make sure the rest of your necessary code is included elsewhere in your project) ...
