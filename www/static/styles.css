@@ -437,6 +437,16 @@ transform: translateX(26px);
     border-radius: 8px;
     background-color: #fff;
 }
+.meditating-message {
+    font-size: 1.2rem;
+    font-style: italic;
+    color: #666;
+    padding: 20px;
+    min-height: 50px;
+}
+.result-item {
+    position: relative; /* Ensure it’s positioned so box-shadow shows correctly */
+}
 
 /* Golden glow highlight effect */
 .highlight-golden {
