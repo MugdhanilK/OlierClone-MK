@@ -453,55 +453,54 @@ $('#query').on('input', function() {
 //Summarise
 
 //Changes done
-// --- Summarize Button Click Handler (Modified to send summary with reference links) ---
+// --- Summarize Button Click Handler (Modified for meditating placeholder, query inclusion & reference links) ---
 $(document).on('click', '#summarize-results-btn', function() {
-    // 0. Ensure the chatbox is open
+    // 0. Ensure the chatbox is open.
     if (!$("#chatbox").hasClass("open")) {
-        // Trigger the open chatbox behavior.
-        // This assumes that your existing open_chatbot button click handler opens the chatbox.
         $(".open_chatbot").first().trigger("click");
     }
     
-    // Hide the Olier Boy image (which is inside the .empty-div)
+    // Hide the Olier Boy image (inside .empty-div) so it doesn't remain visible.
     $("#messages .empty-div").hide();
 
-
-    // 1. Get the Olier chat messages area (inside the chatbox)
+    // 1. Get the Olier chat messages area.
     const messagesBox = document.querySelector("#messages .messages-box");
     if (!messagesBox) {
         console.error("Messages area not found.");
         return;
     }
     
-    // 2. Create and append a new chat bubble (assistant message) with a placeholder message
+    // 2. Create and append a new chat bubble with a meditating placeholder.
     let placeholderBubble = document.createElement("div");
-    placeholderBubble.classList.add("box", "ai-message"); // Use the same classes as your existing AI chat bubbles
+    placeholderBubble.classList.add("box", "ai-message");
 
     let placeholderMessage = document.createElement("div");
     placeholderMessage.classList.add("messages");
     placeholderMessage.style.whiteSpace = "pre-wrap";
-
-    // Change from plain text to a meditating-style message (adjust HTML/CSS as desired)
+    // Use a meditating-style placeholder message.
     placeholderMessage.innerHTML = '<div class="meditating-message">Creating the Olier Overview...</div>';
 
     placeholderBubble.appendChild(placeholderMessage);
     messagesBox.appendChild(placeholderBubble);
 
-    // Optional: scroll to the bottom if you have a function such as scrollToBottom()
+    // Optional: scroll to the bottom, if needed.
     // scrollToBottom();
 
-    // 3. Prepare the payload for the summarization API
+    // 3. Prepare the payload using the stored search results and include the query.
     const fullResultsData = $('#results').data('fullResultsData') || [];
     if (fullResultsData.length === 0) {
         placeholderMessage.textContent = "No results available for summarization.";
         return;
     }
-    
-    // Use the top five results (or fewer)
     const topResults = fullResultsData.slice(0, 5);
-    const payload = { results: topResults };
+    // Extract the user's query from the input field
+    const userQuery = $('#query').val().trim();
+    const payload = {
+        results: topResults,
+        query: userQuery
+    };
 
-    // 4. Make the AJAX call to your summarization API endpoint.
+    // 4. Send AJAX request to the summarization API.
     $.ajax({
         url: serverUrl + 'api/summarize-results',
         method: 'POST',
@@ -509,9 +508,8 @@ $(document).on('click', '#summarize-results-btn', function() {
         data: JSON.stringify(payload),
         success: function(response) {
             let summary = response.summary || "(No summary received)";
-            // Process the summary to convert [REF:xxx] markers into clickable links.
+            // Process the summary to convert reference markers into clickable links.
             let processedSummary = replaceReferenceMarkers(summary);
-            // Update the chat bubble with the processed summary.
             placeholderMessage.innerHTML = processedSummary;
         },
         error: function(jqXHR, textStatus, errorThrown) {
