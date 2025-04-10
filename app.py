@@ -318,31 +318,18 @@ async def send_message():
 async def summarize_results():
     data = await request.get_json()
     results = data.get('results', [])
-    user_query = data.get('query', '').strip()  # Get the user's query
     if not results:
         return jsonify({'error': 'No search results provided.'}), 400
-    
     # Build a reference list string from the provided results
     references_text = ""
     for result in results:
         references_text += f"[REF:{result.get('search_id')}] - {result.get('author', 'Unknown Author')}, {result.get('book_title', 'Unknown Book')}, {result.get('chapter_title', 'Unknown Chapter')}\n"
-    
-    # Revised prompt: Insert the user query and instruct the model to embed reference markers inline.
     prompt = (
-        f"User Query: {user_query}\n\n"
-        "Based on the detailed search results provided below, produce a comprehensive and context-aware summary that directly responds to the user's query. "
-        "Use the complete text excerpts as context to fully capture the background and nuances of the topic. "
-        "Ensure that reference markers appear inline at the exact points where each source is relevant. "
-        "Each reference marker must be in one of the following formats: "
-        "[CWSA - 'Book Title', 'Chapter Title'] for Complete Works of Sri Aurobindo, "
-        "[CWM - 'Book Title', 'Chapter Title'] for Collected Works of The Mother, and "
-        "[Mother's Agenda - 'Book Title', 'Chapter Title'] for The Mother's Agenda series. "
-        "Each marker must be distinct and correspond exactly to one of the provided search results. "
-        "Below is the reference list extracted from the search results:\n"
-        f"{references_text}\n"
-        "Using this information, generate a detailed summary that answers the user's query."
+        f"Summarize the following search results by highlighting key insights. "
+        f"Embed clickable reference markers exactly in the format [REF:<search_id>] wherever relevant. "
+        f"Use the list below as reference:\n{references_text}\n"
+        f"Ensure that each marker corresponds to one of the provided results."
     )
-    
     messages = [
         {"role": "system", "content": system_message0},
         {"role": "user", "content": prompt}
@@ -351,7 +338,7 @@ async def summarize_results():
         response = fireworks_client.chat.completions.create(
             model=model,
             messages=messages,
-            max_tokens=1500,
+            max_tokens=1000,
             temperature=0.4,
         )
         summary = response.choices[0].message.content.strip()
@@ -359,7 +346,6 @@ async def summarize_results():
     except Exception as e:
         logger.error(f"Error during summarization: {e}")
         return jsonify({'error': 'An error occurred during summarization.'}), 500
-
 
 
 
