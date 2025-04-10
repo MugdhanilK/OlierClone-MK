@@ -2024,64 +2024,70 @@ async function sendMessage() {
 }
 
     
-      // Function to add copy button
+// Function to add copy button
 
         // Function to remove all existing copy buttons
         function removeAllCopyButtons() {
             document.querySelectorAll('.copy-button').forEach(button => button.remove());
         }
+        
+//New Changes to CopyButton
 
-function addCopyButton(wrapper) {
-    removeAllCopyButtons();
-    let copyButton = document.createElement("button");
-    copyButton.innerHTML = '<div class="copy-icon"></div>'; // Initial icon
-    copyButton.classList.add("copy-button");
-    copyButton.style.position = "absolute";
-    copyButton.style.bottom = "5px";
-    copyButton.style.right = "5px";
-    copyButton.style.background = "none";
-    copyButton.style.border = "none";
-    copyButton.style.cursor = "pointer";
-    copyButton.style.padding = "5px";
-
-    copyButton.addEventListener("click", function() {
-        const allMessages = document.querySelectorAll("#messages .box");
-        const lastTwoMessages = Array.from(allMessages).slice(-2);
-        let textToCopyPlain = "";
-        let textToCopyHTML = "";
-
-        lastTwoMessages.forEach((messageBox) => {
-            const messageElement = messageBox.querySelector('.messages');
-            if (messageElement) {
-                const role = messageBox.classList.contains("right") ? "User" : "Olier";
-                const contentPlain = messageElement.textContent.trim();
-                const contentHTML = messageElement.innerHTML.trim();
-
-                textToCopyPlain += `${role}: ${contentPlain}\n\n`;
-                textToCopyHTML += `<p><strong>${role}:</strong></p>${contentHTML}<br>`;
-            }
-        });
-
-        if (textToCopyPlain && textToCopyHTML) {
-            const clipboardItem = new ClipboardItem({
-                "text/plain": new Blob([textToCopyPlain], { type: "text/plain" }),
-                "text/html": new Blob([textToCopyHTML], { type: "text/html" })
+        function addCopyButton(wrapper) { 
+            removeAllCopyButtons();
+            let copyButton = document.createElement("button");
+            copyButton.innerHTML = '<div class="copy-icon"></div>'; // Initial icon
+            copyButton.classList.add("copy-button");
+            // Remove absolute positioning styling so the button flows inline
+            // copyButton.style.position = "absolute";
+            // copyButton.style.bottom = "5px";
+            // copyButton.style.right = "5px";
+            copyButton.style.background = "none";
+            copyButton.style.border = "none";
+            copyButton.style.cursor = "pointer";
+            copyButton.style.padding = "5px";
+            copyButton.style.display = "block";   // Ensures the button appears on its own line
+            copyButton.style.marginTop = "8px";     // Adds a little space above the button
+        
+            copyButton.addEventListener("click", function() {
+                const allMessages = document.querySelectorAll("#messages .box");
+                const lastTwoMessages = Array.from(allMessages).slice(-2);
+                let textToCopyPlain = "";
+                let textToCopyHTML = "";
+        
+                lastTwoMessages.forEach((messageBox) => {
+                    const messageElement = messageBox.querySelector('.messages');
+                    if (messageElement) {
+                        const role = messageBox.classList.contains("right") ? "User" : "Olier";
+                        const contentPlain = messageElement.textContent.trim();
+                        const contentHTML = messageElement.innerHTML.trim();
+        
+                        textToCopyPlain += `${role}: ${contentPlain}\n\n`;
+                        textToCopyHTML += `<p><strong>${role}:</strong></p>${contentHTML}<br>`;
+                    }
+                });
+        
+                if (textToCopyPlain && textToCopyHTML) {
+                    const clipboardItem = new ClipboardItem({
+                        "text/plain": new Blob([textToCopyPlain], { type: "text/plain" }),
+                        "text/html": new Blob([textToCopyHTML], { type: "text/html" })
+                    });
+        
+                    navigator.clipboard.write([clipboardItem]).then(() => {
+                        // Change icon to tick on success
+                        copyButton.innerHTML = '<div class="tick-icon">✓</div>';
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+                } else {
+                    console.log("No messages to copy.");
+                }
             });
-
-            navigator.clipboard.write([clipboardItem]).then(() => {
-                // Change icon to tick on success
-                copyButton.innerHTML = '<div class="tick-icon">✓</div>';
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-            });
-        } else {
-            console.log("No messages to copy.");
+        
+            // Append the copy button directly to the summary container (wrapper)
+            wrapper.appendChild(copyButton);
         }
-    });
-
-    wrapper.appendChild(copyButton);
-}
-
+        
 
 
 
