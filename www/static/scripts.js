@@ -500,7 +500,7 @@ $(document).on('click', '#summarize-results-btn', function() {
         query: userQuery
     };
 
-    // 4. Send AJAX request to the summarization API.
+ // 4. AJAX request to the summarization API.
     $.ajax({
         url: serverUrl + 'api/summarize-results',
         method: 'POST',
@@ -508,7 +508,7 @@ $(document).on('click', '#summarize-results-btn', function() {
         data: JSON.stringify(payload),
         success: function(response) {
             let summary = response.summary || "(No summary received)";
-            // Process the summary to convert reference markers into clickable links.
+            // Process summary to replace new inline reference markers with clickable links.
             let processedSummary = replaceReferenceMarkers(summary);
             placeholderMessage.innerHTML = processedSummary;
         },
@@ -522,10 +522,10 @@ $(document).on('click', '#summarize-results-btn', function() {
 //Changes finished
 
 
-// --- Helper function to replace reference markers with clickable links ---
+// --- Helper function to replace new-style reference markers with clickable links ---
 function replaceReferenceMarkers(text) {
-    return text.replace(/\[REF:([^\]]+)\]/g, function(match, searchId) {
-        return `<a href="#" class="reference-link" data-search-id="${searchId}">${match}</a>`;
+    return text.replace(/\[(CWSA|CWM|Mother's Agenda)\s*-\s*'([^']+)',\s*'([^']+)'\]/g, function(match, series, bookTitle, chapterTitle) {
+        return `<a href="#" class="reference-link" data-book-title="${bookTitle}" data-chapter-title="${chapterTitle}">${match}</a>`;
     });
 }
 
@@ -542,19 +542,22 @@ function setInputValueAndSend(prompt) {
 // --- Event Listener for Reference Links ---
 $(document).on('click', '.reference-link', function(e) {
     e.preventDefault();
-    const searchId = $(this).data('search-id');
-    const $result = $(`.result-item[data-search-id="${searchId}"]`);
+    const bookTitle = $(this).data('book-title');
+    const chapterTitle = $(this).data('chapter-title');
+    // Find the first result-item where the metadata contains both the book title and chapter title (case-insensitive match)
+    let $result = $(".result-item").filter(function(){
+        const metadata = $(this).find(".result-metadata").text();
+        return metadata.toLowerCase().includes(bookTitle.toLowerCase()) &&
+               metadata.toLowerCase().includes(chapterTitle.toLowerCase());
+    }).first();
     if ($result.length) {
-        $('html, body').animate({
-            scrollTop: $result.offset().top - 20
-        }, 500);
+        $('html, body').animate({ scrollTop: $result.offset().top - 20 }, 500);
         $result.addClass('highlight-golden');
         setTimeout(() => {
             $result.removeClass('highlight-golden');
         }, 3000);
     }
 });
-
 // --- Other existing code (platform detection, chatbox logic, etc.) ---
 // ... (Make sure the rest of your necessary code is included elsewhere in your project) ...
 // ... (Ensure isMobile, openChatboxSimplified, openChatboxAndAdjustScroll are defined) ...
