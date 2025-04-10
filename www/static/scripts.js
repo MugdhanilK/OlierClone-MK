@@ -511,6 +511,10 @@ $(document).on('click', '#summarize-results-btn', function() {
         // Process the summary to replace inline reference markers with clickable links.
         let processedSummary = replaceReferenceMarkers(summary);
         placeholderMessage.innerHTML = processedSummary;
+         // Now add the copy button at the bottom of the summary container.
+    // 'messageWrapper' is the container for the message (it should be the wrapper for placeholderMessage)
+    addCopyButton(messageWrapper);
+    
     },
     error: function(jqXHR, textStatus, errorThrown) {
         placeholderMessage.textContent = "Sorry, an error occurred while creating the Olier Overview. Please try again later.";
