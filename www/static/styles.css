@@ -452,13 +452,13 @@ transform: translateX(26px);
 /* Define a pulsing animation for the glow */
 @keyframes pulseGlow {
     0% {
-      box-shadow: 0 0 10px 3px red;
+      box-shadow: 0 0 10px 3px orange;
     }
     50% {
-      box-shadow: 0 0 20px 6px red;
+      box-shadow: 0 0 20px 6px orange;
     }
     100% {
-      box-shadow: 0 0 10px 3px red;
+      box-shadow: 0 0 10px 3px orange;
     }
   }
   
