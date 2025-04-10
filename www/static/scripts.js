@@ -474,6 +474,10 @@ $(document).on('click', '#summarize-results-btn', function() {
     let placeholderBubble = document.createElement("div");
     placeholderBubble.classList.add("box", "ai-message");
 
+    let messageWrapper = document.createElement("div");
+    // Ensure wrapper has relative positioning so that absolute positioning for the copy button works.
+    messageWrapper.style.position = "relative";
+
     let placeholderMessage = document.createElement("div");
     placeholderMessage.classList.add("messages");
     placeholderMessage.style.whiteSpace = "pre-wrap";
@@ -500,124 +504,7 @@ $(document).on('click', '#summarize-results-btn', function() {
         query: userQuery
     };
 
-//New Call
-
-// 4. Streaming fetch request to the summarization API.
-// --- Summarize Button Click Handler (Top 10 Results, Streaming, and Copy Button) ---
-$(document).on('click', '#summarize-results-btn', async function() {
-    // 0. Ensure the chatbox is open.
-    if (!$("#chatbox").hasClass("open")) {
-        $(".open_chatbot").first().trigger("click");
-    }
-    
-    // Hide the Olier Boy image (inside .empty-div)
-    $("#messages .empty-div").hide();
-
-    // 1. Get the Olier chat messages area.
-    const messagesBox = document.querySelector("#messages .messages-box");
-    if (!messagesBox) {
-        console.error("Messages area not found.");
-        return;
-    }
-    
-    // 2. Create and append a new chat bubble with a meditating placeholder.
-    let placeholderBubble = document.createElement("div");
-    placeholderBubble.classList.add("box", "ai-message");
-    
-    let placeholderMessage = document.createElement("div");
-    placeholderMessage.classList.add("messages");
-    placeholderMessage.style.whiteSpace = "pre-wrap";
-    // Use a meditating-style placeholder message.
-    placeholderMessage.innerHTML = '<div class="meditating-message">Creating the Olier Overview...</div>';
-    
-    // Wrap the placeholder message in a container with relative positioning,
-    // so that any dynamically-added copy button can later be appended inside it.
-    let messageWrapper = document.createElement("div");
-    messageWrapper.style.position = "relative";
-    messageWrapper.appendChild(placeholderMessage);
-    
-    placeholderBubble.appendChild(messageWrapper);
-    messagesBox.appendChild(placeholderBubble);
-
-    // Optional: scroll to the bottom.
-    // scrollToBottom();
-
-    // 3. Prepare the payload: use only the first 10 search results and include the user query.
-    const fullResultsData = $('#results').data('fullResultsData') || [];
-    if (fullResultsData.length === 0) {
-        placeholderMessage.textContent = "No results available for summarization.";
-        return;
-    }
-    const topResults = fullResultsData.slice(0, 10);
-    const userQuery = $('#query').val().trim();
-    const payload = {
-        results: topResults,
-        query: userQuery
-    };
-
-    // 4. Streaming fetch request to the summarization API.
-    try {
-        const response = await fetch(serverUrl + 'api/summarize-results', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-    
-        if (!response.body) {
-            throw new Error("ReadableStream not supported in this browser.");
-        }
-    
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let accumulatedText = "";
-    
-        // Optional: clear any meditating animation if implemented
-        // For example: clearInterval(meditatingInterval); meditatingElement.remove();
-    
-        // Function to read stream chunks and update the summary progressively.
-        async function readStream() {
-            const { done, value } = await reader.read();
-            if (done) {
-                // Finalize the summary: remove any stray tokens and render the full text.
-                accumulatedText = accumulatedText.replace(/<\/s>/g, '');
-                let dirtyHtml = md.render(accumulatedText);
-                let cleanHtml = DOMPurify.sanitize(dirtyHtml);
-                // Also process the text to convert reference markers into clickable links.
-                cleanHtml = replaceReferenceMarkers(cleanHtml);
-                placeholderMessage.innerHTML = cleanHtml;
-    
-                // After streaming is complete, add the copy button.
-                addCopyButton(messageWrapper);
-                return;
-            }
-    
-            let chunk = decoder.decode(value, { stream: true });
-            accumulatedText += chunk;
-            let dirtyHtml = md.render(accumulatedText);
-            let cleanHtml = DOMPurify.sanitize(dirtyHtml);
-            // Process inline reference markers.
-            cleanHtml = replaceReferenceMarkers(cleanHtml);
-            placeholderMessage.innerHTML = cleanHtml;
-    
-            // Optionally: scroll the messagesBox to the bottom.
-            // messagesBox.scrollTop = messagesBox.scrollHeight;
-    
-            // Continue reading the stream.
-            await readStream();
-        }
-        await readStream();
-    } catch (err) {
-        console.error("Summarization request failed:", err);
-        placeholderMessage.textContent = "Sorry, an error occurred while creating the Olier Overview. Please try again later.";
-    }
-});
-
-
-//Old Call
-
  // 4. AJAX request to the summarization API.
-
- /*
  $.ajax({
     url: serverUrl + 'api/summarize-results',
     method: 'POST',
@@ -630,18 +517,17 @@ $(document).on('click', '#summarize-results-btn', async function() {
         placeholderMessage.innerHTML = processedSummary;
          // Now add the copy button at the bottom of the summary container.
     // 'messageWrapper' is the container for the message (it should be the wrapper for placeholderMessage)
-    addCopyButton(messageWrapper);
+        addCopyButton(messageWrapper);
     
     },
     error: function(jqXHR, textStatus, errorThrown) {
         placeholderMessage.textContent = "Sorry, an error occurred while creating the Olier Overview. Please try again later.";
         console.error("Summarization request failed:", textStatus, errorThrown);
     }
-});*/
-
+});
 });
 
-
+//Changes finished
 
 
 // --- Helper function to replace new-style reference markers with clickable links ---
@@ -2149,71 +2035,6 @@ async function sendMessage() {
             document.querySelectorAll('.copy-button').forEach(button => button.remove());
         }
 
-        
-//New CopyButton
-
-        function addCopyButton(wrapper) { 
-            removeAllCopyButtons();
-            let copyButton = document.createElement("button");
-            copyButton.innerHTML = '<div class="copy-icon"></div>'; // Initial icon
-            copyButton.classList.add("copy-button");
-            // Remove absolute positioning so it appears in normal document flow.
-            // Remove these lines:
-            // copyButton.style.position = "absolute";
-            // copyButton.style.bottom = "5px";
-            // copyButton.style.right = "5px";
-            
-            // Set display as block and add margin
-            copyButton.style.display = "block";
-            copyButton.style.marginTop = "8px";
-            copyButton.style.background = "none";
-            copyButton.style.border = "none";
-            copyButton.style.cursor = "pointer";
-            copyButton.style.padding = "5px";
-        
-            copyButton.addEventListener("click", function() {
-                const allMessages = document.querySelectorAll("#messages .box");
-                const lastTwoMessages = Array.from(allMessages).slice(-2);
-                let textToCopyPlain = "";
-                let textToCopyHTML = "";
-            
-                lastTwoMessages.forEach((messageBox) => {
-                    const messageElement = messageBox.querySelector('.messages');
-                    if (messageElement) {
-                        const role = messageBox.classList.contains("right") ? "User" : "Olier";
-                        const contentPlain = messageElement.textContent.trim();
-                        const contentHTML = messageElement.innerHTML.trim();
-            
-                        textToCopyPlain += `${role}: ${contentPlain}\n\n`;
-                        textToCopyHTML += `<p><strong>${role}:</strong></p>${contentHTML}<br>`;
-                    }
-                });
-            
-                if (textToCopyPlain && textToCopyHTML) {
-                    const clipboardItem = new ClipboardItem({
-                        "text/plain": new Blob([textToCopyPlain], { type: "text/plain" }),
-                        "text/html": new Blob([textToCopyHTML], { type: "text/html" })
-                    });
-            
-                    navigator.clipboard.write([clipboardItem]).then(() => {
-                        // Change icon to tick on success
-                        copyButton.innerHTML = '<div class="tick-icon">✓</div>';
-                    }).catch(err => {
-                        console.error('Failed to copy text: ', err);
-                    });
-                } else {
-                    alert("No messages to copy.");
-                }
-            });
-            
-            // Append the copy button directly to the wrapper.
-            wrapper.appendChild(copyButton);
-        }
-        
-
-//Old CopyButton
-
-/*
 function addCopyButton(wrapper) {
     removeAllCopyButtons();
     let copyButton = document.createElement("button");
@@ -2263,7 +2084,7 @@ function addCopyButton(wrapper) {
     });
 
     wrapper.appendChild(copyButton);
-}*/
+}
 
 
 
