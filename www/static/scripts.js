@@ -501,22 +501,22 @@ $(document).on('click', '#summarize-results-btn', function() {
     };
 
  // 4. AJAX request to the summarization API.
-    $.ajax({
-        url: serverUrl + 'api/summarize-results',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(payload),
-        success: function(response) {
-            let summary = response.summary || "(No summary received)";
-            // Process summary to replace new inline reference markers with clickable links.
-            let processedSummary = replaceReferenceMarkers(summary);
-            placeholderMessage.innerHTML = processedSummary;
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            placeholderMessage.textContent = "Sorry, an error occurred while creating the Olier Overview. Please try again later.";
-            console.error("Summarization request failed:", textStatus, errorThrown);
-        }
-    });
+ $.ajax({
+    url: serverUrl + 'api/summarize-results',
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(payload),
+    success: function(response) {
+        let summary = response.summary || "(No summary received)";
+        // Process the summary to replace inline reference markers with clickable links.
+        let processedSummary = replaceReferenceMarkers(summary);
+        placeholderMessage.innerHTML = processedSummary;
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        placeholderMessage.textContent = "Sorry, an error occurred while creating the Olier Overview. Please try again later.";
+        console.error("Summarization request failed:", textStatus, errorThrown);
+    }
+});
 });
 
 //Changes finished
@@ -524,10 +524,15 @@ $(document).on('click', '#summarize-results-btn', function() {
 
 // --- Helper function to replace new-style reference markers with clickable links ---
 function replaceReferenceMarkers(text) {
-    return text.replace(/\[(CWSA|CWM|Mother's Agenda)\s*-\s*'([^']+)',\s*'([^']+)'\]/g, function(match, series, bookTitle, chapterTitle) {
-        return `<a href="#" class="reference-link" data-book-title="${bookTitle}" data-chapter-title="${chapterTitle}">${match}</a>`;
+    // This regex matches markers of the form:
+    // [CWSA - 'Book Title', 'Chapter Title']
+    // [CWM - 'Book Title', 'Chapter Title']
+    // [Mother's Agenda - 'Book Title', 'Chapter Title']
+    return text.replace(/\[(CWSA|CWM|Mother's Agenda)\s*-\s*'([^']+)',\s*'([^']+)'\]/g, function(match, series, book, chapter) {
+        return `<a href="#" class="reference-link" data-book-title="${book}" data-chapter-title="${chapter}">${match}</a>`;
     });
 }
+
 
 // Helper function to set chat input value and trigger the send button
 // (Keep this if your overall code uses it; otherwise, you may remove or adjust it as needed.)
@@ -544,12 +549,13 @@ $(document).on('click', '.reference-link', function(e) {
     e.preventDefault();
     const bookTitle = $(this).data('book-title');
     const chapterTitle = $(this).data('chapter-title');
-    // Find the first result-item where the metadata contains both the book title and chapter title (case-insensitive match)
+    // Find the first result-item whose metadata includes both the book title and chapter title (case-insensitive)
     let $result = $(".result-item").filter(function(){
         const metadata = $(this).find(".result-metadata").text();
         return metadata.toLowerCase().includes(bookTitle.toLowerCase()) &&
                metadata.toLowerCase().includes(chapterTitle.toLowerCase());
     }).first();
+
     if ($result.length) {
         $('html, body').animate({ scrollTop: $result.offset().top - 20 }, 500);
         $result.addClass('highlight-golden');
@@ -558,6 +564,8 @@ $(document).on('click', '.reference-link', function(e) {
         }, 3000);
     }
 });
+
+
 // --- Other existing code (platform detection, chatbox logic, etc.) ---
 // ... (Make sure the rest of your necessary code is included elsewhere in your project) ...
 // ... (Ensure isMobile, openChatboxSimplified, openChatboxAndAdjustScroll are defined) ...
