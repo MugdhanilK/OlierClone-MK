@@ -524,7 +524,7 @@ $(document).on('click', '#summarize-results-btn', function() {
 
 // --- Helper function to replace new-style reference markers with clickable links ---
 function replaceReferenceMarkers(text) {
-    // This regex matches markers of the form:
+    // This regex matches markers like:
     // [CWSA - 'Book Title', 'Chapter Title']
     // [CWM - 'Book Title', 'Chapter Title']
     // [Mother's Agenda - 'Book Title', 'Chapter Title']
@@ -532,6 +532,7 @@ function replaceReferenceMarkers(text) {
         return `<a href="#" class="reference-link" data-book-title="${book}" data-chapter-title="${chapter}">${match}</a>`;
     });
 }
+
 
 
 // Helper function to set chat input value and trigger the send button
@@ -549,7 +550,7 @@ $(document).on('click', '.reference-link', function(e) {
     e.preventDefault();
     const bookTitle = $(this).data('book-title');
     const chapterTitle = $(this).data('chapter-title');
-    // Find the first result-item whose metadata includes both the book title and chapter title (case-insensitive)
+    // Find the first result-item whose metadata includes both the book title and chapter title (ignoring case)
     let $result = $(".result-item").filter(function(){
         const metadata = $(this).find(".result-metadata").text();
         return metadata.toLowerCase().includes(bookTitle.toLowerCase()) &&
@@ -564,6 +565,7 @@ $(document).on('click', '.reference-link', function(e) {
         }, 3000);
     }
 });
+
 
 
 // --- Other existing code (platform detection, chatbox logic, etc.) ---
