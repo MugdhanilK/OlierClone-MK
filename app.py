@@ -128,6 +128,84 @@ async def search_endpoint():
 
 
 
+#New Keyword Search*/
+@app.route('/api/keyword-search', methods=['POST'])
+async def keyword_search():
+    form = await request.form
+    query = form.get('query', '').strip()
+    if not query:
+        return jsonify({'error': 'No query provided.'}), 400
+
+    try:
+        index = meili_client.get_index(meili_index_name)
+        search_results = index.search(
+            query,
+            {
+                'limit': 10,
+                'attributesToRetrieve': [
+                    'author', 'book_title', 'chapter_title',
+                    'search_id', 'text'
+                ],
+                'attributesToHighlight': ['text'],
+                'highlightPreTag': '<em>',
+                'highlightPostTag': '</em>',
+                'matchingStrategy': 'all',
+            }
+        )
+
+        processed_hits = []
+        for hit in search_results['hits']:
+            # Extract metadata
+            author = hit.get('author', 'Unknown Author').strip()
+            book_title = hit.get('book_title', 'Unknown Book').strip()
+            chapter_title = hit.get('chapter_title', 'Unknown Chapter').strip()
+            # Determine prefix based on author
+            if author.lower() == "sri aurobindo":
+                prefix = "CWSA"
+            elif author.lower() == "the mother":
+                if "agenda" in book_title.lower():
+                    prefix = "Mother's Agenda"
+                else:
+                    prefix = "CWM"
+            else:
+                prefix = "CWSA"  # default if unknown
+
+            # Create the marker string in the desired inline format
+            marker = f"[{prefix} - '{book_title}', '{chapter_title}']"
+            
+            # Option: Append the marker at the end of the text.
+            hit_text = hit.get('text', '')
+            # Here we append a space and marker at the end.
+            hit['text'] = f"{hit_text} {marker}"
+            
+            # Also update highlighted_text if it exists; otherwise, use the full text.
+            hit_highlight = hit.get('highlighted_text', '')
+            if hit_highlight:
+                hit['highlighted_text'] = f"{hit_highlight} {marker}"
+            else:
+                hit['highlighted_text'] = hit['text']
+
+            processed_hits.append({
+                'author': author,
+                'book_title': book_title,
+                'chapter_title': chapter_title,
+                'search_id': hit.get('search_id', ''),
+                'text': hit['text'],
+                'highlighted_text': hit['highlighted_text'],
+                'file_path': f"/home/olier/Olierclone/www/static/HTML/{book_title}_modified.html"
+            })
+
+        return jsonify(processed_hits)
+
+    except Exception as e:
+        logger.error(f"Error during Meilisearch query: {e}")
+        return jsonify({'error': 'An error occurred during the search.'}), 500
+
+
+
+
+#Old Keyword Search (Replace it if new doesn't work out)*/
+'''
 @app.route('/api/keyword-search', methods=['POST'])
 async def keyword_search():
     form = await request.form
@@ -173,6 +251,10 @@ async def keyword_search():
     except Exception as e:
         logger.error(f"Error during Meilisearch query: {e}")
         return jsonify({'error': 'An error occurred during the search.'}), 500
+
+'''
+#Done.
+
 
 @app.route('/api/full-text', methods=['GET'])
 async def full_text():
