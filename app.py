@@ -406,7 +406,9 @@ async def summarize_results():
 
     # Build a reference list string using the author to determine which prefix to use.
     references_text = ""
-    for result in results:
+    # Only use the first 10 results
+    top_results = results[:10]
+    for result in top_results:
         author = result.get('author', 'Unknown Author').strip()
         book_title = result.get('book_title', 'Unknown Book').strip()
         chapter_title = result.get('chapter_title', 'Unknown Chapter').strip()
@@ -425,20 +427,20 @@ async def summarize_results():
         references_text += f"[{prefix} - '{book_title}', '{chapter_title}']\n"
 
     # Revised prompt: Insert the user query and explicitly instruct inline reference embedding.
-    prompt = (
-        f"User Query: {user_query}\n\n"
-        "Based on the detailed search results provided below, produce a comprehensive and context-aware summary that directly responds to the user's query. "
-        "Use the complete text excerpts as context to fully capture the background and nuances of the topic. "
-        "IMPORTANT: Embed all reference markers inline exactly where each source is relevant; do not append a separate list at the end. "
-        "Each reference marker must be in one of the following formats: "
-        "[CWSA - 'Book Title', 'Chapter Title'] for Complete Works of Sri Aurobindo, "
-        "[CWM - 'Book Title', 'Chapter Title'] for Collected Works of The Mother, and "
-        "[Mother's Agenda - 'Book Title', 'Chapter Title'] for The Mother's Agenda series. "
-        "Each marker must be distinct and correspond exactly to one of the provided search results. "
-        "Below is the reference list extracted from the search results:\n"
-        f"{references_text}\n"
-        "Using this information, generate a detailed summary that answers the user's query."
-    )
+    prompt = ( 
+    f"User Query: {user_query}\n\n"
+    "Based on the detailed top 10 search results provided below, produce a comprehensive and context-aware summary that directly responds to the user's query. "
+    "Use the complete text excerpts as context to fully capture the background and nuances of the topic. "
+    "IMPORTANT: Embed all reference markers inline exactly where each source is relevant; do not append a separate list at the end. "
+    "Each reference marker must be in one of the following formats: "
+    "[CWSA - 'Book Title', 'Chapter Title'] for Complete Works of Sri Aurobindo, "
+    "[CWM - 'Book Title', 'Chapter Title'] for Collected Works of The Mother, and "
+    "[Mother's Agenda - 'Book Title', 'Chapter Title'] for The Mother's Agenda series. "
+    "Each marker must be distinct and correspond exactly to one of the provided search results. "
+    "Below is the reference list extracted from the top 10 search results:\n"
+    f"{references_text}\n"
+    "Using this information, generate a detailed summary that answers the user's query using only these top 10 search results."
+)
 
     messages = [
         {"role": "system", "content": system_message0},
