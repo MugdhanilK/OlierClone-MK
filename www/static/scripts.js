@@ -562,7 +562,7 @@ $(document).on('click', '.reference-link', function(e) {
         $result.addClass('highlight-golden');
         setTimeout(() => {
             $result.removeClass('highlight-golden');
-        }, 3000);
+        }, 5000);
     }
 });
 

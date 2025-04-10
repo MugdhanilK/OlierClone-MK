@@ -441,6 +441,7 @@ transform: translateX(26px);
     font-size: 1.2rem;
     font-style: italic;
     color: #666;
+    background-size: contain;
     padding: 20px;
     min-height: 50px;
 }
@@ -448,11 +449,25 @@ transform: translateX(26px);
     position: relative; /* Ensure it’s positioned so box-shadow shows correctly */
 }
 
-/* Golden glow highlight effect */
-.highlight-golden {
-    box-shadow: 0 0 10px 3px gold;
-    transition: box-shadow 0.5s ease-out;
-}
+/* Define a pulsing animation for the glow */
+@keyframes pulseGlow {
+    0% {
+      box-shadow: 0 0 10px 3px red;
+    }
+    50% {
+      box-shadow: 0 0 20px 6px red;
+    }
+    100% {
+      box-shadow: 0 0 10px 3px red;
+    }
+  }
+  
+  /* Use the pulsing animation in the highlight class */
+  .highlight-golden {
+    animation: pulseGlow 1s infinite; /* The pulse cycle lasts 1 second and repeats infinitely */
+    /* You can add !important if necessary to override other styles */
+  }
+
 
 /* Style for reference links */
 .reference-link {
