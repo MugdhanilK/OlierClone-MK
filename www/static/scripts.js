@@ -492,7 +492,7 @@ $(document).on('click', '#summarize-results-btn', function() {
         placeholderMessage.textContent = "No results available for summarization.";
         return;
     }
-    const topResults = fullResultsData.slice(0, 5);
+    const topResults = fullResultsData.slice(0, 10);
     // Extract the user's query from the input field
     const userQuery = $('#query').val().trim();
     const payload = {
