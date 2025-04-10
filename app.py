@@ -318,7 +318,7 @@ async def send_message():
 async def summarize_results():
     data = await request.get_json()
     results = data.get('results', [])
-    user_query = data.get('query', '').strip()  # Extract the user query from the payload
+    user_query = data.get('query', '').strip()  # Get the user's query
     if not results:
         return jsonify({'error': 'No search results provided.'}), 400
     
@@ -327,20 +327,20 @@ async def summarize_results():
     for result in results:
         references_text += f"[REF:{result.get('search_id')}] - {result.get('author', 'Unknown Author')}, {result.get('book_title', 'Unknown Book')}, {result.get('chapter_title', 'Unknown Chapter')}\n"
     
-    # Revised prompt with the user query explicitly inserted
+    # Revised prompt: Insert the user query and instruct the model to embed reference markers inline.
     prompt = (
         f"User Query: {user_query}\n\n"
-        "Based on the detailed search results provided below, produce a comprehensive and context-aware summary that addresses the user's query. "
-        "Use the complete text excerpts as context to capture the topic's specific background and nuances. "
-        "Your summary should integrate insights from each text in a meaningful manner while remaining faithful to the original wording. "
-        "Embed clickable reference markers for each source in exactly one of the following formats: "
+        "Based on the detailed search results provided below, produce a comprehensive and context-aware summary that directly responds to the user's query. "
+        "Use the complete text excerpts as context to fully capture the background and nuances of the topic. "
+        "Ensure that reference markers appear inline at the exact points where each source is relevant. "
+        "Each reference marker must be in one of the following formats: "
         "[CWSA - 'Book Title', 'Chapter Title'] for Complete Works of Sri Aurobindo, "
         "[CWM - 'Book Title', 'Chapter Title'] for Collected Works of The Mother, and "
         "[Mother's Agenda - 'Book Title', 'Chapter Title'] for The Mother's Agenda series. "
-        "Ensure that each reference marker is distinct and corresponds exactly to one of the provided search results. "
+        "Each marker must be distinct and correspond exactly to one of the provided search results. "
         "Below is the reference list extracted from the search results:\n"
         f"{references_text}\n"
-        "Using this information, generate a detailed summary that directly responds to the user's query."
+        "Using this information, generate a detailed summary that answers the user's query."
     )
     
     messages = [
