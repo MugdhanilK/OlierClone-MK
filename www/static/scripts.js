@@ -484,8 +484,12 @@ $(document).on('click', '#summarize-results-btn', function() {
     // Use a meditating-style placeholder message.
     placeholderMessage.innerHTML = '<div class="meditating-message">Creating the Olier Overview...</div>';
 
-    placeholderBubble.appendChild(placeholderMessage);
-    messagesBox.appendChild(placeholderBubble);
+    // Put the message inside the wrapper
+    messageWrapper.appendChild(placeholderMessage);
+    // Then put the wrapper inside the bubble
+    placeholderBubble.appendChild(messageWrapper);
+    // Then finally attach to the DOM
+    messagesBox.appendChild(placeholderBubble); 
 
      // 2a. Animate dots after "Creating the Olier Overview"
      const meditatingElement = placeholderMessage.querySelector('.meditating-message');
@@ -525,8 +529,7 @@ $(document).on('click', '#summarize-results-btn', function() {
         let processedSummary = replaceReferenceMarkers(summary);
         placeholderMessage.innerHTML = processedSummary;
          // Now add the copy button at the bottom of the summary container.
-    // 'messageWrapper' is the container for the message (it should be the wrapper for placeholderMessage)
-        addCopyButton(messageWrapper);
+         addCopyButton(messageWrapper);
     
     },
     error: function(jqXHR, textStatus, errorThrown) {
