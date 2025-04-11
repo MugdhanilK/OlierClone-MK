@@ -487,13 +487,22 @@ $(document).on('click', '#summarize-results-btn', function() {
     placeholderBubble.appendChild(placeholderMessage);
     messagesBox.appendChild(placeholderBubble);
 
+     // 2a. Animate dots after "Creating the Olier Overview"
+     const meditatingElement = placeholderMessage.querySelector('.meditating-message');
+     let dotCount = 0;
+     const meditatingInterval = setInterval(() => {
+         dotCount = (dotCount + 1) % 4;
+         meditatingElement.textContent = 'Creating the Olier Overview' + '.'.repeat(dotCount);
+     }, 500);
+
     // Optional: scroll to the bottom, if needed.
-    // scrollToBottom();
+    scrollToBottom();
 
     // 3. Prepare the payload using the stored search results and include the query.
     const fullResultsData = $('#results').data('fullResultsData') || [];
     if (fullResultsData.length === 0) {
         placeholderMessage.textContent = "No results available for summarization.";
+        clearInterval(meditatingInterval);
         return;
     }
     const topResults = fullResultsData.slice(0, 10);
