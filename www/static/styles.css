@@ -1449,6 +1449,14 @@ tbody {
 
 /* Chat Input */
 
+/*New Addition*/
+#chat-input {
+    max-height: 150px;    /* or a height that suits your design */
+    overflow-y: auto;     /* Enable vertical scrollbar if content exceeds the max height */
+    /* Optionally, allow horizontal scrolling if needed: overflow-x: hidden; */
+  }
+  
+/*Rest of the style about the Chat Input*/
 #chat-input-container {
     flex-shrink: 0;
     margin-top: auto;
