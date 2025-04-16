@@ -568,14 +568,7 @@ function setInputValueAndSend(prompt) {
 // --- Event Listener for Reference Links ---
 $(document).on('click', '.reference-link', function(e) {
     e.preventDefault();
-
-    // For mobile devices, close the chat window (right side)
-    if ($('body').hasClass('is-mobile')) {
-        // You can either hide it immediately...
-        // $('#chatbox').hide();
-        // ...or slide it up for a nicer transition:
-        $('#chatbox').slideUp();
-    }
+    
     const bookTitle = $(this).data('book-title');
     const chapterTitle = $(this).data('chapter-title');
     // Find the first result-item whose metadata includes both the book title and chapter title (ignoring case)
