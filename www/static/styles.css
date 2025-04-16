@@ -1451,12 +1451,12 @@ tbody {
 
 /*New Addition*/
 #chat-input {
-    max-height: 150px;    /* or a height that suits your design */
+    max-height: 200px;    /* or a height that suits your design */
     overflow-y: auto;     /* Enable vertical scrollbar if content exceeds the max height */
     /* Optionally, allow horizontal scrolling if needed: overflow-x: hidden; */
   }
   
-/*Rest of the style about the Chat Input*/
+/*Rest of the style about the*/
 #chat-input-container {
     flex-shrink: 0;
     margin-top: auto;
@@ -1501,7 +1501,7 @@ body.keyboard-open #chat-input-container {
     line-height: 1.1rem;         /* Set line-height equal to font-size */
     color: #333;                 /* Ensure text remains readable */
     resize: none;                /* Prevent manual resizing */
-    overflow-y: hidden;
+    overflow-y: auto;
     border: none;                /* Hide scrollbar */
 }
 
