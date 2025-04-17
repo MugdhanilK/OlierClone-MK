@@ -569,6 +569,12 @@ function setInputValueAndSend(prompt) {
 $(document).on('click', '.reference-link', function(e) {
     e.preventDefault();
     
+  // 1️⃣ If we’re on mobile, trigger the existing Close‑Chatbot button
+ if ( $('body').hasClass('is-mobile') ) {
+    $('.close-icon').trigger('click');
+  }
+
+  // 2️⃣ Now perform the normal scroll + highlight logic:
     const bookTitle = $(this).data('book-title');
     const chapterTitle = $(this).data('chapter-title');
     // Find the first result-item whose metadata includes both the book title and chapter title (ignoring case)
