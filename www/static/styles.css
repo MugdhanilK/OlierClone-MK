@@ -1070,7 +1070,8 @@ tbody {
     background: url('/static/chatbotbackgroundA.png') no-repeat center center / cover;
     right: 0;
     top: 0;
-    overflow: hidden;
+    /* remove overflow:hidden */
+  /* overflow: hidden; */
     transition: transform 0.3s ease-in-out; /* Only transition transform */
     transform: translateX(100%);
     touch-action: pan-y;
@@ -1274,9 +1275,9 @@ tbody {
 
 /* Messages container adapts to available space */
 #messages {
-    flex: 1 1 auto;           /* fill all space between header & input */
-    overflow-y: auto;  
-    -webkit-overflow-scrolling: touch;
+    flex: 1 1 auto;             /* fill all available space */
+    overflow-y: auto;           /* now this area will scroll */
+    -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
 }
 
 #messages .empty-div {
