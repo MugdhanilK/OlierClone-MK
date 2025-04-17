@@ -584,13 +584,23 @@ $(document).on('click', '.reference-link', function(e) {
                metadata.toLowerCase().includes(chapterTitle.toLowerCase());
     }).first();
 
-    if ($result.length) {
-        $('html, body').animate({ scrollTop: $result.offset().top - 20 }, 500);
-        $result.addClass('highlight-golden');
-        setTimeout(() => {
-            $result.removeClass('highlight-golden');
-        }, 5000);
-    }
+    if ( !$result.length ) return;
+
+  // ➌  Scroll it into view on the right container
+  if ( $('body').hasClass('is-mobile') ) {
+    // your mobile scroll container—adjust selector if yours is different
+    const $scrollPane = $('#results');
+    // scrollTop wants the pixel distance *inside* the pane
+    const scrollPos  = $scrollPane.scrollTop() + $result.position().top - 20;
+    $scrollPane.animate({ scrollTop: scrollPos }, 500);
+  } else {
+    // desktop: scroll the page
+    $('html, body').animate({ scrollTop: $result.offset().top - 20 }, 500);
+  }
+
+  // ➍  Highlight
+  $result.addClass('highlight-golden');
+  setTimeout(() => $result.removeClass('highlight-golden'), 5000);
 });
 
 
