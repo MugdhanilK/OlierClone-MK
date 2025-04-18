@@ -1348,9 +1348,6 @@ tbody {
     width: 5px;
     background-color: transparent;
     cursor: ew-resize;
-
-    /* Prevent it from intercepting wheel/touch events */
-  pointer-events: none;
 }
 
 /* Only when the user is actively dragging do we want it to capture events */
