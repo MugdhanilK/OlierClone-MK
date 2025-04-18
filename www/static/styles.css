@@ -1281,10 +1281,12 @@ tbody {
 
 /* Messages container adapts to available space */
 #messages {
-    flex: 1 1 auto;             /* fill all available space */
-    overflow-y: auto;           /* now this area will scroll */
-    -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+    flex: 1 1 auto;                       /* fill all available space */
+    overflow-y: auto;                     /* now this area will scroll */
+    -webkit-overflow-scrolling: touch;    /* smooth scroll on iOS */
+    overscroll-behavior: contain;         /* prevent “scroll chaining” to the page */
 }
+
 
 #messages .empty-div {
     position: absolute;
