@@ -146,6 +146,7 @@ body.ios-device .container::before {
     }
 }
 /* This class will emulate your @media (max-width: 767px) rules */
+/*
 .mobile-tablet-lock-scroll {
     height: 100%;
     margin: 0;
@@ -155,8 +156,10 @@ body.ios-device .container::before {
   
   .mobile-tablet-lock-scroll .container {
     height: 100%;
-    overflow-y: scroll !important; /* allow vertical scrolling inside .container */
+    overflow-y: scroll !important; 
   }
+*/
+
 
   /* ============================== */
 /* iPadOS CSS       */
@@ -567,10 +570,10 @@ transform: translateX(26px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 /*_______________________Old______________________*/
-/*#results {
+#results {
     margin-top: 20px;
     margin-bottom: 140px; /* or margin-bottom, whichever suits your layout */
-/*}*/
+}
 
 
 .result-item {
@@ -2690,30 +2693,8 @@ body.keyboard-open #chat-input-container {
         font-size: 0.55rem;
     }
 
-     /* Make the left pane scrollable on mobile */
-  #results {
-    height: calc(100vh - 100px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
 
-    /* Wrap only the results in its own scrollable pane */
-  .results-wrapper {
-    /* How tall? 
-       - Use viewport‑height (vh) to size relative to the screen
-       - Subtract the combined height of any fixed headers/toolbars
-    */
-    height: calc(100vh - 200px);
-     /* 2. Enable scrolling when content overflows */
-    overflow-y: auto;
-     /* 3. Smooth, native‑style scrolling on iOS */
-    -webkit-overflow-scrolling: touch;
-  }
 
-  /* Optional: if you also want to tweak the inner list itself */
-  .results-wrapper #results {
-    padding: 0 1rem;  /* e.g. add some horizontal padding */
-  }
 
 }
 
