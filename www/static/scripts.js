@@ -568,36 +568,44 @@ function setInputValueAndSend(prompt) {
 // --- Event Listener for Reference Links ---
 $(document).on('click', '.reference-link', function(e) {
     e.preventDefault();
-
+    
+    // ① Read the link’s data attributes up front
     const bookTitle   = $(this).data('book-title');
     const chapterTitle= $(this).data('chapter-title');
-
-  // 1️⃣ If we’re on mobile, trigger the existing Close‑Chatbot button
- if ( $('body').hasClass('is-mobile') ) {
-    $('.close-icon').trigger('click');
-    setTimeout(() => {
-      const $container = $('#results');
-      const $target    = $(".result-item").filter(function(){
-        const md = $(this).find(".result-metadata").text().toLowerCase();
-        return md.includes(bookTitle.toLowerCase())
-            && md.includes(chapterTitle.toLowerCase());
-      }).first();
-      if (!$target.length) return;
-      const topOffset = $target.position().top + $container.scrollTop() - 20;
-      $container.animate({ scrollTop: topOffset }, 500);
-      $target.addClass('highlight-golden');
-      setTimeout(() => $target.removeClass('highlight-golden'), 5000);
-    }, 300);
-    return;
   
-}
+    // ② On mobile, first close the chat pane (reusing your existing toggle)
+    if ( $('body').hasClass('is-mobile') ) {
+      $('.close-icon').trigger('click');
+  
+      // ③ Wait for your 0.3s slide‑out animation to finish, then scroll the page
+      setTimeout(() => {
+        const $result = $(".result-item").filter(function(){
+          const md = $(this).find(".result-metadata").text().toLowerCase();
+          return md.includes(bookTitle.toLowerCase()) &&
+                 md.includes(chapterTitle.toLowerCase());
+        }).first();
+        if (!$result.length) return;
+  
+        // ④ Scroll the window exactly as on desktop
+        $('html, body').animate({
+          scrollTop: $result.offset().top - 20
+        }, 500);
+  
+        // ⑤ Highlight it
+        $result.addClass('highlight-golden');
+        setTimeout(() => $result.removeClass('highlight-golden'), 5000);
+      }, 300);
+  
+      return;
+    } 
 
   // 2️⃣ If on desktop, perform the normal scroll + highlight logic:
   
     //const bookTitle = $(this).data('book-title');
    // const chapterTitle = $(this).data('chapter-title');
-    // Find the first result-item whose metadata includes both the book title and chapter title (ignoring case)
-    let $result = $(".result-item").filter(function(){
+   
+   // Find the first result-item whose metadata includes both the book title and chapter title (ignoring case)
+    const $result = $(".result-item").filter(function(){
         const metadata = $(this).find(".result-metadata").text();
         return metadata.toLowerCase().includes(bookTitle.toLowerCase()) &&
                metadata.toLowerCase().includes(chapterTitle.toLowerCase());
