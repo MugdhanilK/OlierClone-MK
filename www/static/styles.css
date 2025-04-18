@@ -566,10 +566,13 @@ transform: translateX(26px);
 #feedback-btn:hover {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
-#results {
+/*_______________________Old______________________*/
+/*#results {
     margin-top: 20px;
     margin-bottom: 140px; /* or margin-bottom, whichever suits your layout */
-}
+/*}*/
+
+
 .result-item {
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -1345,6 +1348,14 @@ tbody {
     width: 5px;
     background-color: transparent;
     cursor: ew-resize;
+
+    /* Prevent it from intercepting wheel/touch events */
+  pointer-events: none;
+}
+
+/* Only when the user is actively dragging do we want it to capture events */
+#chatbox-resizer.resizer-active {
+  pointer-events: auto;
 }
 
 #chatbox-resizer:hover {
@@ -2681,6 +2692,13 @@ body.keyboard-open #chat-input-container {
     #flex-box-chapter-title {
         font-size: 0.55rem;
     }
+
+     /* Make the left pane scrollable on mobile */
+  #results {
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* Adjust button widths if necessary */
