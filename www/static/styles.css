@@ -2699,6 +2699,25 @@ body.keyboard-open #chat-input-container {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
+
+    /* Wrap only the results in its own scrollable pane */
+  .results-wrapper {
+    /* How tall? 
+       - Use viewport‑height (vh) to size relative to the screen
+       - Subtract the combined height of any fixed headers/toolbars
+    */
+    height: calc(100vh - 200px);
+     /* 2. Enable scrolling when content overflows */
+    overflow-y: auto;
+     /* 3. Smooth, native‑style scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Optional: if you also want to tweak the inner list itself */
+  .results-wrapper #results {
+    padding: 0 1rem;  /* e.g. add some horizontal padding */
+  }
+
 }
 
 /* Adjust button widths if necessary */
