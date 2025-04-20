@@ -343,7 +343,7 @@ SYSTEM_MESSAGE_POETIC = (
 # --- Reasoning Instructions for Gemini (Tweaked Detail Integration) ---
 # Restored the specific structural example.
 # Tweaked the instruction to explicitly ask for *integration* of facts into the steps.
-REVISED_REASONING_INSTRUCTION_FORMAT = """Outline how the query should be answered based on the preceding conversation. Do NOT include ANY preamble ("Here is an outline..."etc.). Answer according to the philosophy of Sri Aurobindo and the Mother, if relevant. Where appropriate for the query (e.g., if it asks about history, specific events, or quotes), integrate relevant factual details and (if the query ask for it) direct quotes into your outline after searching online. A sample format for the *structure* of the steps is as such: 
+REVISED_REASONING_INSTRUCTION_FORMAT = """Outline how the query should be answered based on the preceding conversation. Do NOT include ANY preamble ("Here is an outline..."etc.). Answer according to the philosophy of Sri Aurobindo and the Mother, if relevant. Where appropriate for the query (e.g., if it asks about history, specific events, or quotes), integrate relevant factual details and (if the query ask for it) direct quotes into your outline. A sample format for the *structure* of the steps is as such: 
  
  Start with a clear statement acknowledging Divine Love's centrality in his philosophy.
  Explain its fundamental nature and contrast it with human love.
@@ -479,7 +479,7 @@ async def send_message():
                 if reasoning_steps and "Reasoning generation blocked" not in reasoning_steps and "[No text content in Gemini response]" not in reasoning_steps and "[Gemini response parts were empty]" not in reasoning_steps:
                     # Construct the user message combining original query and reasoning
                     query_with_reasoning = (
-                        f'Follow closely the following outline to answer the query ("{original_query}"): {reasoning_steps}'
+                        f'Refer to the outline and details included to answer the query ("{original_query}"). Outline: {reasoning_steps}'
                     )
                     # Build the message list: System Message + User Query w/ Reasoning
                     final_fireworks_messages = [
