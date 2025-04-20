@@ -325,7 +325,7 @@ async def full_pdf():
 GEMINI_REASONING_MODEL_NAME = 'gemini-2.5-pro-preview-03-25' # Keeping user-specified model
 
 # Fireworks model for the final response ("Olier")
-FIREWORKS_FINAL_MODEL = "accounts/jaredquek-1b3158/models/oliernov0p5" # Your Olier model
+model = "accounts/jaredquek-1b3158/models/oliernov0p5" # Your Olier model
 
 # --- System Messages for Olier (Fireworks) ---
 # These remain unchanged as they are for the final Fireworks model
@@ -526,7 +526,7 @@ async def send_message():
              return
         try:
             stream = fireworks_client.chat.completions.acreate(
-                model=FIREWORKS_FINAL_MODEL,
+                model=model,
                 messages=final_fireworks_messages, # Send the correctly prepared list
                 max_tokens=1000,
                 n=1,
@@ -594,7 +594,7 @@ async def summarize_results():
 )
 
     messages = [
-        {"role": "system", "content": system_message0},
+        {"role": "system", "content": SYSTEM_MESSAGE_PLAIN },
         {"role": "user", "content": prompt}
     ]
     try:
