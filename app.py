@@ -451,7 +451,8 @@ async def send_message():
 
                 # Call Gemini model
                 logger.debug(f"Calling Gemini model: {GEMINI_REASONING_MODEL_NAME} with history context.")
-                reasoning_response = gemini_client.models.generate_content(
+
+                reasoning_response = await gemini_client.aio.models.generate_content(
                     model=GEMINI_REASONING_MODEL_NAME,
                     contents=gemini_full_contents, # Send history + reasoning request
                     config=gemini_config
