@@ -42,6 +42,12 @@ try:
     # Initialize Fireworks client directly with the key
     fireworks_client = Fireworks(api_key=FIREWORKS_API_KEY)
     logger.info("Fireworks API Key loaded and client initialized.")
+    
+    # Load FAL Key
+
+    FAL_KEY = secrets.get("FAL_KEY")
+    if FAL_KEY:
+        os.environ['FAL_KEY'] = FAL_KEY
 
 # Handle errors during TOML loading or key retrieval
 except FileNotFoundError:
@@ -628,7 +634,7 @@ async def generate_description():
         return jsonify({'error': 'No message provided.'}), 400
 
     messages = [
-        {"role": "system", "content": system_message},
+        {"role": "system", "content": SYSTEM_MESSAGE_POETIC},
         {"role": "user", "content": f"{preamble} {user_message}"}
     ]
 
