@@ -602,6 +602,9 @@ async def summarize_results():
     "Using this information, generate a detailed summary that answers the user's query using only these top 10 search results."
 )
 
+# — Log fully assembled prompt —
+    logger.info(f"/api/summarize-results prompt:\n{prompt}")
+    
     messages = [
         {"role": "system", "content": SYSTEM_MESSAGE_PLAIN},
         {"role": "user", "content": prompt}
