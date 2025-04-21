@@ -1360,8 +1360,20 @@ function scrollToBottom() {
 }
 
 // Automatically scroll to the bottom as new messages are added
-const observer = new MutationObserver(scrollToBottom);
-observer.observe(messagesContainer, { childList: true, subtree: true });
+const observer = new MutationObserver((mutationsList) => {
+    // Only auto‑scroll if an AI message (.box.ai-message) was just added and never on a reference‑link click
+    const addedAiMessage = mutationsList.some(mutation =>
+      Array.from(mutation.addedNodes).some(node =>
+        node.nodeType === Node.ELEMENT_NODE &&
+        node.classList.contains('box') &&
+        node.classList.contains('ai-message')
+      )
+    );
+    if (addedAiMessage) {
+      scrollToBottom();
+    }
+  });
+  observer.observe(messagesContainer, { childList: true, subtree: true });
 
 
 // Define the autoResize function
