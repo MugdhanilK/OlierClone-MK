@@ -897,8 +897,6 @@ if (isIOS) {
   
 
     function adjustChatboxHeight() {
-        
-        console.log('⚙️ adjustChatboxHeight called; scrollTop before =', messages.scrollTop);
         // This function adjusts the chatbox height dynamically based on the viewport
         // and the dimensions of the top chatbox and chat input container. 
       
@@ -1273,8 +1271,7 @@ function openChatboxSimplified() {
 
 function openChatboxAndAdjustScroll() {
 
-    console.log('🚀 openChatboxAndAdjustScroll called');
-
+    
     // 1) Capture the closest page number element from the bottom
     var pageNumElement = getClosestPageNumElementFromBottom();
 
