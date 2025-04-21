@@ -42,12 +42,6 @@ try:
     # Initialize Fireworks client directly with the key
     fireworks_client = Fireworks(api_key=FIREWORKS_API_KEY)
     logger.info("Fireworks API Key loaded and client initialized.")
-    
-    # Load FAL Key
-
-    FAL_KEY = secrets.get("FAL_KEY")
-    if FAL_KEY:
-        os.environ['FAL_KEY'] = FAL_KEY
 
 # Handle errors during TOML loading or key retrieval
 except FileNotFoundError:
@@ -331,7 +325,7 @@ async def full_pdf():
 GEMINI_REASONING_MODEL_NAME = 'gemini-2.5-pro-preview-03-25' # Keeping user-specified model
 
 # Fireworks model for the final response ("Olier")
-model = "accounts/jaredquek-1b3158/models/oliernov0p5" # Your Olier model
+FIREWORKS_FINAL_MODEL = "accounts/jaredquek-1b3158/models/oliernov0p5" # Your Olier model
 
 # --- System Messages for Olier (Fireworks) ---
 # These remain unchanged as they are for the final Fireworks model
@@ -457,8 +451,7 @@ async def send_message():
 
                 # Call Gemini model
                 logger.debug(f"Calling Gemini model: {GEMINI_REASONING_MODEL_NAME} with history context.")
-
-                reasoning_response = await gemini_client.aio.models.generate_content(
+                reasoning_response = gemini_client.models.generate_content(
                     model=GEMINI_REASONING_MODEL_NAME,
                     contents=gemini_full_contents, # Send history + reasoning request
                     config=gemini_config
@@ -533,7 +526,7 @@ async def send_message():
              return
         try:
             stream = fireworks_client.chat.completions.acreate(
-                model=model,
+                model=FIREWORKS_FINAL_MODEL,
                 messages=final_fireworks_messages, # Send the correctly prepared list
                 max_tokens=1000,
                 n=1,
@@ -570,6 +563,7 @@ async def summarize_results():
         author = result.get('author', 'Unknown Author').strip()
         book_title = result.get('book_title', 'Unknown Book').strip()
         chapter_title = result.get('chapter_title', 'Unknown Chapter').strip()
+        
         # Determine the reference prefix based on the author.
         if author.lower() == "sri aurobindo":
             prefix = "CWSA"
@@ -582,7 +576,11 @@ async def summarize_results():
         else:
             # Default prefix if author is unknown
             prefix = "CWSA"
-        references_text += f"[{prefix} - '{book_title}', '{chapter_title}']\n"
+        
+          # **Grab the full raw text** (including any <em>…</em> highlights)
+        snippet = result.get('highlighted_text') or result.get('text', '')
+         # **Append snippet + its citation marker**
+        references_text += f"{snippet}\n[{prefix} - '{book_title}', '{chapter_title}']\n\n"
 
     # Revised prompt: Insert the user query and explicitly instruct inline reference embedding.
     prompt = ( 
@@ -601,7 +599,7 @@ async def summarize_results():
 )
 
     messages = [
-        {"role": "system", "content": SYSTEM_MESSAGE_PLAIN },
+        {"role": "system", "content": system_message0},
         {"role": "user", "content": prompt}
     ]
     try:
@@ -634,7 +632,7 @@ async def generate_description():
         return jsonify({'error': 'No message provided.'}), 400
 
     messages = [
-        {"role": "system", "content": SYSTEM_MESSAGE_POETIC},
+        {"role": "system", "content": system_message},
         {"role": "user", "content": f"{preamble} {user_message}"}
     ]
 
