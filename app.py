@@ -549,7 +549,11 @@ async def send_message():
 # --- New Endpoint for Summarizing Search Results with Reference Markers ---
 @app.route('/api/summarize-results', methods=['POST'])
 async def summarize_results():
+    
     data = await request.get_json()
+    # — Log incoming payload —
+    logger.info(f"/api/summarize-results payload: {json.dumps(data)}")
+    
     results = data.get('results', [])
     user_query = data.get('query', '').strip()  # Get the user's query text
     if not results:
