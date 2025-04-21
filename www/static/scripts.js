@@ -908,7 +908,10 @@ if (isIOS) {
         if (!chatInputContainer || !messages || !topChatbox) {
           return;
         }
-      
+
+        //Debug: confirm this function is firing and what scrollTop was
+        console.log('⚙️ adjustChatboxHeight called; scrollTop before =', messages.scrollTop);
+        
         // Determine the height of the visible viewport (prioritizing window.visualViewport, then fallback to window.innerHeight)
         let viewportHeight = window.visualViewport
           ? window.visualViewport.height
@@ -1274,6 +1277,10 @@ function openChatboxAndAdjustScroll() {
     
     // 1) Capture the closest page number element from the bottom
     var pageNumElement = getClosestPageNumElementFromBottom();
+
+
+// 1.1) Debug: did we even enter this function?
+    console.log('🚀 openChatboxAndAdjustScroll called; pageNumElement =', pageNumElement);
 
     // 2) Open the chatbox
     $("#chatbox").addClass("open");
