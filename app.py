@@ -599,12 +599,12 @@ async def summarize_results():
 )
 
     messages = [
-        {"role": "system", "content": system_message0},
+        {"role": "system", "content": SYSTEM_MESSAGE_PLAIN},
         {"role": "user", "content": prompt}
     ]
     try:
         response = fireworks_client.chat.completions.create(
-            model=model,
+            model=FIREWORKS_FINAL_MODEL,
             messages=messages,
             max_tokens=1500,
             temperature=0.4,
