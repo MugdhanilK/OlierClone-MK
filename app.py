@@ -10,6 +10,8 @@ from fireworks.client import Fireworks
 from search_cohere2 import search_and_rank
 import asyncio
 import aiofiles  # Added for async file I/O
+from google import genai
+from google.genai import types
 
 # Initialize Quart App
 app = Quart(__name__, static_folder='www', static_url_path='')
@@ -18,20 +20,36 @@ app = cors(app, allow_origin="*")
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# Load secrets from toml file
+# --- Configuration ---
+# Load secrets from TOML file instead of environment variables
+SECRETS_FILE_PATH = '/home/olier/DataGenResearch/Datagen/secrets.toml' # Define path
 try:
-    secrets = toml.load('/home/olier/DataGenResearch/Datagen/secrets.toml')  
-    FIREWORKS_API_KEY = secrets["FIREWORKS_API_KEY"]
+    secrets = toml.load(SECRETS_FILE_PATH)
+
+    # Load Google API Key
+    GOOGLE_API_KEY = secrets.get("GOOGLE_API_KEY")
+    if not GOOGLE_API_KEY:
+        raise ValueError("GOOGLE_API_KEY is not set in the secrets file")
+    # Initialize the Gemini client instance passing the key directly
+    # Removed genai.configure() as it's not used with this import/client pattern
+    gemini_client = genai.Client(api_key=GOOGLE_API_KEY)
+    logger.info("Google Gemini API Key loaded and client initialized.")
+
+    # Load Fireworks API Key
+    FIREWORKS_API_KEY = secrets.get("FIREWORKS_API_KEY")
     if not FIREWORKS_API_KEY:
         raise ValueError("FIREWORKS_API_KEY is not set in the secrets file")
-    os.environ['FIREWORKS_API_KEY'] = FIREWORKS_API_KEY
+    # Initialize Fireworks client directly with the key
+    fireworks_client = Fireworks(api_key=FIREWORKS_API_KEY)
+    logger.info("Fireworks API Key loaded and client initialized.")
 
-    FAL_KEY = secrets.get("FAL_KEY")
-    if FAL_KEY:
-        os.environ['FAL_KEY'] = FAL_KEY
+# Handle errors during TOML loading or key retrieval
+except FileNotFoundError:
+    logger.error(f"Secrets file not found at: {SECRETS_FILE_PATH}")
+    exit(f"Secrets file not found: {SECRETS_FILE_PATH}")
 except Exception as e:
-    logger.error(f"Failed to load API keys from secrets file: {str(e)}")
-    raise SystemExit("Application cannot start without API keys.")
+    logger.error(f"Failed to load API keys from secrets file '{SECRETS_FILE_PATH}': {str(e)}")
+    exit("Application cannot start without API keys loaded correctly from TOML.")
 
 
 
@@ -87,9 +105,7 @@ async def get_content_by_id():
         "text": entry.get('text', '')
     })
 
-# In your main Quart app file (where @app.route('/api/search',...) is defined)
-# Make sure necessary imports like Quart, request, jsonify, logger,
-# and search_and_rank are present.
+
 
 @app.route('/api/search', methods=['POST'])
 async def search_endpoint():
@@ -301,79 +317,217 @@ async def full_pdf():
     else:
         return f"File not found: {full_file_path}", 404
 
-# Initialize the Fireworks client
-fireworks_client = Fireworks(api_key=FIREWORKS_API_KEY)
-model = "accounts/jaredquek-1b3158/models/oliernov0p5"
-reasoningmodel = "accounts/fireworks/models/llama-v3p3-70b-instruct"
+### Olier Chat
 
-system_message = (
+
+# --- Model Names ---
+# Gemini model for reasoning with grounding
+GEMINI_REASONING_MODEL_NAME = 'gemini-2.5-pro-preview-03-25' # Keeping user-specified model
+
+# Fireworks model for the final response ("Olier")
+FIREWORKS_FINAL_MODEL = "accounts/jaredquek-1b3158/models/oliernov0p5" # Your Olier model
+
+# --- System Messages for Olier (Fireworks) ---
+# These remain unchanged as they are for the final Fireworks model
+SYSTEM_MESSAGE_PLAIN = (
     "You are Olier, an AI boy. You are an obedient servant of Sri Aurobindo and answer questions with reference to their teachings. "
     "In this dialogue, you will not use any poetry or metaphors. You will speak completely directly, factually and in very simple terms."
 )
 
-system_message0 = (
+SYSTEM_MESSAGE_POETIC = (
     "You are Olier, an AI boy. You are very loving and bring a quiet poetry and humor to all you say, "
     "making complex topics simple. You are an obedient servant of Sri Aurobindo and answer questions "
     "with reference to their teachings."
 )
 
-reasoning_system_message = "You are a helpful assistant that provides concise reasoning steps to queries."
+# --- Reasoning Instructions for Gemini (Tweaked Detail Integration) ---
+# Restored the specific structural example.
+# Tweaked the instruction to explicitly ask for *integration* of facts into the steps.
+REVISED_REASONING_INSTRUCTION_FORMAT = """Outline how the query should be answered based on the preceding conversation. Do NOT include ANY preamble ("Here is an outline..."etc.). Answer according to the philosophy of Sri Aurobindo and the Mother, if relevant. Where appropriate for the query (e.g., if it asks about history, specific events, or quotes), integrate relevant factual details and (if the query ask for it) direct quotes into your outline after searching online. A sample format for the *structure* of the steps is as such: 
+ 
+ Start with a clear statement acknowledging Divine Love's centrality in his philosophy.
+ Explain its fundamental nature and contrast it with human love.
+ Describe its connection to Ananda and the psychic being.
+ Elaborate on its role as a transformative force in Integral Yoga.
+ Briefly touch upon how it is cultivated.
+ Conclude by summarizing its significance for individual realization and collective evolution.""" # Keep triple quotes for line breaks
 
-    #Summarise 
-    
+# --- Generation Configuration (for Gemini Reasoning) ---
+# Define generation settings for the Gemini reasoning step
+# These settings will now be wrapped in GenerateContentConfig
+GEMINI_TEMPERATURE = 0.5
+# GEMINI_MAX_TOKENS = 500 # Example if needed
+
+# --- Helper function to format messages for Gemini ---
+# (Re-added and adapted)
+def format_messages_for_gemini(messages_openai_format):
+    """Converts OpenAI-style message list to Gemini's content format."""
+    gemini_contents = []
+    for msg in messages_openai_format:
+        role = msg.get('role')
+        content = msg.get('content')
+        if not role or not content:
+            continue
+        # Map roles (OpenAI 'assistant' -> Gemini 'model', 'system' ignored here)
+        if role == 'system':
+             continue # System messages handled separately if needed by Gemini model/config
+        gemini_role = 'model' if role == 'assistant' else 'user'
+        # Ensure content is a string before creating Part
+        if not isinstance(content, str):
+            logger.warning(f"Message content is not a string: {content}. Skipping message.")
+            continue
+        # Use types.Content and types.Part
+        gemini_contents.append(types.Content(role=gemini_role, parts=[types.Part(text=content)]))
+    return gemini_contents
+
+# --- Initialize Fireworks Client ---
+# Already done above after loading key
+
+
 @app.route('/api/send-message', methods=['POST'])
 async def send_message():
     data = await request.get_json()
-    messages = data.get('messages', [])
-    style = data.get('style', 'poetic')  # Default to poetic if not provided
-    reflective_mode = data.get('reflectiveMode', False)  # Default to False if not provided
+    messages_openai_format = data.get('messages', []) # Original history from frontend
+    if not isinstance(messages_openai_format, list):
+         messages_openai_format = []
 
-    # If Reflective Mode is activated
+    style = data.get('style', 'poetic')
+    reflective_mode = data.get('reflectiveMode', False)
+
+    # Determine the final list of messages to be sent to Fireworks
+    final_fireworks_messages = []
+    system_message_to_use = SYSTEM_MESSAGE_PLAIN if style == 'plain' else SYSTEM_MESSAGE_POETIC
+
+    # --- Reflective Mode Logic (Using Gemini) ---
     if reflective_mode:
-        query = messages[-1]['content'] if messages else ""
-        reasoning_prompt = (
-            f"Outline concisely your reasoning steps to address the following query: {query}. "
-            "Do not include the final answer in your output. Consider the query from various different angles."
+        original_query = ""
+        history_for_gemini_openai_format = []
 
-        )
+        if messages_openai_format:
+             # Separate history from the last user query
+             if messages_openai_format[-1].get('role') == 'user':
+                 original_query = messages_openai_format[-1].get('content', "")
+                 history_for_gemini_openai_format = messages_openai_format[:-1] # History before the last query
+             else:
+                 # Handle cases where last message isn't user? Maybe just use full history?
+                 logger.warning("Reflective mode triggered but last message not from user. Using full history for context.")
+                 original_query = "" # Or try to find last user query?
+                 history_for_gemini_openai_format = messages_openai_format
 
-        # Call the reasoning model
-        try:
-            reasoning_response = fireworks_client.chat.completions.create(
-                model=model,
-                messages=[
-                    {"role": "system", "content": system_message},
-                    {"role": "user", "content": reasoning_prompt}
-                ],
-            )
-            reasoning_steps = reasoning_response.choices[0].message.content.strip()
-        except Exception as e:
-            logger.error(f"An error occurred while calling the reasoning model: {e}")
-            return jsonify({"error": "Failed to process Reflective Mode."}), 500
+        if original_query:
+            reasoning_steps = ""
+            try:
+                # Format history for Gemini
+                gemini_history_contents = format_messages_for_gemini(history_for_gemini_openai_format)
 
-        # Add the reasoning output to the original query
-        query_with_reasoning = (
-            f"Query: {query}. Refer to the following reasoning steps to create your answer: {reasoning_steps}"
-        )
+                # Construct the final user prompt for Gemini, asking for reasoning about the actual query
+                # Using the REVISED_REASONING_INSTRUCTION_FORMAT
+                gemini_reasoning_user_prompt = (
+                    f"My specific query, considering the preceding conversation history, is: '{original_query}'.\n\n"
+                    f"{REVISED_REASONING_INSTRUCTION_FORMAT}" # This variable contains the tweaked instructions
+                )
+                logger.debug(f"Reflective Mode - Gemini Reasoning User Prompt: {gemini_reasoning_user_prompt}")
 
-        # Replace the user's original query with the updated query
-        if messages:
-            messages[-1]['content'] = query_with_reasoning
+                # Combine history with the new reasoning request
+                # Use types.Content and types.Part
+                gemini_full_contents = gemini_history_contents + [types.Content(role='user', parts=[types.Part(text=gemini_reasoning_user_prompt)])]
 
-    # Insert system message based on style
-    if not any(msg.get('role') == 'system' for msg in messages):
-        if style == 'plain':
-            messages.insert(0, {"role": "system", "content": system_message})
-        else:
-            messages.insert(0, {"role": "system", "content": system_message0})
+                # *** ADDED FOR DEBUGGING ***
+                # Log the full input 'contents' being sent to Gemini
+                logger.info(f"Reflective Mode - Full input 'contents' being sent to Gemini: {gemini_full_contents}")
 
-    logger.debug(f"Full message being sent to Fireworks API: {messages}")
+                # Configure the grounding tool
+                # *** CORRECTED SYNTAX BELOW ***
+                # Use types.Tool and types.GoogleSearch, with correct keyword 'google_search'
+                search_tool = types.Tool(google_search=types.GoogleSearch())
 
+                # Configure generation settings
+                # Use types.GenerateContentConfig
+                gemini_config = types.GenerateContentConfig(
+                    tools=[search_tool],
+                    temperature=GEMINI_TEMPERATURE,
+                    # max_output_tokens=GEMINI_MAX_TOKENS, # Add if defined above
+                )
+
+                # Call Gemini model
+                logger.debug(f"Calling Gemini model: {GEMINI_REASONING_MODEL_NAME} with history context.")
+                reasoning_response = gemini_client.models.generate_content(
+                    model=GEMINI_REASONING_MODEL_NAME,
+                    contents=gemini_full_contents, # Send history + reasoning request
+                    config=gemini_config
+                )
+
+                # Extract reasoning steps
+                if reasoning_response.prompt_feedback and reasoning_response.prompt_feedback.block_reason:
+                     logger.warning(f"Gemini reasoning call blocked: {reasoning_response.prompt_feedback.block_reason_message}")
+                     reasoning_steps = f"[Reasoning generation blocked by safety settings: {reasoning_response.prompt_feedback.block_reason_message}]"
+                else:
+                    if hasattr(reasoning_response, 'text') and reasoning_response.text:
+                        reasoning_steps = reasoning_response.text.strip()
+                    elif reasoning_response.candidates and reasoning_response.candidates[0].content.parts:
+                        reasoning_steps = "".join(part.text for part in reasoning_response.candidates[0].content.parts).strip()
+                        if not reasoning_steps: reasoning_steps = "[Gemini response parts were empty]"
+                    else:
+                        reasoning_steps = "[No text content in Gemini response]"
+                    if reasoning_response.candidates and reasoning_response.candidates[0].grounding_metadata:
+                         logger.debug(f"Gemini Grounding Metadata: {reasoning_response.candidates[0].grounding_metadata}")
+                    else: logger.debug("No grounding metadata found.")
+
+                logger.info(f"Reflective Mode - Gemini Reasoning Steps Received: {reasoning_steps}") # Log the actual steps received
+
+                # --- Prepare LIMITED messages for the FINAL Fireworks model ---
+                if reasoning_steps and "Reasoning generation blocked" not in reasoning_steps and "[No text content in Gemini response]" not in reasoning_steps and "[Gemini response parts were empty]" not in reasoning_steps:
+                    # Construct the user message combining original query and reasoning
+                    query_with_reasoning = (
+                        f'Follow closely the following outline to answer the query ("{original_query}"): {reasoning_steps}'
+                    )
+                    # Build the message list: System Message + User Query w/ Reasoning
+                    final_fireworks_messages = [
+                        {"role": "system", "content": system_message_to_use},
+                        {"role": "user", "content": query_with_reasoning}
+                    ]
+                    logger.info(f"Reflective Mode - Constructed query for Olier (NO HISTORY): {query_with_reasoning}")
+                else:
+                    # Failed to get reasoning, fall back to non-reflective mode
+                    logger.warning("Reflective Mode: Failed to get valid reasoning steps. Falling back to standard mode.")
+                    reflective_mode = False # Set flag to false so non-reflective logic runs
+
+            except Exception as e:
+                logger.error(f"An error occurred during Reflective Mode Gemini call: {e}")
+                # Fall back to non-reflective mode on error
+                reflective_mode = False # Set flag to false so non-reflective logic runs
+
+        else: # No query found, cannot run reflective mode
+             logger.warning("Reflective Mode requested but no user query found.")
+             reflective_mode = False # Disable reflective mode
+
+    # --- Prepare FINAL API Call to Fireworks ("Olier") ---
+
+    # If reflective mode did NOT run successfully, prepare the full history
+    if not final_fireworks_messages: # Check if the list wasn't populated by successful reflective mode
+         logger.debug("Preparing full history for Fireworks model (Non-Reflective or Fallback).")
+         final_fireworks_messages = messages_openai_format # Start with original history
+         # Insert system message if not present
+         if not any(msg.get('role') == 'system' for msg in final_fireworks_messages):
+              final_fireworks_messages.insert(0, {"role": "system", "content": system_message_to_use})
+
+    # Ensure we always have messages to send
+    if not final_fireworks_messages:
+        logger.error("No messages prepared to send to Fireworks API.")
+        return jsonify({"error": "Failed to prepare messages for the final model."}), 500
+
+    logger.debug(f"Final messages being sent to Fireworks API (Olier): {final_fireworks_messages}")
+
+    # --- Streaming Response from Fireworks ("Olier") ---
     async def event_stream():
+        if 'fireworks_client' not in globals() and 'fireworks_client' not in locals():
+             logger.error("Fireworks client is not initialized.")
+             yield "STREAM_ERROR: Internal server configuration error."
+             return
         try:
             stream = fireworks_client.chat.completions.acreate(
-                model=model,
-                messages=messages,
+                model=FIREWORKS_FINAL_MODEL,
+                messages=final_fireworks_messages, # Send the correctly prepared list
                 max_tokens=1000,
                 n=1,
                 temperature=0.4,
@@ -386,19 +540,20 @@ async def send_message():
                     if content:
                         yield content
         except Exception as e:
-            logger.error(f"An error occurred during chat completion streaming: {e}")
-            yield f"An error occurred: {e}"
+            logger.error(f"An error occurred during Fireworks chat completion streaming: {e}")
+            yield f"STREAM_ERROR: An error occurred during final response generation: {e}"
 
-    return Response(event_stream(), mimetype='text/event-stream')
-
-
-
+    return Response(event_stream(), mimetype='text/plain')
 
 
 # --- New Endpoint for Summarizing Search Results with Reference Markers ---
 @app.route('/api/summarize-results', methods=['POST'])
 async def summarize_results():
+    
     data = await request.get_json()
+    # — Log incoming payload —
+    logger.info(f"/api/summarize-results payload: {json.dumps(data)}")
+    
     results = data.get('results', [])
     user_query = data.get('query', '').strip()  # Get the user's query text
     if not results:
@@ -412,6 +567,7 @@ async def summarize_results():
         author = result.get('author', 'Unknown Author').strip()
         book_title = result.get('book_title', 'Unknown Book').strip()
         chapter_title = result.get('chapter_title', 'Unknown Chapter').strip()
+        
         # Determine the reference prefix based on the author.
         if author.lower() == "sri aurobindo":
             prefix = "CWSA"
@@ -424,9 +580,38 @@ async def summarize_results():
         else:
             # Default prefix if author is unknown
             prefix = "CWSA"
-        references_text += f"[{prefix} - '{book_title}', '{chapter_title}']\n"
+        
+          # **Grab the full raw text** (including any <em>…</em> highlights)
+        snippet = result.get('highlighted_text') or result.get('text', '')
+         # **Append snippet + its citation marker**
+        references_text += f"{snippet}\n[{prefix} - '{book_title}', '{chapter_title}']\n\n"
 
     # Revised prompt: Insert the user query and explicitly instruct inline reference embedding.
+    
+    prompt = f"""
+User Query: {user_query}
+    Example of inline citations in context:
+“Sri Aurobindo teaches that true peace arises in the soul’s stillness [CWSA – 'The Life Divine', 'Chapter 3'], which then overflows into action [CWM – 'Prayers and Meditations', 'Meditation 5'] and forms the basis for transformation in the Mother’s Agenda [Mother's Agenda – 'Agenda Vol. 2', 'Page 45'].”
+
+Below are the top 10 search result excerpts with their markers:
+
+{references_text}
+    
+Now, using only these full excerpts as your source material, write a polished, context‑aware summary that:
+1. Embeds each citation marker **inline** exactly where its excerpt supports the point (do **not** append a separate list at the end).  
+2. Uses **only** these three marker formats:
+   - `[CWSA – 'Book Title', 'Chapter Title']` for Sri Aurobindo  
+   - `[CWM – 'Book Title', 'Chapter Title']` for The Mother  
+   - `[Mother's Agenda – 'Book Title', 'Chapter Title']` for The Mother’s Agenda series  
+3. Flows naturally in clear, factual language.
+
+Begin your summary directly—no additional preamble.
+"""
+    
+
+    #----------------------------------------------------
+    # Old prompt (for reference):
+    '''
     prompt = ( 
     f"User Query: {user_query}\n\n"
     "Based on the detailed top 10 search results provided below, produce a comprehensive and context-aware summary that directly responds to the user's query. "
@@ -441,14 +626,18 @@ async def summarize_results():
     f"{references_text}\n"
     "Using this information, generate a detailed summary that answers the user's query using only these top 10 search results."
 )
+    '''
 
+# — Log fully assembled prompt —
+    logger.info(f"/api/summarize-results prompt:\n{prompt}")
+    
     messages = [
-        {"role": "system", "content": system_message0},
+        {"role": "system", "content": SYSTEM_MESSAGE_PLAIN},
         {"role": "user", "content": prompt}
     ]
     try:
         response = fireworks_client.chat.completions.create(
-            model=model,
+            model=FIREWORKS_FINAL_MODEL,
             messages=messages,
             max_tokens=1500,
             temperature=0.4,
@@ -476,7 +665,7 @@ async def generate_description():
         return jsonify({'error': 'No message provided.'}), 400
 
     messages = [
-        {"role": "system", "content": system_message},
+        {"role": "system", "content": SYSTEM_MESSAGE_PLAIN},
         {"role": "user", "content": f"{preamble} {user_message}"}
     ]
 
@@ -485,7 +674,7 @@ async def generate_description():
     async def event_stream():
         try:
             stream = fireworks_client.chat.completions.acreate(
-                model=model,
+                model=FIREWORKS_FINAL_MODEL,
                 messages=messages,
                 max_tokens=500,
                 n=1,
