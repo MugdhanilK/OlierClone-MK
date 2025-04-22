@@ -102,6 +102,7 @@ body.ios-device::before {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    max-width: 1120px; /* Ensure container never exceeds desired width */
 }
 
 

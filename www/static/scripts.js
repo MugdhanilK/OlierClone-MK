@@ -129,7 +129,13 @@ $(document).ready(function() {
 
     // Variables to track resizing state
     let isResizing = false;
+    
     let lastDownX = 0;
+
+
+        // ───── Declare observer in outer scope ─────
+        let chatboxResizeObserver;
+
 
 
 // Cache DOM elements
@@ -1141,7 +1147,7 @@ function resizerDown(e) {
 
 
 // Initialize ZingTouch on the chatbox element
-const chatboxElement = document.getElementById('chatbox');
+//const chatboxElement = document.getElementById('chatbox');
 
 if (chatboxElement) {
     // Create a ZingTouch region for the chatbox with preventDefault set to false
