@@ -1,8 +1,3 @@
-// ─────────────────────────────────────────────────
-// Prevent unwanted auto‑scroll on link‑clicks
-let suppressNextAutoScroll = false;
-// ─────────────────────────────────────────────────
-
 $(document).ready(function() {
     const serverUrl = 'https://8c31be54e6fac00f.ngrok.app/';
 
@@ -129,13 +124,7 @@ $(document).ready(function() {
 
     // Variables to track resizing state
     let isResizing = false;
-    
     let lastDownX = 0;
-
-
-        // ───── Declare observer in outer scope ─────
-        let chatboxResizeObserver;
-
 
 
 // Cache DOM elements
@@ -467,8 +456,6 @@ $('#query').on('input', function() {
 // --- Summarize Button Click Handler (Modified for meditating placeholder, query inclusion & reference links) ---
 $(document).on('click', '#summarize-results-btn', function() {
     
-    // ❗️ Don’t jump to bottom when showing the placeholder
-    suppressNextAutoScroll = true;
     
     // 0. Ensure the chatbox is open.
     if (!$("#chatbox").hasClass("open")) {
@@ -515,9 +502,8 @@ $(document).on('click', '#summarize-results-btn', function() {
      }, 500);
 
     // Optional: scroll to the bottom, if needed.
-    if (!suppressNextAutoScroll) {
-        scrollToBottom();
-      }
+    scrollToBottom();
+
       
 
     // 3. Prepare the payload using the stored search results and include the query.
@@ -587,8 +573,6 @@ function setInputValueAndSend(prompt) {
 $(document).on('click', '.reference-link', function(e) {
     e.preventDefault();
     
-    // ❗️ Suppress the next auto‑scroll
-    suppressNextAutoScroll = true;
 
 
     // ① Read the link’s data attributes up front
@@ -957,12 +941,7 @@ if (isIOS) {
         messages.style.height = `${messagesHeight}px`;
       
         // Scroll to the bottom of the messages container to show the latest messages
-       
-      
-        if (!suppressNextAutoScroll) {
-            messages.scrollTop = messages.scrollHeight;
-            }
-            suppressNextAutoScroll = false;
+        messages.scrollTop = messages.scrollHeight;
       }
       
 
@@ -1147,7 +1126,7 @@ function resizerDown(e) {
 
 
 // Initialize ZingTouch on the chatbox element
-//const chatboxElement = document.getElementById('chatbox');
+const chatboxElement = document.getElementById('chatbox');
 
 if (chatboxElement) {
     // Create a ZingTouch region for the chatbox with preventDefault set to false
