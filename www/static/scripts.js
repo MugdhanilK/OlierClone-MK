@@ -572,7 +572,13 @@ function setInputValueAndSend(prompt) {
 // --- Event Listener for Reference Links ---
 $(document).on('click', '.reference-link', function(e) {
     e.preventDefault();
-    
+
+    //________________________________________________
+    e.stopPropagation();
+// remove focus so the container doesn’t scroll to show the focused link
+    this.blur();
+
+ //__________________________________________________
 
 
     // ① Read the link’s data attributes up front
@@ -626,7 +632,14 @@ $(document).on('click', '.reference-link', function(e) {
     }
 });
 
+//_____________________________________________________
 
+ // Prevent the reference-link ever receiving focus
+ $(document).on('mousedown', '.reference-link', function(e) {
+    e.preventDefault();
+  });
+
+//_____________________________________________________
 
 // --- Other existing code (platform detection, chatbox logic, etc.) ---
 // ... (Make sure the rest of your necessary code is included elsewhere in your project) ...
