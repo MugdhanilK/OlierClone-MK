@@ -570,12 +570,15 @@ transform: translateX(26px);
 #feedback-btn:hover {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
-/*_______________________Old______________________*/
+/*_______________________New______________________*/
+/* Make the search-results pane independently scrollable */
 #results {
     margin-top: 20px;
-    margin-bottom: 140px; /* or margin-bottom, whichever suits your layout */
+    margin-bottom: 140px;       /* keep your existing bottom spacing */
+    height: calc(100% - 160px);  /* adjust the 160px to account for any headers/footers above & below */
+    overflow-y: auto;            /* enable vertical scrolling inside #results */
+    overscroll-behavior: contain;/* prevent scroll chaining into parent containers */
 }
-
 
 .result-item {
     border: 1px solid #ddd;
