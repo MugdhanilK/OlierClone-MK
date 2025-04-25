@@ -546,12 +546,29 @@ $(document).on('click', '#summarize-results-btn', function() {
 //Changes finished
 
 
+
+// --- Helper function to replace new-style reference markers with clickable links ---
+function replaceReferenceMarkers(text) {
+    // This regex matches markers like:
+    // [CWSA - 'Book Title', 'Chapter Title']
+    // [CWM - 'Book Title', 'Chapter Title']
+    // [Mother's Agenda - 'Book Title', 'Chapter Title']
+    return text.replace(/\[(CWSA|CWM|Mother's Agenda)\s*-\s*'([^']+)',\s*'([^']+)'\]/g, function(match, series, book, chapter) {
+        return `<a href="#" class="reference-link" data-book-title="${book}" data-chapter-title="${chapter}">${match}</a>`;
+    });
+}
+
+
+
+/*_____________________________________________
 // --- Helper function to replace new-style reference markers with clickable links ---
 function replaceReferenceMarkers(text) {
 
      // ① Collapse any newlines immediately before a reference marker
-  text = text.replace(/[\r\n]+\s*(\[(?:CWSA|CWM|Mother's Agenda)[^\]]+\])/g, ' $1');
-    // This regex matches markers like:
+     text = text.replace(
+        /[\r\n]+\s*(\[[^\]]+\])\s*[\r\n]+/g,
+        ' $1 '
+      );    // This regex matches markers like:
     // [CWSA - 'Book Title', 'Chapter Title']
     // [CWM - 'Book Title', 'Chapter Title']
     // [Mother's Agenda - 'Book Title', 'Chapter Title']
@@ -562,14 +579,14 @@ function replaceReferenceMarkers(text) {
            ${match}
         </a>`;
 
-/*_____________________________________________________
+_____________________________________________________
         return `<a href="#" class="reference-link"
            data-book-title="${book}"
            data-chapter-title="${chapter}">
            ${match}
-        </a>`;*/
+        </a>`;
     });
-}
+}*/
 
 
 
