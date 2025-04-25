@@ -548,6 +548,9 @@ $(document).on('click', '#summarize-results-btn', function() {
 
 // --- Helper function to replace new-style reference markers with clickable links ---
 function replaceReferenceMarkers(text) {
+
+     // ① Collapse any newlines immediately before a reference marker
+  text = text.replace(/[\r\n]+\s*(\[(?:CWSA|CWM|Mother's Agenda)[^\]]+\])/g, ' $1');
     // This regex matches markers like:
     // [CWSA - 'Book Title', 'Chapter Title']
     // [CWM - 'Book Title', 'Chapter Title']
