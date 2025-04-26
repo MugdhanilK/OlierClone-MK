@@ -455,8 +455,6 @@ $('#query').on('input', function() {
 //Changes done
 // --- Summarize Button Click Handler (Modified for meditating placeholder, query inclusion & reference links) ---
 $(document).on('click', '#summarize-results-btn', function() {
-    
-    
     // 0. Ensure the chatbox is open.
     if (!$("#chatbox").hasClass("open")) {
         $(".open_chatbot").first().trigger("click");
@@ -504,8 +502,6 @@ $(document).on('click', '#summarize-results-btn', function() {
     // Optional: scroll to the bottom, if needed.
     scrollToBottom();
 
-      
-
     // 3. Prepare the payload using the stored search results and include the query.
     const fullResultsData = $('#results').data('fullResultsData') || [];
     if (fullResultsData.length === 0) {
@@ -546,7 +542,6 @@ $(document).on('click', '#summarize-results-btn', function() {
 //Changes finished
 
 
-
 // --- Helper function to replace new-style reference markers with clickable links ---
 function replaceReferenceMarkers(text) {
     // This regex matches markers like:
@@ -557,36 +552,6 @@ function replaceReferenceMarkers(text) {
         return `<a href="#" class="reference-link" data-book-title="${book}" data-chapter-title="${chapter}">${match}</a>`;
     });
 }
-
-
-
-/*_____________________________________________
-// --- Helper function to replace new-style reference markers with clickable links ---
-function replaceReferenceMarkers(text) {
-
-     // ① Collapse any newlines immediately before a reference marker
-     text = text.replace(
-        /[\r\n]+\s*(\[[^\]]+\])\s*[\r\n]+/g,
-        ' $1 '
-      );    // This regex matches markers like:
-    // [CWSA - 'Book Title', 'Chapter Title']
-    // [CWM - 'Book Title', 'Chapter Title']
-    // [Mother's Agenda - 'Book Title', 'Chapter Title']
-    return text.replace(/\[(CWSA|CWM|Mother's Agenda)\s*-\s*'([^']+)',\s*'([^']+)'\]/g, function(match, series, book, chapter) {
-        return `<a href="#" class="reference-link"
-           data-book-title="${book}"
-           data-chapter-title="${chapter}">
-           ${match}
-        </a>`;
-
-_____________________________________________________
-        return `<a href="#" class="reference-link"
-           data-book-title="${book}"
-           data-chapter-title="${chapter}">
-           ${match}
-        </a>`;
-    });
-}*/
 
 
 
@@ -603,7 +568,7 @@ function setInputValueAndSend(prompt) {
 // --- Event Listener for Reference Links ---
 $(document).on('click', '.reference-link', function(e) {
     e.preventDefault();
-
+    
     // ① Read the link’s data attributes up front
     const bookTitle   = $(this).data('book-title');
     const chapterTitle= $(this).data('chapter-title');
@@ -971,6 +936,7 @@ if (isIOS) {
       
         // Scroll to the bottom of the messages container to show the latest messages
         messages.scrollTop = messages.scrollHeight;
+      
       }
       
 

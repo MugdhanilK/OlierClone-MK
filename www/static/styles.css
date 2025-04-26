@@ -102,7 +102,6 @@ body.ios-device::before {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    max-width: 1120px; /* Ensure container never exceeds desired width */
 }
 
 
@@ -575,6 +574,7 @@ transform: translateX(26px);
     margin-top: 20px;
     margin-bottom: 140px; /* or margin-bottom, whichever suits your layout */
 }
+
 
 .result-item {
     border: 1px solid #ddd;
