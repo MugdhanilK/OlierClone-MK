@@ -2352,13 +2352,29 @@ function displayDomainOnlyCardLinks(messageContentDiv, sources) {
     linksOuterContainer.appendChild(cardsFlexContainer);
 
     // --- Add Toggle Functionality ---
-    titleToggleArea.addEventListener('click', () => {
-        const isHidden = cardsFlexContainer.style.display === 'none';
-        cardsFlexContainer.style.display = isHidden ? 'flex' : 'none'; // Toggle display
-        toggleIcon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)'; // Rotate arrow
-        if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-        if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-    });
+titleToggleArea.addEventListener('click', () => {
+    // ***** 1. Get the messages container and save current scroll position *****
+    const messagesContainer = document.getElementById('messages');
+    const currentScrollTop = messagesContainer.scrollTop;
+    // ***********************************************************************
+
+    const isHidden = cardsFlexContainer.style.display === 'none';
+    cardsFlexContainer.style.display = isHidden ? 'flex' : 'none'; // Toggle display
+    toggleIcon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)'; // Rotate arrow
+
+    // Let these functions run - adjustChatboxHeight WILL scroll to bottom here
+    if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+    if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+
+    // ***** 2. Immediately restore the saved scroll position *****
+    messagesContainer.scrollTop = currentScrollTop;
+    // **********************************************************
+
+    // Optional: You might call updateScrollButtonVisibility *again* after restoring
+    // scroll position, just in case the restored position affects the button state.
+    // if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+});
+// ---
     // ---
 
     // Append the whole links section to the message content div only if cards were added
