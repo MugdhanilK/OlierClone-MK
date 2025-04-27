@@ -343,14 +343,14 @@ SYSTEM_MESSAGE_POETIC = (
 # --- Reasoning Instructions for Gemini (Tweaked Detail Integration) ---
 # Restored the specific structural example.
 # Tweaked the instruction to explicitly ask for *integration* of facts into the steps.
-REVISED_REASONING_INSTRUCTION_FORMAT = """Outline how the query should be answered based on the preceding conversation. Do NOT include ANY preamble ("Here is an outline..."etc.). Answer according to the philosophy of Sri Aurobindo and the Mother, if relevant. Where appropriate for the query (e.g., if it asks about history, specific events, or quotes), integrate relevant factual details and (if the query ask for it) direct quotes into your outline after searching online. A sample format for the *structure* of the steps is as such: 
+REVISED_REASONING_INSTRUCTION_FORMAT = """Outline how the query should be answered based on the preceding conversation after SEARCHING ONLINE. Do NOT include ANY preamble ("Here is an outline..."etc.). Answer according to the philosophy of Sri Aurobindo and the Mother, if relevant. Where appropriate for the query (e.g., if it asks about history, specific events, or quotes), integrate relevant factual details and (if the query ask for it) direct quotes into your outline. A sample format for the *structure* of the steps is as such: 
  
- Start with a clear statement acknowledging Divine Love's centrality in his philosophy.
- Explain its fundamental nature and contrast it with human love.
- Describe its connection to Ananda and the psychic being.
- Elaborate on its role as a transformative force in Integral Yoga.
- Briefly touch upon how it is cultivated.
- Conclude by summarizing its significance for individual realization and collective evolution.""" # Keep triple quotes for line breaks
+ Start with X...
+ Explain Y.....
+ Describe Y's connection to Z....[insert relevant quote or fact here]...
+ Elaborate on Z.......[insert relevant quote or fact here]...
+ Briefly touch upon A, B, and C....
+ Conclude by summarizing....""" # Keep triple quotes for line breaks
 
 # --- Generation Configuration (for Gemini Reasoning) ---
 # Define generation settings for the Gemini reasoning step
