@@ -526,9 +526,18 @@ $(document).on('click', '#summarize-results-btn', function() {
     success: function(response) {
         let summary = response.summary || "(No summary received)";
         // Process the summary to replace inline reference markers with clickable links.
-        let processedSummary = replaceReferenceMarkers(summary);
-        placeholderMessage.innerHTML = processedSummary;
-         // Now add the copy button at the bottom of the summary container.
+        
+        //let processedSummary = replaceReferenceMarkers(summary);
+        //placeholderMessage.innerHTML = processedSummary;
+        
+        
+        //________________________New Lines___________________________
+        // 1. Run our new regex-based wrapper over the raw text:
+        const htmlWithLinks = replaceReferenceMarkers(summary);
+        // 2. Inject it into the bubble’s innerHTML:
+        placeholderMessage.innerHTML = htmlWithLinks;
+
+        // Now add the copy button at the bottom of the summary container.
          addCopyButton(messageWrapper);
     
     },
@@ -544,15 +553,21 @@ $(document).on('click', '#summarize-results-btn', function() {
 
 // --- Helper function to replace new-style reference markers with clickable links ---
 function replaceReferenceMarkers(text) {
-    // This regex matches markers like:
-    // [CWSA - 'Book Title', 'Chapter Title']
-    // [CWM - 'Book Title', 'Chapter Title']
-    // [Mother's Agenda - 'Book Title', 'Chapter Title']
-    return text.replace(/\[(CWSA|CWM|Mother's Agenda)\s*-\s*'([^']+)',\s*'([^']+)'\]/g, function(match, series, book, chapter) {
-        return `<a href="#" class="reference-link" data-book-title="${book}" data-chapter-title="${chapter}">${match}</a>`;
-    });
-}
-
+    // Matches:
+    //  [CWSA – 'Book Title', 'Chapter Title']
+    //  [CWM - 'Book Title', 'Chapter Title']
+    //  [Mother’s Agenda - 'Book Title', 'Chapter Title']
+    return text.replace(
+      /\[(CWSA|CWM|Mother['’]s Agenda)[\s–-]*[-–]\s*['’]([^'’]+)['’],\s*['’]([^'’]+)['’]\]/g,
+      (match, series, book, chapter) => {
+        return `<a href="#" class="reference-link"
+                    data-book-title="${book}"
+                    data-chapter-title="${chapter}"
+                >${match}</a>`;
+      }
+    );
+  }
+  
 
 
 // Helper function to set chat input value and trigger the send button
