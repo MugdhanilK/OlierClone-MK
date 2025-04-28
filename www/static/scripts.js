@@ -977,8 +977,18 @@ function adjustChatboxStyle() {
   
         // Position the chat input container at the bottom, fixed.
         const chatInputContainer = document.getElementById('chat-input-container');
-        chatInputContainer.style.position = 'fixed';
-        chatInputContainer.style.bottom = '0';
+        
+        //chatInputContainer.style.position = 'fixed';
+        //chatInputContainer.style.bottom = '0';
+
+        //______________________New Addition to Never expose the background image beneath the Chatbox______________________
+        chatInputContainer.style.position = 'absolute';
+        chatInputContainer.style.bottom   = '0';
+        chatInputContainer.style.left     = '0';
+        chatInputContainer.style.width    = '100%';
+
+
+
       } else {
         // On desktop, keep main content visible and recalculate widths.
         mainContent.style.visibility = 'visible';
