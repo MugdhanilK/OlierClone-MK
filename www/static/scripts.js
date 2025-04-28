@@ -2828,8 +2828,8 @@ $("#send-btn").show();
                 }
             }
         }
-    
-        adjustChatboxStyle();
+    //______________________Removing this for Stopping the Auto Scrolling of Chatbox to the Bottom__________________________
+        //adjustChatboxStyle();
     }
 
     
