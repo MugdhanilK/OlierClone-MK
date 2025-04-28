@@ -530,7 +530,7 @@ $(document).on('click', '#summarize-results-btn', function() {
         //let processedSummary = replaceReferenceMarkers(summary);
         //placeholderMessage.innerHTML = processedSummary;
         
-        
+
         //________________________New Lines___________________________
         // 1. Run our new regex-based wrapper over the raw text:
         const htmlWithLinks = replaceReferenceMarkers(summary);
@@ -558,15 +558,15 @@ function replaceReferenceMarkers(text) {
     //  [CWM - 'Book Title', 'Chapter Title']
     //  [Mother’s Agenda - 'Book Title', 'Chapter Title']
     return text.replace(
-      /\[(CWSA|CWM|Mother['’]s Agenda)[\s–-]*[-–]\s*['’]([^'’]+)['’],\s*['’]([^'’]+)['’]\]/g,
-      (match, series, book, chapter) => {
-        return `<a href="#" class="reference-link"
-                    data-book-title="${book}"
-                    data-chapter-title="${chapter}"
-                >${match}</a>`;
-      }
-    );
-  }
+    /\[(CWSA|CWM|Mother['’]s Agenda)\s*[-–]\s*'(.+?)'\s*,\s*'(.+?)'\]/g,
+    (match, series, book, chapter) => {
+      return `<a href="#" class="reference-link"
+                  data-book-title="${book}"
+                  data-chapter-title="${chapter}"
+              >${match}</a>`;
+    }
+  );
+}
   
 
 
