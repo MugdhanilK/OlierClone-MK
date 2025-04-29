@@ -589,8 +589,21 @@ async def summarize_results():
     
     results = data.get('results', [])
     user_query = data.get('query', '').strip()  # Get the user's query text
+    #___________________________New Code___________________________
+    
+    if not results:
+        # If sending an error non-streamed
+        # return jsonify({'error': 'No search results provided.'}), 400
+        # If sending error via stream (simpler for client)
+        async def error_stream():
+             yield "STREAM_ERROR: No search results provided for summarization."
+        return Response(error_stream(), mimetype='text/plain'), 400
+    #___________________________End of New Code___________________________
+
+    '''
     if not results:
         return jsonify({'error': 'No search results provided.'}), 400
+    '''
 
     # Build a reference list string using the author to determine which prefix to use.
     references_text = ""
@@ -640,26 +653,7 @@ Now, using only these full excerpts as your source material, write a polished,
 
 Begin your summary directly—no additional preamble.
 """
-    
 
-    #----------------------------------------------------
-    # Old prompt (for reference):
-    '''
-    prompt = ( 
-    f"User Query: {user_query}\n\n"
-    "Based on the detailed top 10 search results provided below, produce a comprehensive and context-aware summary that directly responds to the user's query. "
-    "Use the complete text excerpts as context to fully capture the background and nuances of the topic. "
-    "IMPORTANT: Embed all reference markers inline exactly where each source is relevant; do not append a separate list at the end. "
-    "Each reference marker must be in one of the following formats: "
-    "[CWSA - 'Book Title', 'Chapter Title'] for Complete Works of Sri Aurobindo, "
-    "[CWM - 'Book Title', 'Chapter Title'] for Collected Works of The Mother, and "
-    "[Mother's Agenda - 'Book Title', 'Chapter Title'] for The Mother's Agenda series. "
-    "Each marker must be distinct and correspond exactly to one of the provided search results. "
-    "Below is the reference list extracted from the top 10 search results:\n"
-    f"{references_text}\n"
-    "Using this information, generate a detailed summary that answers the user's query using only these top 10 search results."
-)
-    '''
 
 # — Log fully assembled prompt —
     logger.info(f"/api/summarize-results prompt:\n{prompt}")
@@ -668,19 +662,33 @@ Begin your summary directly—no additional preamble.
         {"role": "system", "content": SYSTEM_MESSAGE_PLAIN},
         {"role": "user", "content": prompt}
     ]
-    try:
-        response = fireworks_client.chat.completions.create(
-            model=FIREWORKS_FINAL_MODEL,
-            messages=messages,
-            max_tokens=1500,
-            temperature=0.4,
-        )
-        summary = response.choices[0].message.content.strip()
-        return jsonify({'summary': summary})
-    except Exception as e:
-        logger.error(f"Error during summarization: {e}")
-        return jsonify({'error': 'An error occurred during summarization.'}), 500
+        # --- Define the async generator for streaming ---
+    async def event_stream():
+        try:
+            # *** Use acreate and set stream=True ***
+            stream = fireworks_client.chat.completions.acreate(
+                model=FIREWORKS_FINAL_MODEL,
+                messages=messages,
+                max_tokens=1500,
+                temperature=0.4,
+                stream=True, # <<< Enable streaming
+            )
 
+            # *** Stream the response chunks ***
+            async for chunk in stream:
+                for choice in chunk.choices:
+                    delta = choice.delta
+                    content = delta.content
+                    if content:
+                        yield content # Send the chunk to the client
+        except Exception as e:
+            logger.error(f"Error during Fireworks summarization streaming: {e}", exc_info=True)
+            # Send an error message within the stream
+            yield f"STREAM_ERROR: An error occurred during summarization: {str(e)}"
+
+    # --- Return the streaming response ---
+    # *** Use text/plain for easier frontend handling ***
+    return Response(event_stream(), mimetype='text/plain')
 
 
 
