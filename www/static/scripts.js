@@ -453,101 +453,151 @@ $('#query').on('input', function() {
 //Summarise
 
 //Changes done
-// --- Summarize Button Click Handler (Modified for meditating placeholder, query inclusion & reference links) ---
-$(document).on('click', '#summarize-results-btn', function() {
-    // 0. Ensure the chatbox is open.
+
+// (Make sure markdownit and DOMPurify are loaded/initialized)
+const md = window.markdownit(); // Initialize markdown-it
+
+// --- Summarize Button Click Handler (Modified for Streaming) ---
+$(document).on('click', '#summarize-results-btn', async function() { // Add async here
+    // 0. Ensure chatbox is open
     if (!$("#chatbox").hasClass("open")) {
         $(".open_chatbot").first().trigger("click");
     }
-    
-    // Hide the Olier Boy image (inside .empty-div) so it doesn't remain visible.
     $("#messages .empty-div").hide();
 
-    // 1. Get the Olier chat messages area.
+    // 1. Get messages area
     const messagesBox = document.querySelector("#messages .messages-box");
     if (!messagesBox) {
         console.error("Messages area not found.");
         return;
     }
-    
-    // 2. Create and append a new chat bubble with a meditating placeholder.
+
+    // 2. Create placeholder bubble
     let placeholderBubble = document.createElement("div");
     placeholderBubble.classList.add("box", "ai-message");
-
     let messageWrapper = document.createElement("div");
-    // Ensure wrapper has relative positioning so that absolute positioning for the copy button works.
     messageWrapper.style.position = "relative";
-
     let placeholderMessage = document.createElement("div");
     placeholderMessage.classList.add("messages");
     placeholderMessage.style.whiteSpace = "pre-wrap";
-    // Use a meditating-style placeholder message.
-    placeholderMessage.innerHTML = '<div class="meditating-message">Creating the Olier Overview...</div>';
-
-    // Put the message inside the wrapper
+    let meditatingElement = document.createElement("div"); // Separate element for "Meditating..."
+    meditatingElement.classList.add("meditating-message"); // Use existing class
+    meditatingElement.textContent = 'Creating the Olier Overview...';
+    placeholderMessage.appendChild(meditatingElement); // Add meditating text initially
     messageWrapper.appendChild(placeholderMessage);
-    // Then put the wrapper inside the bubble
     placeholderBubble.appendChild(messageWrapper);
-    // Then finally attach to the DOM
-    messagesBox.appendChild(placeholderBubble); 
+    messagesBox.appendChild(placeholderBubble);
+    scrollToBottom(); // Scroll initially
 
-     // 2a. Animate dots after "Creating the Olier Overview"
-     const meditatingElement = placeholderMessage.querySelector('.meditating-message');
-     let dotCount = 0;
-     const meditatingInterval = setInterval(() => {
-         dotCount = (dotCount + 1) % 4;
-         meditatingElement.textContent = 'Creating the Olier Overview' + '.'.repeat(dotCount);
-     }, 500);
+    // 2a. Animate dots (Keep this part)
+    let dotCount = 0;
+    const meditatingInterval = setInterval(() => {
+        dotCount = (dotCount + 1) % 4;
+        if (meditatingElement && meditatingElement.parentNode) { // Check if element still exists
+             meditatingElement.textContent = 'Creating the Olier Overview' + '.'.repeat(dotCount);
+        } else {
+             clearInterval(meditatingInterval); // Stop if element is removed
+        }
+    }, 500);
 
-    // Optional: scroll to the bottom, if needed.
-    scrollToBottom();
-
-    // 3. Prepare the payload using the stored search results and include the query.
+    // 3. Prepare payload (same as before)
     const fullResultsData = $('#results').data('fullResultsData') || [];
     if (fullResultsData.length === 0) {
-        placeholderMessage.textContent = "No results available for summarization.";
+        if (meditatingElement && meditatingElement.parentNode) meditatingElement.textContent = "No results available for summarization.";
         clearInterval(meditatingInterval);
         return;
     }
     const topResults = fullResultsData.slice(0, 10);
-    // Extract the user's query from the input field
     const userQuery = $('#query').val().trim();
     const payload = {
         results: topResults,
         query: userQuery
     };
 
- // 4. AJAX request to the summarization API.
- $.ajax({
-    url: serverUrl + 'api/summarize-results',
-    method: 'POST',
-    contentType: 'application/json',
-    data: JSON.stringify(payload),
-    success: function(response) {
-        let summary = response.summary || "(No summary received)";
-        // Process the summary to replace inline reference markers with clickable links.
-        
-        //let processedSummary = replaceReferenceMarkers(summary);
-        //placeholderMessage.innerHTML = processedSummary;
-        
+    // 4. Fetch request for streaming summarization
+    try {
+        const response = await fetch(serverUrl + 'api/summarize-results', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify(payload) // Use body for fetch
+        });
 
-        //________________________New Lines___________________________
-        // 1. Run our new regex-based wrapper over the raw text:
-        const htmlWithLinks = replaceReferenceMarkers(summary);
-        // 2. Inject it into the bubble’s innerHTML:
-        placeholderMessage.innerHTML = htmlWithLinks;
+        if (!response.ok) {
+            // Handle HTTP errors before trying to read stream
+            clearInterval(meditatingInterval);
+            if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove(); // Remove meditating text
+            placeholderMessage.textContent = `Error: ${response.status} ${response.statusText}`;
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-        // Now add the copy button at the bottom of the summary container.
-         addCopyButton(messageWrapper);
-    
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedText = '';
+        let firstChunkReceived = false;
+
+        while (true) {
+            const { done, value } = await reader.read();
+
+            if (value) {
+                // --- First chunk logic ---
+                if (!firstChunkReceived) {
+                    clearInterval(meditatingInterval);
+                    if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+                    placeholderMessage.innerHTML = ''; // Clear "Meditating..."
+                    firstChunkReceived = true;
+                }
+                // ---
+
+                let chunk = decoder.decode(value);
+
+                // Check for backend error signal
+                if (chunk.startsWith("STREAM_ERROR:")) {
+                     placeholderMessage.innerHTML = `<span style="color: red;">${chunk.substring("STREAM_ERROR:".length).trim()}</span>`;
+                     console.error("Summarization stream error:", chunk);
+                     break; // Stop processing stream on error
+                }
+
+
+                accumulatedText += chunk;
+
+                // Render progressively with reference links
+                let textWithLinks = replaceReferenceMarkers(accumulatedText);
+                let dirtyHtml = md.render(textWithLinks); // Use markdown-it
+                let cleanHtml = DOMPurify.sanitize(dirtyHtml); // Sanitize
+                placeholderMessage.innerHTML = cleanHtml; // Update content
+
+
+                // --- Optional: Adjust height during streaming (can be intensive) ---
+                // You might throttle this if needed
+                 if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                 if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+                 scrollToBottom(); // Keep scrolling as content arrives
+                 // ---
+            }
+
+            if (done) {
+                clearInterval(meditatingInterval); // Ensure cleared if loop finishes quickly
+                if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove(); // Ensure removed
+
+                // Add copy button AFTER streaming is complete
+                addCopyButton(messageWrapper);
+
+                // Final layout adjustment after all content is rendered
+                if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+                scrollToBottom(); // Final scroll
+
+                break; // Exit the loop
+            }
+        }
+
+    } catch (error) {
+        clearInterval(meditatingInterval); // Clear interval on fetch error
+        if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
         placeholderMessage.textContent = "Sorry, an error occurred while creating the Olier Overview. Please try again later.";
-        console.error("Summarization request failed:", textStatus, errorThrown);
+        console.error("Summarization request failed:", error);
     }
-});
-});
-
+}); // End of summarize button click handler
 //Changes finished
 
 
