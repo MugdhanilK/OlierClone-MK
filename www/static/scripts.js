@@ -535,11 +535,13 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
         let accumulatedText = '';
         let firstChunkReceived = false;
 
+        // Inside the 'while (true)' loop for summary streaming
+
         while (true) {
             const { done, value } = await reader.read();
 
             if (value) {
-                // --- First chunk logic ---
+                // --- First chunk logic (keep as is) ---
                 if (!firstChunkReceived) {
                     clearInterval(meditatingInterval);
                     if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
@@ -550,7 +552,7 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
 
                 let chunk = decoder.decode(value);
 
-                // Check for backend error signal
+                // Check for backend error signal (keep as is)
                 if (chunk.startsWith("STREAM_ERROR:")) {
                      placeholderMessage.innerHTML = `<span style="color: red;">${chunk.substring("STREAM_ERROR:".length).trim()}</span>`;
                      console.error("Summarization stream error:", chunk);
@@ -560,15 +562,23 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
 
                 accumulatedText += chunk;
 
-                // Render progressively with reference links
-                let textWithLinks = replaceReferenceMarkers(accumulatedText);
-                let dirtyHtml = md.render(textWithLinks); // Use markdown-it
-                let cleanHtml = DOMPurify.sanitize(dirtyHtml); // Sanitize
-                placeholderMessage.innerHTML = cleanHtml; // Update content
+                // ***** CORRECTED RENDERING ORDER *****
+                // 1. Render Markdown from the accumulated text FIRST.
+                //    This will process any markdown syntax but leave the [Marker] tags untouched.
+                let renderedMarkdown = md.render(accumulatedText);
+
+                // 2. Now, replace the [Marker] tags within the RENDERED HTML string.
+                let htmlWithLinks = replaceReferenceMarkers(renderedMarkdown);
+
+                // 3. Sanitize the final HTML which now contains rendered markdown AND the links.
+                let cleanHtml = DOMPurify.sanitize(htmlWithLinks);
+
+                // 4. Update the DOM.
+                placeholderMessage.innerHTML = cleanHtml;
+                // ***** END OF CORRECTED RENDERING ORDER *****
 
 
-                // --- Optional: Adjust height during streaming (can be intensive) ---
-                // You might throttle this if needed
+                // --- UI Adjustments (keep as is) ---
                  if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
                  if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
                  scrollToBottom(); // Keep scrolling as content arrives
@@ -576,8 +586,9 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
             }
 
             if (done) {
-                clearInterval(meditatingInterval); // Ensure cleared if loop finishes quickly
-                if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove(); // Ensure removed
+                // --- Final UI Adjustments and Button Addition (keep as is) ---
+                clearInterval(meditatingInterval);
+                if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
 
                 // Add copy button AFTER streaming is complete
                 addCopyButton(messageWrapper);
@@ -590,7 +601,7 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
                 break; // Exit the loop
             }
         }
-
+        
     } catch (error) {
         clearInterval(meditatingInterval); // Clear interval on fetch error
         if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
