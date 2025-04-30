@@ -1461,6 +1461,15 @@ function openChatboxAndAdjustScroll() {
 $(".open_chatbot").on("click", function(event) {
     event.stopPropagation(); // Prevent the event from reaching the document click handler
 
+     // --- ADD THIS ---
+    // Immediately hide the clicked button (the floating one)
+    const floatingChatButton = document.querySelector('.open_chatbot:not(.in-flex-box)');
+    if (floatingChatButton) {
+        floatingChatButton.classList.add('hidden');
+        // Optionally, if you prefer the vanish animation on click:
+        // floatingChatButton.classList.add('vanish');
+    }
+    // --- END ADDED ---
     if (isMobile) {
         // Use the simplified function for mobile devices
         openChatboxSimplified();
@@ -3084,6 +3093,35 @@ $(document).on('click', '#settings-menu-dropdown .close-menu-btn', function(even
 
 
 // Handle click forzoom_to_top 
+
+// Handle click for .zoom_to_top (Books button)
+$(document).on('click', '.zoom_to_top', function(event) {
+    console.log('Clicked:', $(this).attr('id') || $(this).attr('class'));
+
+    // Prevent default anchor behavior and stop event bubbling
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Always toggle the main menu dropdown regardless of scroll position
+    $('#main-menu-dropdown').toggleClass('active');
+
+    // Toggle ARIA expanded state for accessibility
+    let isExpanded = $(this).attr('aria-expanded') === 'true';
+    $(this).attr('aria-expanded', !isExpanded);
+
+    // --- REMOVED the else block that caused scrolling to top ---
+
+    // If the menu is being opened and reading mode is active, expand the current book
+    if ($('#main-menu-dropdown').hasClass('active') && readingModeActivated) {
+        // Ensure the function exists before calling
+        if (typeof expandCurrentBookInMenu === 'function') {
+            expandCurrentBookInMenu();
+        }
+    }
+});
+
+//_______________________Old zoom_to_top Function__________________________
+/*
 $(document).on('click', '.zoom_to_top', function(event) {
     console.log('Clicked:', $(this).attr('id') || $(this).attr('class'));
     let scrollPosition = $(window).scrollTop();
@@ -3104,7 +3142,7 @@ $(document).on('click', '.zoom_to_top', function(event) {
         window.scrollTo(0, 0);
     }
 });
-
+*/
 
 
 // Font Size Adjuster
