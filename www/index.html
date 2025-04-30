@@ -94,7 +94,7 @@
                         <li>
                             <label class="flex items-center space-x-2 cursor-pointer">
                                 <input type="radio" name="searchScope" value="all" class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500" checked>
-                                <span>All (Sri Aurobindo & The Mother)</span>
+                                <span>All (Sri Aurobindo &amp; The Mother)</span>
                             </label>
                         </li>
                         <li>
@@ -173,7 +173,9 @@
     
 
             <!-- Search Container -->
-            <div class="search-container mt-3">
+           
+           
+            <!--<div class="search-container mt-3">
                 <div class="d-flex justify-content-center mb-3">
                     <label class="switch">
                         <input id="searchToggle" type="checkbox" />
@@ -184,9 +186,26 @@
                     onfocus="this.style.textAlign='left'; this.placeholder='';"
                     placeholder="Find quotes from Sri Aurobindo &amp; the Mother!" type="text" />
                 <button class="btn btn-primary" id="search-btn">Seek</button>
+            </div>-->
+
+
+
+            <div class="search-container mt-3">
+                <div class="d-flex justify-content-center mb-3">
+                    <label class="switch">
+                        <input id="searchToggle" type="checkbox" />
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <input autocomplete="off" class="form-control; selected-card;" id="query"
+                    onfocus="this.style.textAlign='left'; this.placeholder='';"
+                    onblur="if(this.value===''){ this.style.textAlign='center'; this.placeholder='Find quotes from Sri Aurobindo &amp; the Mother!'; }"
+                    placeholder="Find quotes from Sri Aurobindo &amp; the Mother!" type="text" />
+
+                <button class="btn btn-primary" id="search-btn">Seek</button>
             </div>
 
-
+            
 <!--Summarise-->
 
 <!-- Inside the body, after the search container -->
@@ -270,7 +289,7 @@
 
             </div>
         </div>
-    </div> <!-- END of .container -->
+     <!-- END of .container -->
     <!-- Loader Overlay for View Detail -->
     <div id="view-detail-loader-overlay">
     </div>
