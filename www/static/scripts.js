@@ -141,6 +141,7 @@ const sampleQuestions = document.querySelector('.sample-questions');
 const fullText = document.getElementById('full-text');
 
 let readingModeActivated = false; // Global flag to track if reading mode is active
+let lastScrollTop = 0; // <-- ADD THIS LINE HERE
 
 
 
@@ -602,6 +603,65 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
             }
         }
         
+/*
+        while (true) {
+            const { done, value } = await reader.read();
+
+            if (value) {
+                // --- First chunk logic ---
+                if (!firstChunkReceived) {
+                    clearInterval(meditatingInterval);
+                    if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+                    placeholderMessage.innerHTML = ''; // Clear "Meditating..."
+                    firstChunkReceived = true;
+                }
+                // ---
+
+                let chunk = decoder.decode(value);
+
+                // Check for backend error signal
+                if (chunk.startsWith("STREAM_ERROR:")) {
+                     placeholderMessage.innerHTML = `<span style="color: red;">${chunk.substring("STREAM_ERROR:".length).trim()}</span>`;
+                     console.error("Summarization stream error:", chunk);
+                     break; // Stop processing stream on error
+                }
+
+
+                accumulatedText += chunk;
+
+                // Render progressively with reference links
+                let textWithLinks = replaceReferenceMarkers(accumulatedText);
+                let dirtyHtml = md.render(textWithLinks); // Use markdown-it
+                let cleanHtml = DOMPurify.sanitize(dirtyHtml); // Sanitize
+                placeholderMessage.innerHTML = cleanHtml; // Update content
+
+
+                // --- Optional: Adjust height during streaming (can be intensive) ---
+                // You might throttle this if needed
+                 if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                 if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+                 scrollToBottom(); // Keep scrolling as content arrives
+                 // ---
+            }
+
+            if (done) {
+                clearInterval(meditatingInterval); // Ensure cleared if loop finishes quickly
+                if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove(); // Ensure removed
+
+                // Add copy button AFTER streaming is complete
+                addCopyButton(messageWrapper);
+
+                // Final layout adjustment after all content is rendered
+                if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+                scrollToBottom(); // Final scroll
+
+                break; // Exit the loop
+            }
+        }
+*/
+
+
     } catch (error) {
         clearInterval(meditatingInterval); // Clear interval on fetch error
         if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
@@ -2859,7 +2919,70 @@ $("#send-btn").show();
             toggleButtonVisibility(false);
         }
     });
+/*______________________New toggleOlierButton Function__________________________*/
 
+function toggleOlierButton() {
+    const olierButton = document.querySelector('.open_chatbot:not(.in-flex-box)');
+    const zoomToTopButton = document.querySelector('.zoom_to_top');
+    const chatbox = document.getElementById('chatbox'); // Keep chatbox check
+
+    if (!olierButton || !zoomToTopButton || !chatbox) return; // Exit if elements not found
+
+    let currentScrollTop = window.scrollY || window.pageYOffset;
+    const isChatboxOpen = chatbox.classList.contains('open');
+
+    // --- Reading Mode Handling (uses .vanish) ---
+    if (readingModeActivated) {
+        olierButton.classList.add('vanish');
+        zoomToTopButton.classList.add('vanish');
+        // Ensure .hidden is removed if reading mode takes precedence
+        olierButton.classList.remove('hidden');
+        zoomToTopButton.classList.remove('hidden');
+        lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // Update scroll pos even when vanished
+        return; // Exit early
+    } else {
+        // Ensure .vanish is removed if not in reading mode
+        olierButton.classList.remove('vanish');
+        zoomToTopButton.classList.remove('vanish');
+    }
+
+    // --- Scroll Direction Handling (uses .hidden) ---
+
+    // Always show buttons if chatbox is open AND user is near the top (or scrolls up to near top)
+     if (isChatboxOpen && currentScrollTop <= 10) {
+         olierButton.classList.add('hidden'); // Chat button stays hidden when chatbox open
+         zoomToTopButton.classList.remove('hidden'); // Show Books button
+     }
+     // Always show buttons if chatbox is closed AND user is near the top (or scrolls up to near top)
+     else if (!isChatboxOpen && currentScrollTop <= 10) {
+        olierButton.classList.remove('hidden');
+        zoomToTopButton.classList.remove('hidden');
+     }
+     // Handle scrolling down (hide buttons)
+     else if (currentScrollTop > lastScrollTop) {
+        olierButton.classList.add('hidden');
+        zoomToTopButton.classList.add('hidden');
+     }
+     // Handle scrolling up (show buttons, respecting chatbox state)
+     else if (currentScrollTop < lastScrollTop) {
+         if (!isChatboxOpen) { // Show both if chatbox closed
+             olierButton.classList.remove('hidden');
+             zoomToTopButton.classList.remove('hidden');
+         } else { // If chatbox open, only show Books button when scrolling up
+            olierButton.classList.add('hidden');
+            zoomToTopButton.classList.remove('hidden');
+         }
+     }
+
+    // Update last scroll position for the next event
+    lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // For Mobile or negative scrolling
+}
+
+/*______________________End of New toggleOlierButton Function__________________________*/
+
+
+
+/*______________________Old toggleOlierButton Function__________________________
     function toggleOlierButton() {
         // Get references to elements
         const olierButton = document.querySelector('.open_chatbot:not(.in-flex-box)');
@@ -2906,23 +3029,32 @@ $("#send-btn").show();
         }
     //______________________Removing this for Stopping the Auto Scrolling of Chatbox to the Bottom__________________________
         //adjustChatboxStyle();
-    }
-
+    }*/
+   
+/*______________________End of Old toggleOlierButton Function__________________________ */ 
     
-    // Event listener for scroll event
+    
+// New Event listener for scroll event (Throttled)
+
+window.addEventListener('scroll', throttle(toggleOlierButton, 100)); // Adjust throttle time (e.g., 100ms) if needed
+
+
+/*    // Old Event listener for scroll event
+
     window.addEventListener('scroll', function() {
         toggleOlierButton();
-    });
+    });*/
     
-    // Initial setup on DOMContentLoaded
-    document.addEventListener('DOMContentLoaded', function() {
-        adjustChatboxStyle();
-        toggleOlierButton();
-    
-        // Initially hide the image and send buttons
-        $("#img-btn").hide();
-        $("#send-btn").hide();
-    });
+// Initial setup on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    adjustChatboxStyle();
+    lastScrollTop = window.scrollY || window.pageYOffset; // <-- ADD THIS LINE HERE
+    toggleOlierButton(); // Initial state check
+
+    // Initially hide the image and send buttons
+    $("#img-btn").hide();
+    $("#send-btn").hide();
+});
 
 
 // Handle click for opening the settings menu
