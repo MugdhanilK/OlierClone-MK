@@ -317,14 +317,17 @@ async def full_pdf():
     else:
         return f"File not found: {full_file_path}", 404
 
+# <<< SNIP: Previous code above this point remains the same >>>
+
 ### Olier Chat - MODIFIED SECTION ###
 
 
 # --- Model Names ---
-# Gemini model for Olier Chat (Using the model previously named for reasoning)
-GEMINI_CHAT_MODEL_NAME = 'gemini-2.5-pro-preview-03-25' # Using user-specified model
-GEMINI_SUMMARY_MODEL_NAME = 'gemini-2.5-pro-preview-03-25' # Using the same model for simplicity
-
+# Gemini models for Olier Chat
+# Added 'models/' prefix for consistency with summarize endpoint and potential API requirements
+GEMINI_CHAT_MODEL_PRO = 'models/gemini-2.5-pro-preview-03-25' # Default Pro model
+GEMINI_CHAT_MODEL_FLASH = 'models/gemini-2.5-flash-preview-04-17' # Speedy Mode Flash model
+GEMINI_SUMMARY_MODEL_NAME = 'models/gemini-2.5-pro-preview-03-25' # Summary model (prefixed)
 
 # Fireworks model (Keep if used elsewhere, e.g., summarize-results)
 FIREWORKS_FINAL_MODEL = "accounts/jaredquek-1b3158/models/oliernov0p5" # Your Olier model
@@ -347,8 +350,6 @@ SYSTEM_MESSAGE_POETIC = (
 )
 # --- END UPDATED SYSTEM MESSAGES ---
 
-# --- Reasoning Instructions for Gemini (No longer used in this endpoint) ---
-# REVISED_REASONING_INSTRUCTION_FORMAT = """...""" # Removed as reflective mode is gone
 
 # --- Generation Configuration (for Gemini Chat) ---
 # Define generation settings for the Gemini chat step
@@ -386,7 +387,7 @@ def format_messages_for_gemini(messages_openai_format):
 
 @app.route('/api/send-message', methods=['POST'])
 async def send_message():
-    """Handles sending messages to the Olier chat, now using Gemini directly."""
+    """Handles sending messages to the Olier chat, using Gemini Pro or Flash based on speedy_mode flag."""
     try: # Outer try to catch errors during initial request processing
         data = await request.get_json()
         messages_openai_format = data.get('messages', [])
@@ -395,6 +396,17 @@ async def send_message():
             messages_openai_format = []
 
         style = data.get('style', 'poetic') # 'poetic' or 'plain'
+        # --- Check for Speedy Mode flag ---
+        # Handles boolean True or string 'true' (case-insensitive)
+        speedy_mode_flag = str(data.get('speedy_mode', 'false')).lower() == 'true'
+
+        # --- Select Model based on Flag ---
+        if speedy_mode_flag:
+            model_name_to_use = GEMINI_CHAT_MODEL_FLASH
+            logger.info(f"Speedy Mode: ON. Using model: {model_name_to_use}")
+        else:
+            model_name_to_use = GEMINI_CHAT_MODEL_PRO
+            logger.info(f"Speedy Mode: OFF. Using model: {model_name_to_use}")
 
         # Determine the system message based on the requested style
         system_message_to_use = SYSTEM_MESSAGE_PLAIN if style == 'plain' else SYSTEM_MESSAGE_POETIC
@@ -407,7 +419,7 @@ async def send_message():
             gemini_chat_contents = format_messages_for_gemini(messages_openai_format)
 
             if not gemini_chat_contents:
-                # Check if the *only* message was a system message (which gets skipped)
+                # Handle cases with no valid user/assistant messages (same logic as before)
                 if messages_openai_format and all(m.get('role') == 'system' for m in messages_openai_format):
                      logger.warning("Input messages only contained system messages, which are skipped. No content to send to Gemini.")
                      async def empty_stream_no_user_msg():
@@ -419,52 +431,43 @@ async def send_message():
                          yield "STREAM_ERROR: No messages provided."
                      return Response(empty_stream_no_msg(), mimetype='text/plain'), 400
                 else:
-                     # This case might happen if format_messages_for_gemini fails unexpectedly
                      logger.error("Failed to convert messages to Gemini format, resulting list is empty.")
                      async def empty_stream_format_fail():
                          yield "STREAM_ERROR: Internal error preparing messages for AI."
                      return Response(empty_stream_format_fail(), mimetype='text/plain'), 500
 
-
             logger.debug(f"Formatted Gemini contents (excluding system message): {gemini_chat_contents}")
 
             # Configure the Gemini API call using GenerateContentConfig
-            # Add google_search tool to enable grounding
-            search_tool = types.Tool(google_search=types.GoogleSearch())
+            # --- CORRECTED SYNTAX HERE ---
+            search_tool = types.Tool(google_search=types.GoogleSearch()) # Use 'google_search' as the keyword
+            # --- END CORRECTION ---
+
             gemini_config = types.GenerateContentConfig(
                 system_instruction=types.Content(role="system", parts=[types.Part(text=system_message_to_use)]),
                 temperature=GEMINI_TEMPERATURE,
                 tools=[search_tool], # Ensure the search tool is included
                 # Optional: Add safety settings if needed
-                # safety_settings={
-                #     HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-                #     HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-                #     HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-                #     HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-                # }
+                # safety_settings={ ... }
             )
             logger.debug(f"Gemini config: temperature={GEMINI_TEMPERATURE}, system_instruction set, tools set. Max tokens not set.")
 
         except Exception as prep_err: # Catch errors during prep
             logger.error(f"Error preparing messages or config for Gemini: {prep_err}", exc_info=True)
-            # Define error_stream INSIDE this except block to capture prep_err
             async def error_stream_prep(error_message):
                 yield f"STREAM_ERROR: Error preparing request: {error_message}"
-            # Call the inner function with the captured error
             return Response(error_stream_prep(str(prep_err)), mimetype='text/plain'), 500
 
         # --- Streaming Response from Gemini ---
-        # This part runs only if the preparation steps succeed
-        async def event_stream_success():
-            # --- Variable to store grounding URLs ---
+        # Define the nested function to handle the stream, passing the selected model name
+        async def event_stream_success(selected_model_name):
             grounding_sources = []
-            # --- Marker for grounding data ---
             GROUNDING_MARKER = "###GROUNDING_SOURCES_START###"
             try:
-                logger.info(f"Calling Gemini model '{GEMINI_CHAT_MODEL_NAME}' for chat completion (streaming).")
-                # Use the async client and generate_content_stream
+                # Use the selected_model_name passed to this function
+                logger.info(f"Calling Gemini model '{selected_model_name}' for chat completion (streaming).")
                 stream = await gemini_client.aio.models.generate_content_stream(
-                    model=GEMINI_CHAT_MODEL_NAME,
+                    model=selected_model_name, # Use the dynamically selected model name
                     contents=gemini_chat_contents,
                     config=gemini_config
                 )
@@ -472,76 +475,62 @@ async def send_message():
                 async for chunk in stream:
                     # Check for blocking reasons first
                     if chunk.prompt_feedback and chunk.prompt_feedback.block_reason:
-                        block_message = f"STREAM_ERROR: Content generation blocked by safety settings: {chunk.prompt_feedback.block_reason.name}"
+                        block_message = f"STREAM_ERROR: Content generation blocked by safety settings ({selected_model_name}): {chunk.prompt_feedback.block_reason.name}"
                         logger.warning(block_message)
                         yield block_message
                         return # Stop streaming if blocked
 
-                    # --- START: Extract Grounding URLs from Chunk ---
-                    # Check if grounding metadata exists in the current chunk's candidate
+                    # --- START: Extract Grounding URLs from Chunk (Existing Logic) ---
                     if chunk.candidates and hasattr(chunk.candidates[0], 'grounding_metadata'):
                         metadata = chunk.candidates[0].grounding_metadata
-                        # Check if the metadata object itself is potentially populated (not None)
                         if metadata:
-                             # Log the full metadata object only if it seems populated (has chunks, entry point, or queries)
                             if metadata.grounding_chunks or metadata.search_entry_point or metadata.web_search_queries:
-                                logger.info(f"Populated Gemini Grounding Metadata Found in chunk: {metadata}")
+                                logger.info(f"Populated Gemini Grounding Metadata Found in chunk ({selected_model_name}): {metadata}")
                             else:
-                                # Log less verbosely if metadata object exists but all relevant fields are empty/None
-                                logger.debug(f"Empty Gemini Grounding Metadata object found in chunk: {metadata}")
+                                logger.debug(f"Empty Gemini Grounding Metadata object found in chunk ({selected_model_name}): {metadata}")
 
-                            # Now specifically check for grounding_chunks to extract sources
                             if hasattr(metadata, 'grounding_chunks') and metadata.grounding_chunks:
-                                logger.info(f"Found {len(metadata.grounding_chunks)} grounding_chunks in this chunk.") # Log count
-                                for grounding_chunk_item in metadata.grounding_chunks: # Use a different variable name
+                                logger.info(f"Found {len(metadata.grounding_chunks)} grounding_chunks in this chunk ({selected_model_name}).")
+                                for grounding_chunk_item in metadata.grounding_chunks:
                                     if hasattr(grounding_chunk_item, 'web') and grounding_chunk_item.web and hasattr(grounding_chunk_item.web, 'uri') and grounding_chunk_item.web.uri:
                                         source_title = grounding_chunk_item.web.title if hasattr(grounding_chunk_item.web, 'title') and grounding_chunk_item.web.title else grounding_chunk_item.web.uri
                                         source_info = { "uri": grounding_chunk_item.web.uri, "title": source_title }
-                                        # Add source only if it's not already collected
                                         if source_info not in grounding_sources:
                                             grounding_sources.append(source_info)
-                                            # Log each added source clearly
-                                            logger.info(f"ADDED Grounding Source: {source_info}")
-                            # else: # Optional log if no chunks found in non-empty metadata
-                            #    if metadata.grounding_chunks is not None: # Check it's explicitly None vs empty list
-                            #        logger.debug("Grounding metadata object found, but grounding_chunks list is empty or None.")
+                                            logger.info(f"ADDED Grounding Source ({selected_model_name}): {source_info}")
                     # --- END: Extract Grounding URLs from Chunk ---
 
-
-                    # Extract and yield text content from the chunk
+                    # Extract and yield text content from the chunk (Existing Logic)
                     if hasattr(chunk, 'text') and chunk.text:
                         yield chunk.text
                     elif chunk.candidates and chunk.candidates[0].content and chunk.candidates[0].content.parts:
                         yield "".join(part.text for part in chunk.candidates[0].content.parts)
 
-                # --- After text stream finishes, send accumulated grounding URLs ---
+                # --- After text stream finishes, send accumulated grounding URLs (Existing Logic) ---
                 if grounding_sources:
                     try:
-                        # Log the final list of sources before sending
-                        logger.info(f"Sending accumulated grounding sources: {grounding_sources}")
+                        logger.info(f"Sending accumulated grounding sources ({selected_model_name}): {grounding_sources}")
                         yield f"\n{GROUNDING_MARKER}\n" # Send marker first
                         yield json.dumps(grounding_sources) # Send JSON data
-                        logger.info("Sent grounding sources to client.")
+                        logger.info(f"Sent grounding sources to client ({selected_model_name}).")
                     except Exception as json_err:
-                        logger.error(f"Error serializing or sending grounding sources: {json_err}")
+                        logger.error(f"Error serializing or sending grounding sources ({selected_model_name}): {json_err}")
                 else:
-                     logger.info("No grounding sources found to send.")
+                     logger.info(f"No grounding sources found to send ({selected_model_name}).")
                 # --- End sending grounding URLs ---
 
             except Exception as stream_err: # Catch errors during the streaming call itself
-                logger.error(f"An error occurred during Gemini chat completion streaming: {stream_err}", exc_info=True)
+                logger.error(f"An error occurred during Gemini ({selected_model_name}) chat completion streaming: {stream_err}", exc_info=True)
                 yield f"STREAM_ERROR: An error occurred during response generation: {str(stream_err)}"
 
-        # Return the streaming response
-        return Response(event_stream_success(), mimetype='text/plain')
+        # Return the streaming response, calling the inner function with the correct model name
+        return Response(event_stream_success(model_name_to_use), mimetype='text/plain')
 
     except Exception as outer_err: # Catch errors from initial request processing (e.g., get_json)
-         logger.error(f"Error processing send-message request: {outer_err}", exc_info=True)
-         # Define error_stream here for outer errors
-         async def error_stream_outer(error_message):
-             yield f"STREAM_ERROR: Failed to process request: {error_message}"
-         return Response(error_stream_outer(str(outer_err)), mimetype='text/plain'), 500
-
+        logger.error(f"Error processing send-message request: {outer_err}", exc_info=True)
+        async def error_stream_outer(error_message):
+            yield f"STREAM_ERROR: Failed to process request: {error_message}"
+        return Response(error_stream_outer(str(outer_err)), mimetype='text/plain'), 500
 
 
 # --- Endpoint for Summarizing Search Results with Reference Markers (REVERTED ASYNC CALL) ---
@@ -573,8 +562,8 @@ async def summarize_results():
         else: prefix = "CWSA"
         snippet_with_marker = result.get('highlighted_text') or result.get('text', '')
         if not snippet_with_marker or f"[{prefix} - '" not in snippet_with_marker:
-             raw_snippet = result.get('text', '')
-             snippet_with_marker = f"{raw_snippet}\n[{prefix} - '{book_title}', '{chapter_title}']"
+              raw_snippet = result.get('text', '')
+              snippet_with_marker = f"{raw_snippet}\n[{prefix} - '{book_title}', '{chapter_title}']"
         references_text += f"{snippet_with_marker}\n\n"
 
     # Prompt construction (remains the same)
@@ -600,6 +589,7 @@ Follow these rules STRICTLY:
 
     # --- Prepare input for Gemini ---
     gemini_contents = [types.Content(role="user", parts=[types.Part(text=prompt)])]
+    # For consistency, using SYSTEM_MESSAGE_PLAIN even for summarization
     system_message_to_use = SYSTEM_MESSAGE_PLAIN
 
     # Configure Gemini API call using GenerateContentConfig
@@ -614,8 +604,9 @@ Follow these rules STRICTLY:
         try:
             logger.info(f"Calling Gemini model '{GEMINI_SUMMARY_MODEL_NAME}' for summarization (streaming) via client.aio.models.")
             # *** Use client.aio.models.generate_content_stream (REVERTED METHOD) ***
+            # NOTE: The model name already includes 'models/' prefix from global definition
             stream = await gemini_client.aio.models.generate_content_stream(
-                model=f'models/{GEMINI_SUMMARY_MODEL_NAME}', # Ensure model name has 'models/' prefix if needed
+                model=GEMINI_SUMMARY_MODEL_NAME,
                 contents=gemini_contents,
                 config=gemini_config # Pass the config object here
             )
@@ -632,13 +623,13 @@ Follow these rules STRICTLY:
                 # Extract and yield text content from the chunk
                 try:
                     if hasattr(chunk, 'text') and chunk.text:
-                         yield chunk.text
+                          yield chunk.text
                     elif chunk.candidates and chunk.candidates[0].content and chunk.candidates[0].content.parts:
                          # Ensure parts have text attribute before joining
                          yield "".join(part.text for part in chunk.candidates[0].content.parts if hasattr(part, 'text'))
                 except ValueError:
-                     logger.debug(f"Ignoring ValueError while accessing chunk parts during summarization: {chunk}")
-                     pass
+                    logger.debug(f"Ignoring ValueError while accessing chunk parts during summarization: {chunk}")
+                    pass
 
         except Exception as e:
             # Log the specific error, including the traceback
@@ -648,6 +639,8 @@ Follow these rules STRICTLY:
     # --- Return the streaming response ---
     return Response(event_stream_gemini(), mimetype='text/plain')
 # --- End of MODIFIED Endpoint ---
+
+
 
 
 
