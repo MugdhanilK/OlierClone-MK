@@ -1476,19 +1476,21 @@ tbody {
 /*Rest of the style about the*/
 #chat-input-container {
     flex-shrink: 0;
-    margin-top: auto;
+    /* margin-top: auto; */ /* Keep this or remove if flex works reliably */
     display: flex;
     gap: 5px;
     align-items: center;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    background-color: #f0fff0; /* Very subtle green */
-    border: 1px solid #b3ffb3; /* Light green border for a gentle look */
-    border-radius: 4px;         /* Rounded corners for a smoother appearance */
-    padding: 8px 12px;          /* Adjusted padding for better text spacing */
+    /* REMOVED: position: fixed; */
+    /* REMOVED: bottom: 0; */
+    /* REMOVED: left: 0; */
+    /* REMOVED: right: 0; */
+    z-index: 1000; /* Keep z-index if needed */
+    background-color: #f0fff0; /* Keep styling */
+    border: 1px solid #b3ffb3; /* Keep styling */
+    border-radius: 4px;        /* Keep styling */
+    padding: 8px 12px;         /* Keep styling */
+    width: 100%; /* Add this to ensure it takes full width within flex parent */
+    box-sizing: border-box; /* Add this for consistent padding behavior */
 }
 /* 
 Adjust chat input container when keyboard is open */
