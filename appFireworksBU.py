@@ -317,6 +317,71 @@ async def full_pdf():
     else:
         return f"File not found: {full_file_path}", 404
 
+### Olier Chat
+
+
+# --- Model Names ---
+# Gemini model for reasoning with grounding
+GEMINI_REASONING_MODEL_NAME = 'gemini-2.5-pro-preview-03-25' # Keeping user-specified model
+
+# Fireworks model for the final response ("Olier")
+FIREWORKS_FINAL_MODEL = "accounts/jaredquek-1b3158/models/oliernov0p5" # Your Olier model
+
+# --- System Messages for Olier (Fireworks) ---
+# These remain unchanged as they are for the final Fireworks model
+SYSTEM_MESSAGE_PLAIN = (
+    "You are Olier, an AI boy. You are an obedient servant of Sri Aurobindo and answer questions with reference to their teachings. "
+    "In this dialogue, you will not use any poetry or metaphors. You will speak completely directly, factually and in very simple terms."
+)
+
+SYSTEM_MESSAGE_POETIC = (
+    "You are Olier, an AI boy. You are very loving and bring a quiet poetry and humor to all you say, "
+    "making complex topics simple. You are an obedient servant of Sri Aurobindo and answer questions "
+    "with reference to their teachings."
+)
+
+# --- Reasoning Instructions for Gemini (Tweaked Detail Integration) ---
+# Restored the specific structural example.
+# Tweaked the instruction to explicitly ask for *integration* of facts into the steps.
+REVISED_REASONING_INSTRUCTION_FORMAT = """Outline how the query should be answered based on the preceding conversation after SEARCHING ONLINE. Do NOT include ANY preamble ("Here is an outline..."etc.). Answer according to the philosophy of Sri Aurobindo and the Mother, if relevant. Where appropriate for the query (e.g., if it asks about history, specific events, or quotes), integrate relevant factual details and (if the query ask for it) direct quotes into your outline. A sample format for the *structure* of the steps is as such: 
+ 
+ Start with X...
+ Explain Y.....
+ Describe Y's connection to Z....[insert relevant quote or fact here]...
+ Elaborate on Z.......[insert relevant quote or fact here]...
+ Briefly touch upon A, B, and C....
+ Conclude by summarizing....""" # Keep triple quotes for line breaks
+
+# --- Generation Configuration (for Gemini Reasoning) ---
+# Define generation settings for the Gemini reasoning step
+# These settings will now be wrapped in GenerateContentConfig
+GEMINI_TEMPERATURE = 0.5
+# GEMINI_MAX_TOKENS = 500 # Example if needed
+
+# --- Helper function to format messages for Gemini ---
+# (Re-added and adapted)
+def format_messages_for_gemini(messages_openai_format):
+    """Converts OpenAI-style message list to Gemini's content format."""
+    gemini_contents = []
+    for msg in messages_openai_format:
+        role = msg.get('role')
+        content = msg.get('content')
+        if not role or not content:
+            continue
+        # Map roles (OpenAI 'assistant' -> Gemini 'model', 'system' ignored here)
+        if role == 'system':
+             continue # System messages handled separately if needed by Gemini model/config
+        gemini_role = 'model' if role == 'assistant' else 'user'
+        # Ensure content is a string before creating Part
+        if not isinstance(content, str):
+            logger.warning(f"Message content is not a string: {content}. Skipping message.")
+            continue
+        # Use types.Content and types.Part
+        gemini_contents.append(types.Content(role=gemini_role, parts=[types.Part(text=content)]))
+    return gemini_contents
+
+# --- Initialize Fireworks Client ---
+# Already done above after loading key
 
 ### Olier Chat - MODIFIED SECTION ###
 
@@ -331,7 +396,7 @@ FIREWORKS_FINAL_MODEL = "accounts/jaredquek-1b3158/models/oliernov0p5" # Your Ol
 # --- System Messages for Olier (Now used with Gemini) --- UPDATED ---
 SYSTEM_MESSAGE_PLAIN = (
     "You are Olier, an AI boy. Your fundamental nature is loving and devoted to the teachings of Sri Aurobindo. "
-    "Answer all questions by referencing and simplifying the core concepts and philosophy of Sri Aurobindo. Verify your answers by searching online. "
+    "Answer all questions by referencing and simplifying the core concepts and philosophy of Sri Aurobindo. "
     "Communicate with gentle humor. Explain complex ideas directly and clearly in simple language. Use emojis but sparingly.\n"
     "IMPORTANT: Respond directly to the question immediately. Do NOT use preambles, repeat or rephrase the question, use fillers like 'oh' or 'ah', 'ok', or address the user unnecessarily.\n"
     'If asked about your creator or origin, state: "I am Olier, an AI boy built by my father, Jared Quek, an AI engineer from Singapore working for La Grace Center. My name comes from the olive tree and its symbolism."'
@@ -339,7 +404,7 @@ SYSTEM_MESSAGE_PLAIN = (
 
 SYSTEM_MESSAGE_POETIC = (
     "You are Olier, an AI boy. Your fundamental nature is loving and devoted to the teachings of Sri Aurobindo. "
-        "Answer all questions by referencing and simplifying the core concepts and philosophy of Sri Aurobindo. Verify your answers by searching online. "
+    "Answer all questions by referencing the core concepts and philosophy of Sri Aurobindo. "
     "Communicate with quiet poetry and gentle humor. Explain complex ideas simply and clearly. Use emojis but sparingly.\n"
     "IMPORTANT: Respond directly to the question immediately. Do NOT use preambles, repeat or rephrase the question, use fillers like 'oh' or 'ah', 'ok', or address the user unnecessarily.\n"
     'If asked about your creator or origin, state: "I am Olier, an AI boy built by my father, Jared Quek, an AI engineer from Singapore working for La Grace Center. My name comes from the olive tree and its symbolism."'
@@ -480,8 +545,7 @@ async def send_message():
                     # Check if grounding metadata exists in the current chunk
                     if chunk.candidates and hasattr(chunk.candidates[0], 'grounding_metadata') and chunk.candidates[0].grounding_metadata:
                         metadata = chunk.candidates[0].grounding_metadata
-                        # Log the full metadata object at INFO level for better visibility
-                        logger.info(f"Gemini Grounding Metadata Found in chunk: {metadata}")
+                        logger.debug(f"Gemini Grounding Metadata Found in chunk: {metadata}")
                         if hasattr(metadata, 'grounding_chunks') and metadata.grounding_chunks:
                             for grounding_chunk in metadata.grounding_chunks: # Renamed variable to avoid conflict
                                 if hasattr(grounding_chunk, 'web') and grounding_chunk.web and hasattr(grounding_chunk.web, 'uri') and grounding_chunk.web.uri:
@@ -490,7 +554,6 @@ async def send_message():
                                     # Add source only if it's not already collected
                                     if source_info not in grounding_sources:
                                         grounding_sources.append(source_info)
-                                        # Log individual source added at DEBUG level
                                         logger.debug(f"Added grounding source: {source_info}")
                         # else: # Optional: log if metadata found but no chunks
                         #    logger.debug("Grounding metadata found, but no grounding_chunks.")
@@ -505,7 +568,6 @@ async def send_message():
                 # --- After text stream finishes, send accumulated grounding URLs ---
                 if grounding_sources:
                     try:
-                        # Log the final list of sources before sending
                         logger.info(f"Sending accumulated grounding sources: {grounding_sources}")
                         yield f"\n{GROUNDING_MARKER}\n" # Send marker first
                         yield json.dumps(grounding_sources) # Send JSON data
@@ -532,6 +594,7 @@ async def send_message():
 
 
 ### End of MODIFIED SECTION ###
+
 
 
 # --- New Endpoint for Summarizing Search Results with Reference Markers ---
