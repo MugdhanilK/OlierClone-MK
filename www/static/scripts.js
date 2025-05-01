@@ -2226,89 +2226,96 @@ async function sendMessage() {
         const md = window.markdownit();
         let accumulatedText = '';
 
-        // Streaming
-        while (true) {
-            const { done, value } = await reader.read();
-
-            // Stop meditating animation
-            if (value && meditatingElement && meditatingElement.parentNode) {
-                 clearInterval(meditatingInterval);
-                 meditatingElement.remove();
-                 if (!markerFound) {
-                     responseMessage.innerHTML = ''; // Clear "Meditating..."
-                 }
-            }
-
-            if (value) {
-                let chunk = decoder.decode(value);
-
-                // Marker Detection Logic
-                const markerIndex = chunk.indexOf(groundingMarker);
-
-                if (markerIndex !== -1) {
-                    const textPart = chunk.substring(0, markerIndex);
-                    if (!markerFound) {
-                        accumulatedText += textPart;
-                        // Render final text part before marker
-                        let dirtyHtml = md.render(accumulatedText.replace(/<\/s>/g, ''));
-                        let cleanHtml = DOMPurify.sanitize(dirtyHtml);
-                        responseMessage.innerHTML = cleanHtml;
-                    }
-                    // Store the JSON part
-                    finalGroundingJsonString = chunk.substring(markerIndex + groundingMarker.length).trimStart();
-                    markerFound = true;
-
-                } else if (!markerFound) {
-                    // Append chunk to main text and render progressively
-                    accumulatedText += chunk;
-                    let dirtyHtml = md.render(accumulatedText.replace(/<\/s>/g, ''));
-                    let cleanHtml = DOMPurify.sanitize(dirtyHtml);
-                    responseMessage.innerHTML = cleanHtml;
-                }
-            }
-
-            // Done condition check
-            if (done) {
-                clearInterval(meditatingInterval);
-                if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
-
-                // Final rendering of accumulated text (only needed if marker was never found)
-                if (!markerFound) {
-                    responseMessage.textContent = ''; // Clear potentially partial markdown
-                    accumulatedText = accumulatedText.replace(/<\/s>/g, '');
-                    let dirtyHtml = md.render(accumulatedText);
-                    let cleanHtml = DOMPurify.sanitize(dirtyHtml);
-                    responseMessage.innerHTML = cleanHtml;
-                }
-
-                // --- Parse JSON and Display Links ---
-                let groundingSources = [];
-                console.log("Attempting to parse grounding JSON. String received:", finalGroundingJsonString);
-                if (finalGroundingJsonString) {
-                    try {
-                        groundingSources = JSON.parse(finalGroundingJsonString.trim());
-                        console.log("Parsed Grounding Sources:", groundingSources);
-                        // *** Call the Domain-Only Card display function ***
-                        displayDomainOnlyCardLinks(responseMessage, groundingSources); // Pass responseMessage div
-                    } catch (e) {
-                        console.error("Error parsing final grounding JSON:", e, "Data:", finalGroundingJsonString);
-                    }
-                } else {
-                    console.log("No grounding JSON string received (marker likely not found).");
-                }
-                // --- END ---
-
-                // Add Copy Button
-                addCopyButton(messageWrapper);
-
-                // --- UI Adjustments ---
-                if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-                if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-                // ---
-
-                break; // Exit loop
-            }
-        } // End while loop
+                       // Streaming
+                       while (true) {
+                        const { done, value } = await reader.read();
+            
+                        // Stop meditating animation
+                        if (value && meditatingElement && meditatingElement.parentNode) {
+                             clearInterval(meditatingInterval);
+                             meditatingElement.remove();
+                             if (!markerFound) {
+                                 responseMessage.innerHTML = ''; // Clear "Meditating..."
+                             }
+                        }
+            
+                        if (value) {
+                            let chunk = decoder.decode(value);
+            
+                            // Marker Detection Logic
+                            const markerIndex = chunk.indexOf(groundingMarker);
+            
+                            let cleanHtml = ''; // Declare cleanHtml here
+            
+                            if (markerIndex !== -1) {
+                                const textPart = chunk.substring(0, markerIndex);
+                                if (!markerFound) {
+                                    accumulatedText += textPart;
+                                    // Render final text part before marker
+                                    let dirtyHtml = md.render(accumulatedText.replace(/<\/s>/g, ''));
+                                    cleanHtml = DOMPurify.sanitize(dirtyHtml); // Assign here
+                                    responseMessage.innerHTML = cleanHtml;
+                                }
+                                // Store the JSON part
+                                finalGroundingJsonString = chunk.substring(markerIndex + groundingMarker.length).trimStart();
+                                markerFound = true;
+            
+                            } else if (!markerFound) {
+                                // Append chunk to main text and render progressively
+                                accumulatedText += chunk;
+                                let dirtyHtml = md.render(accumulatedText.replace(/<\/s>/g, ''));
+                                cleanHtml = DOMPurify.sanitize(dirtyHtml); // Assign here
+                                responseMessage.innerHTML = cleanHtml;
+                            }
+                            // If marker was found previously, finalGroundingJsonString will just keep accumulating
+                            // We don't update innerHTML again in that case until 'done'
+            
+                            // *** ADDED: Ensure scrolling and layout adjustments happen on each update ***
+                            if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                            if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+                            scrollToBottom(); // <-- Explicitly scroll after content update
+                            // *** END ADDED ***
+            
+                        }
+            
+                        // Done condition check
+                        if (done) {
+                            clearInterval(meditatingInterval);
+                            if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+            
+                            // Final rendering of accumulated text (only needed if marker was never found AND content changed)
+                            if (!markerFound) {
+                                 // No need to re-render if it was already done in the loop
+                                 // Only re-render if the last operation was just adding to finalGroundingJsonString
+                            }
+            
+            
+                            // --- Parse JSON and Display Links ---
+                            let groundingSources = [];
+                            console.log("Attempting to parse grounding JSON. String received:", finalGroundingJsonString);
+                            if (finalGroundingJsonString) {
+                                try {
+                                    groundingSources = JSON.parse(finalGroundingJsonString.trim());
+                                    console.log("Parsed Grounding Sources:", groundingSources);
+                                    displayDomainOnlyCardLinks(responseMessage, groundingSources); // Pass responseMessage div
+                                } catch (e) {
+                                    console.error("Error parsing final grounding JSON:", e, "Data:", finalGroundingJsonString);
+                                }
+                            } else {
+                                console.log("No grounding JSON string received (marker likely not found).");
+                            }
+                            // --- END ---
+            
+                            // Add Copy Button
+                            addCopyButton(messageWrapper);
+            
+                            // *** MOVED UI Adjustments into the loop, but a final scroll is safe ***
+                             scrollToBottom(); // Final scroll after everything is done
+                            // *** END MOVED ***
+            
+                            break; // Exit loop
+                        }
+                    } // End while loop
 
     } catch (error) {
         console.error('Error in sendMessage:', error);
