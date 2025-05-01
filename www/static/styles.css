@@ -1326,12 +1326,14 @@ tbody {
 .messages-box .box .messages {
     background-color: #fff;
     padding: 10px 15px;
-    display: inline-block;
+    display: inline-block; /* or block/flex depending on desired layout */
     border-radius: 0 10px 10px 0;
     border-left: 1px solid #1febb1;
     line-height: 1.4;
-    font-size: 1rem !important; 
-}
+    font-size: 1rem !important;
+    white-space: pre-wrap; /* <<<====== ADD THIS LINE */
+    word-wrap: break-word; /* Optional: Good for breaking long words */
+
 
 .messages-box .box.right {
     text-align: right;
@@ -1342,6 +1344,15 @@ tbody {
     border-radius: 10px 0 0 10px;
     border-right: 1px solid #1febb1;
     border-left: none;
+    /* Ensure it also has white-space if not inheriting correctly */
+    white-space: pre-wrap; /* <<<====== ADD OR ENSURE THIS LINE IS HERE */
+    word-wrap: break-word;
+}
+
+/* Your AI message setup in JS already sets this, but ensure CSS covers it too */
+.messages-box .box.ai-message .messages {
+    white-space: pre-wrap; /* <<<====== ENSURE THIS LINE IS PRESENT */
+    word-wrap: break-word;
 }
 
 /* Existing Resizer Handle Styles */
