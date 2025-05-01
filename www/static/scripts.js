@@ -576,6 +576,8 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
 
                 // 4. Update the DOM.
                 placeholderMessage.innerHTML = cleanHtml;
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
                 // ***** END OF CORRECTED RENDERING ORDER *****
 
 
@@ -1166,9 +1168,10 @@ function resizerDown(e) {
       resizer.classList.add('resizer-active');
   
       // Disconnect the ResizeObserver (if present) to avoid conflicting size adjustments
+      /*
       if (chatboxResizeObserver) {
         chatboxResizeObserver.disconnect();
-      }
+      }*/
   
       // Capture the initial horizontal coordinate, based on whether it's a mouse or touch event
       if (e.type === 'mousedown') {
@@ -1236,12 +1239,12 @@ function resizerDown(e) {
       localStorage.setItem('chatboxWidth', chatboxWidth);
   
       // Reconnect the ResizeObserver so it continues to observe changes automatically
-      if (chatboxResizeObserver) {
+      /*if (chatboxResizeObserver) {
         const chatboxElement = document.getElementById('chatbox');
         if (chatboxElement) {
           chatboxResizeObserver.observe(chatboxElement);
         }
-      }
+      }*/
     }
   }
   
@@ -1526,7 +1529,7 @@ const observer = new MutationObserver((mutationsList) => {
       scrollToBottom();
     }
   });
-  observer.observe(messagesContainer, { childList: true, subtree: true });
+  observer.observe(messagesContainer, { childList: true, subtree: true, characterData: true,  });
 
 
 // Define the autoResize function
