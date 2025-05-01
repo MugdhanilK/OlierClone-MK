@@ -1024,7 +1024,7 @@ if (isAndroid || isTablet) {
   }
   setupViewportResizeListener();
 }
-
+/*
 if (isIOS) {
     // On focus: change CSS directly
     chatInput.addEventListener('focus', () => {
@@ -1056,7 +1056,7 @@ if (isIOS) {
       });
       // --- END KEY CHANGE ---
     });
-}
+}*/
   // Keep the visualViewport listener as well, as it handles the initial appearance
 // and potentially other resize events.
 if (isAndroid || isTablet || isIOS) { // Add isIOS here if not already present
@@ -1084,7 +1084,10 @@ if (isAndroid || isTablet || isIOS) { // Add isIOS here if not already present
       // --- Input clearing and focus ---
       $('#chat-input').val('');
       if (typeof autoResize === 'function') autoResize();
-  
+      requestAnimationFrame(() => { // Adjust layout AFTER clearing and resizing input
+        adjustChatboxHeight();
+        updateScrollButtonVisibility();
+   });
       // Only refocus the input field if it's NOT an iOS device
       if (!isIOS) {
           $('#chat-input').focus();
@@ -1592,47 +1595,83 @@ function scrollToBottom() {
 }
 
 // Automatically scroll to the bottom as new messages are added
+// Automatically scroll to the bottom as new messages are added OR content changes
 const observer = new MutationObserver((mutationsList) => {
-    // Only auto‑scroll if an AI message (.box.ai-message) was just added and never on a reference‑link click
-    const addedAiMessage = mutationsList.some(mutation =>
-      Array.from(mutation.addedNodes).some(node =>
-        node.nodeType === Node.ELEMENT_NODE &&
-        node.classList.contains('box') &&
-        node.classList.contains('ai-message')
-      )
-    );
-    if (addedAiMessage) {
-      scrollToBottom();
+    let relevantMutation = false;
+    for (const mutation of mutationsList) {
+        // Check if a node was added/removed OR if text content changed
+        if (mutation.type === 'childList' || mutation.type === 'characterData') {
+            // Ensure the change happened within the messages container we care about
+            if (messagesContainer && messagesContainer.contains(mutation.target)) {
+                 relevantMutation = true;
+                 break; // One relevant mutation is enough to trigger the scroll check
+            }
+        }
     }
-  });
-  observer.observe(messagesContainer, { childList: true, subtree: true, characterData: true,  });
 
+    // If a relevant change happened, call scrollToBottom.
+    // scrollToBottom itself will check the autoScrollEnabled flag.
+    if (relevantMutation) {
+        scrollToBottom();
+    }
+});
+
+// Ensure the observer is observing the correct element with the right options
+if (messagesContainer) {
+    observer.observe(messagesContainer, {
+        childList: true,      // Detect adding/removing message bubbles (for general chat)
+        subtree: true,        // Detect changes within message bubbles
+        characterData: true   // Detect text content changes (for summary streaming)
+    });
+} else {
+     console.error("Could not find messagesContainer to observe.");
+}
 
 // Define the autoResize function
 function autoResize() {
     const chatInput = document.getElementById('chat-input');
+    if (!chatInput) {
+        console.error("#chat-input element not found for autoResize.");
+        return;
+   }
+    
     const lineHeight = parseInt(window.getComputedStyle(chatInput).lineHeight) || 20; // Fetch the line-height from CSS or default to 20
-    const maxHeight = 120;
-    const minHeight = 40;
+    const maxHeight = 120; // Define max height in pixels (e.g., 120px for ~6 lines)
+    const minHeight = 40; // Define min height (e.g., 40px for ~2 lines)
 
     // Reset the height to allow shrinking when deleting text
     chatInput.style.height = 'auto';
 
-    // Calculate the number of lines (accounting for wrapping)
-    const lines = Math.ceil(chatInput.scrollHeight / lineHeight);
+     // Calculate the desired height based on content, constrained by min/max
+     let newHeight = Math.max(minHeight, Math.min(chatInput.scrollHeight, maxHeight));
 
-    // Calculate new height
-    let newHeight = Math.max(minHeight, Math.min(chatInput.scrollHeight, maxHeight));
-
-    // Apply new height
-    chatInput.style.height = newHeight + 'px';
-}
+     // Apply the calculated height
+     chatInput.style.height = newHeight + 'px';
+ 
+     // Optional: If reaching max height, ensure overflow is visible
+     if (newHeight >= maxHeight) {
+         chatInput.style.overflowY = 'auto'; // Show scrollbar only when needed
+     } else {
+         chatInput.style.overflowY = 'hidden'; // Hide scrollbar when not needed
+     }
+ 
+     // DO NOT call adjustChatboxHeight() from here.
+     // Resizing the input doesn't necessarily mean the whole chatbox needs height recalc immediately.
+ }
 
 // const chatInput = document.getElementById('chat-input');
 
-// Attach the autoResize function to the input event
-chatInput.addEventListener('input', autoResize);
+// Attach the autoResize function and subsequent layout adjustments to the input event
+chatInput.addEventListener('input', () => {
+    autoResize(); // Resize the textarea first
+    // Now, adjust the rest of the chatbox layout because the input height changed
+    
+    requestAnimationFrame(() => {
+    adjustChatboxHeight();
+    updateScrollButtonVisibility(); // Update scroll button based on new layout
+});
 
+});
 // Initialize the height
 autoResize();
 
@@ -2168,12 +2207,15 @@ styleRadios.forEach(radio => {
 
 $('#send-btn').on('click', sendMessage);
 
+// REMOVE OR COMMENT OUT THE BLOCK BELOW (For keeping the Standard behavior where "Enter" creates a new line within the text area):
+/*
 $('#chat-input').on('keypress', function(e) {
     if (e.which === 13) { // 13 is the Enter key code
         e.preventDefault(); // Prevent default Enter key behavior
         sendMessage();
     }
 });
+*/
 
 async function sendMessage() {
     let input_message = $('#chat-input').val();
@@ -2364,9 +2406,11 @@ async function sendMessage() {
                             // We don't update innerHTML again in that case until 'done'
             
                             // *** ADDED: Ensure scrolling and layout adjustments happen on each update ***
+                            
+                            requestAnimationFrame(() => {
                             if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
                             if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-                            scrollToBottom(); // <-- Explicitly scroll after content update
+                            scrollToBottom(); });// <-- Explicitly scroll after content update
                             // *** END ADDED ***
             
                         }
@@ -2403,7 +2447,11 @@ async function sendMessage() {
                             addCopyButton(messageWrapper);
             
                             // *** MOVED UI Adjustments into the loop, but a final scroll is safe ***
-                             scrollToBottom(); // Final scroll after everything is done
+                            requestAnimationFrame(() => {
+                                adjustChatboxHeight();
+                                updateScrollButtonVisibility();
+                                scrollToBottom(); // Final scroll after everything is done
+                             }); 
                             // *** END MOVED ***
             
                             break; // Exit loop
