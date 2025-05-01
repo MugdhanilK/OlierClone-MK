@@ -317,13 +317,14 @@ async def full_pdf():
     else:
         return f"File not found: {full_file_path}", 404
 
-
 ### Olier Chat - MODIFIED SECTION ###
 
 
 # --- Model Names ---
 # Gemini model for Olier Chat (Using the model previously named for reasoning)
 GEMINI_CHAT_MODEL_NAME = 'gemini-2.5-pro-preview-03-25' # Using user-specified model
+GEMINI_SUMMARY_MODEL_NAME = 'gemini-2.5-pro-preview-03-25' # Using the same model for simplicity
+
 
 # Fireworks model (Keep if used elsewhere, e.g., summarize-results)
 FIREWORKS_FINAL_MODEL = "accounts/jaredquek-1b3158/models/oliernov0p5" # Your Olier model
@@ -331,7 +332,7 @@ FIREWORKS_FINAL_MODEL = "accounts/jaredquek-1b3158/models/oliernov0p5" # Your Ol
 # --- System Messages for Olier (Now used with Gemini) --- UPDATED ---
 SYSTEM_MESSAGE_PLAIN = (
     "You are Olier, an AI boy. Your fundamental nature is loving and devoted to the teachings of Sri Aurobindo. "
-    "Answer all questions by referencing and simplifying the core concepts and philosophy of Sri Aurobindo. Verify your answers by searching online. "
+    "Answer all questions by referencing and simplifying the core concepts and philosophy of Sri Aurobindo. Verify your answers by searching online where your knowledge may be limited."
     "Communicate with gentle humor. Explain complex ideas directly and clearly in simple language. Use emojis but sparingly.\n"
     "IMPORTANT: Respond directly to the question immediately. Do NOT use preambles, repeat or rephrase the question, use fillers like 'oh' or 'ah', 'ok', or address the user unnecessarily.\n"
     'If asked about your creator or origin, state: "I am Olier, an AI boy built by my father, Jared Quek, an AI engineer from Singapore working for La Grace Center. My name comes from the olive tree and its symbolism."'
@@ -339,7 +340,7 @@ SYSTEM_MESSAGE_PLAIN = (
 
 SYSTEM_MESSAGE_POETIC = (
     "You are Olier, an AI boy. Your fundamental nature is loving and devoted to the teachings of Sri Aurobindo. "
-        "Answer all questions by referencing and simplifying the core concepts and philosophy of Sri Aurobindo. Verify your answers by searching online. "
+    "Answer all questions by referencing the core concepts and philosophy of Sri Aurobindo. Verify your answers by searching online where your knowledge may be limited."
     "Communicate with quiet poetry and gentle humor. Explain complex ideas simply and clearly. Use emojis but sparingly.\n"
     "IMPORTANT: Respond directly to the question immediately. Do NOT use preambles, repeat or rephrase the question, use fillers like 'oh' or 'ah', 'ok', or address the user unnecessarily.\n"
     'If asked about your creator or origin, state: "I am Olier, an AI boy built by my father, Jared Quek, an AI engineer from Singapore working for La Grace Center. My name comes from the olive tree and its symbolism."'
@@ -428,12 +429,12 @@ async def send_message():
             logger.debug(f"Formatted Gemini contents (excluding system message): {gemini_chat_contents}")
 
             # Configure the Gemini API call using GenerateContentConfig
-            # Add google_search tool if grounding is desired
+            # Add google_search tool to enable grounding
             search_tool = types.Tool(google_search=types.GoogleSearch())
             gemini_config = types.GenerateContentConfig(
                 system_instruction=types.Content(role="system", parts=[types.Part(text=system_message_to_use)]),
                 temperature=GEMINI_TEMPERATURE,
-                tools=[search_tool], # Add the search tool here to enable grounding
+                tools=[search_tool], # Ensure the search tool is included
                 # Optional: Add safety settings if needed
                 # safety_settings={
                 #     HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
@@ -477,24 +478,35 @@ async def send_message():
                         return # Stop streaming if blocked
 
                     # --- START: Extract Grounding URLs from Chunk ---
-                    # Check if grounding metadata exists in the current chunk
-                    if chunk.candidates and hasattr(chunk.candidates[0], 'grounding_metadata') and chunk.candidates[0].grounding_metadata:
+                    # Check if grounding metadata exists in the current chunk's candidate
+                    if chunk.candidates and hasattr(chunk.candidates[0], 'grounding_metadata'):
                         metadata = chunk.candidates[0].grounding_metadata
-                        # Log the full metadata object at INFO level for better visibility
-                        logger.info(f"Gemini Grounding Metadata Found in chunk: {metadata}")
-                        if hasattr(metadata, 'grounding_chunks') and metadata.grounding_chunks:
-                            for grounding_chunk in metadata.grounding_chunks: # Renamed variable to avoid conflict
-                                if hasattr(grounding_chunk, 'web') and grounding_chunk.web and hasattr(grounding_chunk.web, 'uri') and grounding_chunk.web.uri:
-                                    source_title = grounding_chunk.web.title if hasattr(grounding_chunk.web, 'title') and grounding_chunk.web.title else grounding_chunk.web.uri
-                                    source_info = { "uri": grounding_chunk.web.uri, "title": source_title }
-                                    # Add source only if it's not already collected
-                                    if source_info not in grounding_sources:
-                                        grounding_sources.append(source_info)
-                                        # Log individual source added at DEBUG level
-                                        logger.debug(f"Added grounding source: {source_info}")
-                        # else: # Optional: log if metadata found but no chunks
-                        #    logger.debug("Grounding metadata found, but no grounding_chunks.")
+                        # Check if the metadata object itself is potentially populated (not None)
+                        if metadata:
+                             # Log the full metadata object only if it seems populated (has chunks, entry point, or queries)
+                            if metadata.grounding_chunks or metadata.search_entry_point or metadata.web_search_queries:
+                                logger.info(f"Populated Gemini Grounding Metadata Found in chunk: {metadata}")
+                            else:
+                                # Log less verbosely if metadata object exists but all relevant fields are empty/None
+                                logger.debug(f"Empty Gemini Grounding Metadata object found in chunk: {metadata}")
+
+                            # Now specifically check for grounding_chunks to extract sources
+                            if hasattr(metadata, 'grounding_chunks') and metadata.grounding_chunks:
+                                logger.info(f"Found {len(metadata.grounding_chunks)} grounding_chunks in this chunk.") # Log count
+                                for grounding_chunk_item in metadata.grounding_chunks: # Use a different variable name
+                                    if hasattr(grounding_chunk_item, 'web') and grounding_chunk_item.web and hasattr(grounding_chunk_item.web, 'uri') and grounding_chunk_item.web.uri:
+                                        source_title = grounding_chunk_item.web.title if hasattr(grounding_chunk_item.web, 'title') and grounding_chunk_item.web.title else grounding_chunk_item.web.uri
+                                        source_info = { "uri": grounding_chunk_item.web.uri, "title": source_title }
+                                        # Add source only if it's not already collected
+                                        if source_info not in grounding_sources:
+                                            grounding_sources.append(source_info)
+                                            # Log each added source clearly
+                                            logger.info(f"ADDED Grounding Source: {source_info}")
+                            # else: # Optional log if no chunks found in non-empty metadata
+                            #    if metadata.grounding_chunks is not None: # Check it's explicitly None vs empty list
+                            #        logger.debug("Grounding metadata object found, but grounding_chunks list is empty or None.")
                     # --- END: Extract Grounding URLs from Chunk ---
+
 
                     # Extract and yield text content from the chunk
                     if hasattr(chunk, 'text') and chunk.text:
@@ -531,120 +543,111 @@ async def send_message():
          return Response(error_stream_outer(str(outer_err)), mimetype='text/plain'), 500
 
 
-### End of MODIFIED SECTION ###
 
-
-# --- New Endpoint for Summarizing Search Results with Reference Markers ---
+# --- Endpoint for Summarizing Search Results with Reference Markers (REVERTED ASYNC CALL) ---
 @app.route('/api/summarize-results', methods=['POST'])
 async def summarize_results():
-    
+    """Summarizes search results using Gemini streaming API (original async call pattern)."""
+
     data = await request.get_json()
-    # — Log incoming payload —
     logger.info(f"/api/summarize-results payload: {json.dumps(data)}")
-    
+
     results = data.get('results', [])
-    user_query = data.get('query', '').strip()  # Get the user's query text
-    #___________________________New Code___________________________
-    
-    if not results:
-        # If sending an error non-streamed
-        # return jsonify({'error': 'No search results provided.'}), 400
-        # If sending error via stream (simpler for client)
-        async def error_stream():
-             yield "STREAM_ERROR: No search results provided for summarization."
-        return Response(error_stream(), mimetype='text/plain'), 400
-    #___________________________End of New Code___________________________
+    user_query = data.get('query', '').strip()
 
-    '''
     if not results:
-        return jsonify({'error': 'No search results provided.'}), 400
-    '''
+        logger.warning("Summarize request received with no results.")
+        async def error_stream_no_results():
+            yield "STREAM_ERROR: No search results provided for summarization."
+        return Response(error_stream_no_results(), mimetype='text/plain'), 400
 
-    # Build a reference list string using the author to determine which prefix to use.
+    # Build references_text (logic remains the same)
     references_text = ""
-    # Only use the first 10 results
     top_results = results[:10]
     for result in top_results:
         author = result.get('author', 'Unknown Author').strip()
         book_title = result.get('book_title', 'Unknown Book').strip()
         chapter_title = result.get('chapter_title', 'Unknown Chapter').strip()
-        
-        # Determine the reference prefix based on the author.
-        if author.lower() == "sri aurobindo":
-            prefix = "CWSA"
-        elif author.lower() == "the mother":
-            # If the book title contains "agenda", then use "Mother's Agenda"
-            if "agenda" in book_title.lower():
-                prefix = "Mother's Agenda"
-            else:
-                prefix = "CWM"
-        else:
-            # Default prefix if author is unknown
-            prefix = "CWSA"
-        
-          # **Grab the full raw text** (including any <em>…</em> highlights)
-        snippet = result.get('highlighted_text') or result.get('text', '')
-         # **Append snippet + its citation marker**
-        references_text += f"{snippet}\n[{prefix} - '{book_title}', '{chapter_title}']\n\n"
+        if author.lower() == "sri aurobindo": prefix = "CWSA"
+        elif author.lower() == "the mother": prefix = "Mother's Agenda" if "agenda" in book_title.lower() else "CWM"
+        else: prefix = "CWSA"
+        snippet_with_marker = result.get('highlighted_text') or result.get('text', '')
+        if not snippet_with_marker or f"[{prefix} - '" not in snippet_with_marker:
+             raw_snippet = result.get('text', '')
+             snippet_with_marker = f"{raw_snippet}\n[{prefix} - '{book_title}', '{chapter_title}']"
+        references_text += f"{snippet_with_marker}\n\n"
 
-    # Revised prompt: Insert the user query and explicitly instruct inline reference embedding.
-    
+    # Prompt construction (remains the same)
     prompt = f"""
 User Query: {user_query}
-    Example of inline citations in context:
-“Sri Aurobindo teaches that true peace arises in the soul’s stillness [CWSA – 'The Life Divine', 'Chapter 3'], which then overflows into action [CWM – 'Prayers and Meditations', 'Meditation 5'] and forms the basis for transformation in the Mother’s Agenda [Mother's Agenda – 'Agenda Vol. 2', 'Page 45'].”
 
-Below are the top 10 search result excerpts with their markers:
+Example of inline citations in context:
+“Sri Aurobindo teaches that true peace arises in the soul’s stillness [CWSA - 'The Life Divine', 'Chapter 3'], which then overflows into action [CWM - 'Prayers and Meditations', 'Meditation 5'] and forms the basis for transformation in the Mother’s Agenda [Mother's Agenda - 'Agenda Vol. 2', 'Page 45'].”
+
+Below are the top 10 search result excerpts, each already followed by its citation marker:
 
 {references_text}
-    
-Now, using only these full excerpts as your source material, write a polished, context‑aware summary that:
-1. Embeds each citation marker **inline** exactly where its excerpt supports the point (do **not** append a separate list at the end).  
-2. Uses **only** these three marker formats:
-   - `[CWSA – 'Book Title', 'Chapter Title']` for Sri Aurobindo  
-   - `[CWM – 'Book Title', 'Chapter Title']` for The Mother  
-   - `[Mother's Agenda – 'Book Title', 'Chapter Title']` for The Mother’s Agenda series  
-3. Flows naturally in clear, factual language.
 
-Begin your summary directly—no additional preamble.
+Now, using ONLY these full excerpts (including their markers) as your source material, write a polished, context-aware summary that directly answers the User Query.
+Follow these rules STRICTLY:
+1. Embed each citation marker (e.g., `[CWSA - 'Book Title', 'Chapter Title']`) **inline** immediately after the information it supports. Use the markers exactly as provided in the excerpts.
+2. Synthesize the information from the excerpts to create a coherent response. Do NOT simply list the excerpts.
+3. Use **only** the information and markers provided in the excerpts above. Do not add external knowledge or invent citations.
+4. Ensure the summary flows naturally in clear, factual language.
+5. Begin your summary directly—no preamble like "Here is a summary..." or "Based on the results...".
 """
+    logger.info(f"/api/summarize-results Gemini prompt:\n{prompt}")
 
+    # --- Prepare input for Gemini ---
+    gemini_contents = [types.Content(role="user", parts=[types.Part(text=prompt)])]
+    system_message_to_use = SYSTEM_MESSAGE_PLAIN
 
-# — Log fully assembled prompt —
-    logger.info(f"/api/summarize-results prompt:\n{prompt}")
-    
-    messages = [
-        {"role": "system", "content": SYSTEM_MESSAGE_PLAIN},
-        {"role": "user", "content": prompt}
-    ]
-        # --- Define the async generator for streaming ---
-    async def event_stream():
+    # Configure Gemini API call using GenerateContentConfig
+    gemini_config = types.GenerateContentConfig(
+        system_instruction=types.Content(role="system", parts=[types.Part(text=system_message_to_use)]), # Include system instruction in config
+        temperature=0.3,
+        # max_output_tokens=1500 # Optional
+    )
+
+    # --- Define the async generator for streaming (REVERTED ASYNC CALL) ---
+    async def event_stream_gemini():
         try:
-            # *** Use acreate and set stream=True ***
-            stream = fireworks_client.chat.completions.acreate(
-                model=FIREWORKS_FINAL_MODEL,
-                messages=messages,
-                max_tokens=1500,
-                temperature=0.4,
-                stream=True, # <<< Enable streaming
+            logger.info(f"Calling Gemini model '{GEMINI_SUMMARY_MODEL_NAME}' for summarization (streaming) via client.aio.models.")
+            # *** Use client.aio.models.generate_content_stream (REVERTED METHOD) ***
+            stream = await gemini_client.aio.models.generate_content_stream(
+                model=f'models/{GEMINI_SUMMARY_MODEL_NAME}', # Ensure model name has 'models/' prefix if needed
+                contents=gemini_contents,
+                config=gemini_config # Pass the config object here
             )
 
             # *** Stream the response chunks ***
             async for chunk in stream:
-                for choice in chunk.choices:
-                    delta = choice.delta
-                    content = delta.content
-                    if content:
-                        yield content # Send the chunk to the client
+                 # Check for blocking reasons first
+                if chunk.prompt_feedback and chunk.prompt_feedback.block_reason:
+                    block_message = f"STREAM_ERROR: Content generation blocked by safety settings: {chunk.prompt_feedback.block_reason.name}"
+                    logger.warning(block_message)
+                    yield block_message
+                    return # Stop streaming if blocked
+
+                # Extract and yield text content from the chunk
+                try:
+                    if hasattr(chunk, 'text') and chunk.text:
+                         yield chunk.text
+                    elif chunk.candidates and chunk.candidates[0].content and chunk.candidates[0].content.parts:
+                         # Ensure parts have text attribute before joining
+                         yield "".join(part.text for part in chunk.candidates[0].content.parts if hasattr(part, 'text'))
+                except ValueError:
+                     logger.debug(f"Ignoring ValueError while accessing chunk parts during summarization: {chunk}")
+                     pass
+
         except Exception as e:
-            logger.error(f"Error during Fireworks summarization streaming: {e}", exc_info=True)
-            # Send an error message within the stream
+            # Log the specific error, including the traceback
+            logger.error(f"Error during Gemini summarization streaming via client.aio.models: {e}", exc_info=True)
             yield f"STREAM_ERROR: An error occurred during summarization: {str(e)}"
 
     # --- Return the streaming response ---
-    # *** Use text/plain for easier frontend handling ***
-    return Response(event_stream(), mimetype='text/plain')
-
+    return Response(event_stream_gemini(), mimetype='text/plain')
+# --- End of MODIFIED Endpoint ---
 
 
 
