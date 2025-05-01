@@ -1082,9 +1082,9 @@ if (isIOS) {
         // Scroll to the bottom (consider if this should always happen,
         // might conflict with user scrolling up intentionally)
         // Check if autoScroll is enabled before forcing scroll
-        if (autoScrollEnabled) {
+        /*if (autoScrollEnabled) {
              messages.scrollTop = messages.scrollHeight;
-        }
+        }*/
         console.log(`ViewportH: ${viewportHeight}, TopH: ${topChatboxHeight}, InputH: ${chatInputContainerHeight}, MessagesH: ${messagesHeight}`);
     
     }
@@ -2153,7 +2153,15 @@ async function sendMessage() {
     // --- Input clearing and focus ---
     $('#chat-input').val('');
     if (typeof autoResize === 'function') autoResize(); // Resize input after clearing
-    $('#chat-input').focus();
+    
+     // $('#chat-input').focus(); // <--- THIS IS THE ORIGINAL LINE
+
+    // --- MODIFICATION START ---
+    // Only refocus the input field if it's NOT an iOS device
+    if (!isIOS) { // Assuming 'isIOS' is your globally defined boolean flag
+        $('#chat-input').focus();
+    }
+    // --- MODIFICATION END ---
 
     // --- History setup ---
     const allMessages = [...document.querySelectorAll("#messages .box")].map(el => {
