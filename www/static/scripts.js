@@ -585,7 +585,7 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
 
                 // 4. Update the DOM.
                 placeholderMessage.innerHTML = cleanHtml;
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                //messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
                 // ***** END OF CORRECTED RENDERING ORDER *****
 
@@ -593,7 +593,9 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
                 // --- UI Adjustments (keep as is) ---
                  if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
                  if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-                 scrollToBottom(); // Keep scrolling as content arrives
+                 
+                 
+                 //scrollToBottom(); // Keep scrolling as content arrives
                  // ---
             }
 
@@ -1028,18 +1030,68 @@ if (isIOS) {
     chatInput.addEventListener('focus', () => {
       const chatInputContainer = document.getElementById('chat-input-container');
       chatInputContainer.style.position = 'absolute';
-      chatInputContainer.style.bottom = 'auto';
-      
+     // Explicitly set bottom to 0 relative to the chatbox container (which has height: 100vh)
+      // This might work better than 'auto' when positioned absolutely
+      chatInputContainer.style.bottom = '0px';
 
+      // You might still want adjustChatboxHeight here if focus itself changes layout
+      // requestAnimationFrame(adjustChatboxHeight);
     });
-  
-    // On blur: revert CSS
+
+    // On blur: revert CSS AND explicitly recalculate height
     chatInput.addEventListener('blur', () => {
       const chatInputContainer = document.getElementById('chat-input-container');
-      chatInputContainer.style.position = '';
-      chatInputContainer.style.bottom = '';
-      
+      chatInputContainer.style.position = ''; // Revert to default/static positioning
+      chatInputContainer.style.bottom = '';   // Revert bottom style
+
+      // --- KEY CHANGE: Explicitly call adjustChatboxHeight ---
+      // Use requestAnimationFrame to ensure the style changes have been
+      // processed by the browser before recalculating the layout.
+      requestAnimationFrame(() => {
+          console.log('iOS blur: Reverting position and recalculating height.'); // Debug log
+          adjustChatboxHeight();
+          // Optional: If content sometimes gets cut off after resize,
+          // you might need a final scroll check/adjustment here.
+          // scrollToBottom();
+      });
+      // --- END KEY CHANGE ---
     });
+}
+  // Keep the visualViewport listener as well, as it handles the initial appearance
+// and potentially other resize events.
+if (isAndroid || isTablet || isIOS) { // Add isIOS here if not already present
+    function setupViewportResizeListener() {
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', () => {
+            console.log('visualViewport resize triggered.'); // Debug log
+            requestAnimationFrame(adjustChatboxHeight); // Use rAF for resize too
+        });
+      } else {
+        // Fallback for older browsers/devices without visualViewport
+        window.addEventListener('resize', () => {
+           console.log('window resize triggered.'); // Debug log
+           requestAnimationFrame(adjustChatboxHeight);
+        });
+      }
+    }
+    setupViewportResizeListener();
+  }
+  
+  // --- Ensure the sendMessage function STILL has the focus prevention for iOS ---
+  async function sendMessage() {
+      // ... (existing code) ...
+  
+      // --- Input clearing and focus ---
+      $('#chat-input').val('');
+      if (typeof autoResize === 'function') autoResize();
+  
+      // Only refocus the input field if it's NOT an iOS device
+      if (!isIOS) {
+          $('#chat-input').focus();
+      }
+      // ---
+  
+      // ... (rest of the sendMessage function) ...
   }
   
 
@@ -1077,7 +1129,7 @@ if (isIOS) {
         const messagesHeight = viewportHeight - topChatboxHeight - chatInputContainerHeight;
     
         // Apply calculated height to the messages container
-        messages.style.height = `${messagesHeight}px`;
+        messages.style.height = `${Math.max(0, messagesHeight)}px`;
     
         // Scroll to the bottom (consider if this should always happen,
         // might conflict with user scrolling up intentionally)
