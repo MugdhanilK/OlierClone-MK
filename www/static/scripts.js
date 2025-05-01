@@ -1024,6 +1024,32 @@ if (isAndroid || isTablet) {
   }
   setupViewportResizeListener();
 }
+
+// --- START: Add back iOS focus/blur position handling ---
+if (isIOS) {
+    // On focus: change CSS directly
+    chatInput.addEventListener('focus', () => {
+      const chatInputContainer = document.getElementById('chat-input-container');
+      chatInputContainer.style.position = 'absolute';
+      // Setting bottom to 'auto' or '0px' can be experimented with if needed,
+      // but 'auto' seemed to work in the original. Let's stick with that.
+      chatInputContainer.style.bottom = 'auto';
+      // We DON'T call adjustChatboxHeight here. Let the viewport resize handle it.
+    });
+
+    // On blur: revert CSS
+    chatInput.addEventListener('blur', () => {
+      const chatInputContainer = document.getElementById('chat-input-container');
+      chatInputContainer.style.position = ''; // Revert to default/static positioning
+      chatInputContainer.style.bottom = '';   // Revert bottom style
+      // We DON'T explicitly call adjustChatboxHeight here.
+      // Relying on the visualViewport resize event that fires after blur.
+      console.log('iOS blur: Reverting position.'); // Debug log
+    });
+}
+
+// --- END: Add back iOS focus/blur position handling ---
+
 /*
 if (isIOS) {
     // On focus: change CSS directly
