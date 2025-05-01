@@ -488,7 +488,16 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
     messageWrapper.appendChild(placeholderMessage);
     placeholderBubble.appendChild(messageWrapper);
     messagesBox.appendChild(placeholderBubble);
-    scrollToBottom(); // Scroll initially
+    // --- UI Adjustments & Scroll (AI Placeholder) ---
+    autoScrollEnabled = true; // Ensure scroll enabled for placeholder
+    requestAnimationFrame(() => { // Ensure DOM update before scrolling
+        scrollToBottom();
+        if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+        if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+    });
+   // --- END UI Adjustments (AI Placeholder) ---
+
+    //scrollToBottom(); // Scroll initially
 
     // 2a. Animate dots (Keep this part)
     let dotCount = 0;
@@ -1037,45 +1046,48 @@ if (isIOS) {
     function adjustChatboxHeight() {
         // This function adjusts the chatbox height dynamically based on the viewport
         // and the dimensions of the top chatbox and chat input container. 
-      
+        const chatbox = document.getElementById('chatbox'); // Get chatbox element
+
         const chatInputContainer = document.getElementById('chat-input-container');  // Reference to the chat input container element
         const messages = document.getElementById('messages');                       // Reference to the messages container element
         const topChatbox = document.querySelector('.top-chatbox');                  // Reference to the top chatbox element
       
-        // If any of these elements are missing, we won't proceed with the height adjustment
-        if (!chatInputContainer || !messages || !topChatbox) {
-          return;
+        if (!chatbox || !chatInputContainer || !messages || !topChatbox) {
+            console.error("Required elements for adjustChatboxHeight not found.");
+            return;
         }
-
-        //Debug: confirm this function is firing and what scrollTop was
-        console.log('⚙️ adjustChatboxHeight called; scrollTop before =', messages.scrollTop);
-        
-        // Determine the height of the visible viewport (prioritizing window.visualViewport, then fallback to window.innerHeight)
+    
+        console.log('⚙️ adjustChatboxHeight called');
+    
+        // Use visualViewport height if available, otherwise fallback to innerHeight
         let viewportHeight = window.visualViewport
-          ? window.visualViewport.height
-          : window.innerHeight;
-      
-        // Find how far down the chatbox starts from the top of the screen
-        let chatboxTopOffset = chatbox.getBoundingClientRect().top;
-        // Calculate remaining space below the chatbox top offset
-        let availableHeight = viewportHeight - chatboxTopOffset;
-      
-        // Set the chatbox element's height to this available space
-        chatbox.style.height = `${availableHeight}px`;
-      
-        // Get the heights of the chat input container and the top chatbox
+            ? window.visualViewport.height
+            : window.innerHeight;
+    
+        // --- Let CSS handle the main chatbox height (e.g., height: 100vh) ---
+        // We don't need to set chatbox.style.height dynamically here if CSS handles it.
+        // However, if you *need* JS to set it due to visualViewport changes, use viewportHeight:
+        chatbox.style.height = `${viewportHeight}px`; // Keep this line if 100vh in CSS is problematic with keyboard
+    
+        // --- Calculate the height available *for the messages area* ---
         const chatInputContainerHeight = chatInputContainer.offsetHeight;
         const topChatboxHeight = topChatbox.offsetHeight;
-        // The remaining space is allocated for the messages area
-        const messagesHeight = availableHeight - topChatboxHeight - chatInputContainerHeight;
-      
-        // Adjust the messages container height
+    
+        // Calculate messages height based on the *viewport height* minus header and footer
+        const messagesHeight = viewportHeight - topChatboxHeight - chatInputContainerHeight;
+    
+        // Apply calculated height to the messages container
         messages.style.height = `${messagesHeight}px`;
-      
-        // Scroll to the bottom of the messages container to show the latest messages
-        messages.scrollTop = messages.scrollHeight;
-      
-      }
+    
+        // Scroll to the bottom (consider if this should always happen,
+        // might conflict with user scrolling up intentionally)
+        // Check if autoScroll is enabled before forcing scroll
+        if (autoScrollEnabled) {
+             messages.scrollTop = messages.scrollHeight;
+        }
+        console.log(`ViewportH: ${viewportHeight}, TopH: ${topChatboxHeight}, InputH: ${chatInputContainerHeight}, MessagesH: ${messagesHeight}`);
+    
+    }
       
 
   
@@ -1492,22 +1504,34 @@ function checkIfAtBottom() {
     return messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight <= threshold;
 }
 
-// Scroll event listener to update auto-scroll flag
+// Scroll event listener to update auto-scroll flag and button visibility
 messagesContainer.addEventListener('scroll', function() {
-    if (checkIfAtBottom()) {
+    const isCurrentlyAtBottom = checkIfAtBottom();
+
+    if (isCurrentlyAtBottom) {
         autoScrollEnabled = true;
+         // Hide scroll-to-bottom button when at bottom
+        if (scrollButton) scrollButton.style.display = 'none';
     } else {
+        // User has scrolled up, disable auto-scroll
         autoScrollEnabled = false;
+         // Show scroll-to-bottom button if overflowing and not at bottom
+         if (isOverflowing() && scrollButton) {
+            // Use flex if that's how you center the icon, otherwise 'block'
+            scrollButton.style.display = 'flex'; // Or 'block'
+         }
     }
 });
 
 // Immediate interaction handlers to disable auto-scroll
 ['mousedown', 'touchstart', 'wheel'].forEach(eventType => {
     messagesContainer.addEventListener(eventType, function() {
+        // Directly disable auto-scroll on any interaction start
         autoScrollEnabled = false;
+        // Update button visibility *immediately* based on new state
+        updateScrollButtonVisibility();
     });
 });
-
 // Modify scrollToBottom function
 function scrollToBottom() {
     if (autoScrollEnabled) {
@@ -1587,9 +1611,15 @@ function updateScrollButtonVisibility() {
 }
 
 // Handle scroll-to-bottom button click
-scrollButton.addEventListener('click', function() {
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-});
+if (scrollButton) { // Check if button exists
+    scrollButton.addEventListener('click', function() {
+        autoScrollEnabled = true; // Re-enable auto-scroll
+        messagesDiv.scrollTo({ top: messagesDiv.scrollHeight, behavior: 'smooth' });
+        // Button will be hidden by the scroll listener once it reaches the bottom
+    });
+} else {
+    console.warn("Scroll-to-bottom button not found.");
+}
 
 // Update visibility when the user scrolls
 messagesDiv.addEventListener('scroll', function() {
@@ -2111,15 +2141,18 @@ async function sendMessage() {
     messageBox.appendChild(message);
     document.querySelector("#messages .messages-box").appendChild(messageBox);
 
-    // --- UI Adjustments ---
-    if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-    if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+    // --- UI Adjustments & Scroll (AI Placeholder) ---
+     autoScrollEnabled = true; // Ensure scroll enabled for placeholder
+     requestAnimationFrame(() => { // Ensure DOM update before scrolling
+         scrollToBottom();
+         if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+         if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+     });
+    // --- END UI Adjustments (AI Placeholder) ---
 
     // --- Input clearing and focus ---
     $('#chat-input').val('');
-    if (typeof chatInput !== 'undefined') {
-        chatInput.dispatchEvent(new Event('input'));
-    }
+    if (typeof autoResize === 'function') autoResize(); // Resize input after clearing
     $('#chat-input').focus();
 
     // --- History setup ---
@@ -2968,6 +3001,16 @@ function toggleOlierButton() {
         olierButton.classList.remove('vanish');
         zoomToTopButton.classList.remove('vanish');
     }
+
+ // --- Mobile + Chatbox Open Handling (Priority 2) ---
+    // <<< START FIX >>>
+    if (isChatboxOpen && isMobile) {
+        olierButton.classList.add('hidden');     // Always hide chat button when chatbox open
+        zoomToTopButton.classList.add('hidden'); // <<< THIS IS THE FIX: Always hide books button on mobile when chatbox open
+        lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // Still update scroll pos
+        return; // Exit early as mobile/open case is handled
+    }
+    // <<< END FIX >>>
 
     // --- Scroll Direction Handling (uses .hidden) ---
 
