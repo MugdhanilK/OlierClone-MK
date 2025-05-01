@@ -2044,22 +2044,23 @@ if (savedStyle && savedStyle !== 'poetic') {
     }
 }
 
-/* Retrieve saved reflectiveMode from localStorage */
-let savedReflectiveMode = localStorage.getItem('reflectiveMode');
-console.log("Retrieved savedReflectiveMode:", savedReflectiveMode);
+/* Retrieve saved speedyMode from localStorage */
+let savedSpeedyMode = localStorage.getItem('speedyModePreference'); // Use a new, distinct key
+console.log("Retrieved savedSpeedyMode:", savedSpeedyMode);
 
-const reflectiveCheckbox = document.querySelector("input[name='reflective-mode']");
-if (reflectiveCheckbox) {
-    // If savedReflectiveMode === 'true', check the box
-    reflectiveCheckbox.checked = (savedReflectiveMode === 'true');
+const speedyCheckbox = document.querySelector("input[name='speedy-mode']"); // Find the correct checkbox
+if (speedyCheckbox) {
+    // If savedSpeedyMode === 'true' (string), check the box
+    speedyCheckbox.checked = (savedSpeedyMode === 'true');
+    console.log(`Set Speedy Mode checkbox checked state to: ${speedyCheckbox.checked} (based on localStorage)`);
 
-    // Set up event listener to update localStorage when Reflective Mode is changed
-    reflectiveCheckbox.addEventListener('change', (e) => {
-        localStorage.setItem('reflectiveMode', e.target.checked);
-        console.log("Reflective Mode changed to:", e.target.checked);
+    // Set up event listener to update localStorage when Speedy Mode is changed
+    speedyCheckbox.addEventListener('change', (e) => {
+        localStorage.setItem('speedyModePreference', e.target.checked); // Save the boolean value (will be stored as string 'true'/'false')
+        console.log("Speedy Mode preference saved to localStorage:", e.target.checked);
     });
 } else {
-    console.warn("No 'reflective-mode' checkbox found in the HTML. Check the markup.");
+    console.warn("No 'speedy-mode' checkbox found in the HTML. Check the markup.");
 }
 
 /* Set up event listeners to update localStorage on style change */
@@ -2157,11 +2158,13 @@ async function sendMessage() {
 // ---
     // --- Style and Mode setup ---
     const selectedStyle = document.querySelector("input[name='style']:checked").value;
-    const reflectiveCheckbox = document.querySelector("input[name='reflective-mode']");
-    let reflectiveMode = reflectiveCheckbox && reflectiveCheckbox.checked;
-    if (typeof isFirstMessageAfterOliClick !== 'undefined' && isFirstMessageAfterOliClick) {
-        reflectiveMode = false;
-    }
+    const speedyCheckbox = document.querySelector("input[name='speedy-mode']"); // <-- Find the NEW checkbox
+    const isSpeedyMode = speedyCheckbox ? speedyCheckbox.checked : false; // <-- Get its state, default false if not found
+    // Note: The logic involving 'isFirstMessageAfterOliClick' was tied to reflective mode.
+    // Decide if you still need similar logic for speedy mode. If not, remove that check.
+    // For now, we'll just use the direct checkbox state.
+    console.log(`Style: ${selectedStyle}, Speedy Mode Active: ${isSpeedyMode}`); // Log the values being sent
+
 
     // --- AI Response Container Setup ---
     let responseBox = document.createElement("div");
@@ -2205,7 +2208,8 @@ async function sendMessage() {
             body: JSON.stringify({
                 messages: chatHistory,
                 style: selectedStyle,
-                reflectiveMode: reflectiveMode
+                // reflectiveMode: reflectiveMode // REMOVE THIS LINE
+                speedy_mode: isSpeedyMode      // <-- ADD THIS LINE (using snake_case for Python backend)
             })
         });
 
