@@ -330,7 +330,7 @@ GEMINI_CHAT_MODEL_PRO = 'models/gemini-2.5-pro-preview-03-25' # Default Pro mode
 FIREWORKS_FINAL_MODEL = "accounts/jaredquek-1b3158/models/oliernov0p5" # Your Olier model for Speedy Mode
 
 # Summary model (Remains Gemini for now, adjust if needed)
-GEMINI_SUMMARY_MODEL_NAME = 'gemini-2.5-flash-preview-04-17'
+GEMINI_SUMMARY_MODEL_NAME = 'models/gemini-2.5-flash-preview-04-17'
 
 # --- System Messages ---
 # --- Regular System Messages (for Gemini Pro) ---
