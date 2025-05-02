@@ -2443,28 +2443,16 @@ $(document).on('click', '.toggle_search', function(event) {
     event.preventDefault();
     // event.stopPropagation();
 
-    console.log('Toggle button clicked. isSearchVisible:', isSearchVisible); // Debugging
+    console.log('Toggle button clicked'); // Debugging
+
     if (isSearchVisible) {
                 // Save scroll
-                searchScrollPosition = $(window).scrollTop(); // Save search scroll position
+                searchScrollPosition = $(window).scrollTop();
         
-                $('#search-view-container').addClass('closed');   // Hide Search Container
-                $('#reading-view-container').removeClass('closed'); // Show Reading Container
-
-                 // Restore reading view scroll position IF it exists and is relevant
-        // This might need adjustment depending on exact behaviour needed
-        if (fullTextScrollPosition > 0) {
-            // Use requestAnimationFrame for smoother scroll restoration
-           requestAnimationFrame(() => {
-               $(window).scrollTop(fullTextScrollPosition);
-            });
-       }
-
-
-       // Update state
-       isSearchVisible = false;
-        readingModeActivated = true; // Assuming toggle always enters reading mode visually
-        toggleButtonVisibility(true); // Hide floating buttons in reading mode
+                // Hide the **entire** search pane
+                $('.search-container').addClass('closed');
+               // Show the **entire** full-text pane
+               $('.fulltext-container').removeClass('closed');
     } else {
 
         // Save scroll
