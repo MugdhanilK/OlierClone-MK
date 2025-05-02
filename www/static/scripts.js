@@ -2406,15 +2406,8 @@ $('#decrease-font-btn').on('click', function(event) {
 
 // Apply Reading Mode Settings
 function applyReadingMode() {
-   // --- START UPDATED CODE ---
-    // Hide the search view container
-    $('#search-view-container').addClass('closed');
-    // Show the reading view container
-    $('#reading-view-container').removeClass('closed');
-    // --- END UPDATED CODE ---
-
     // Hide the searchSpace by adding the 'closed' class
-    //if (searchSpace) searchSpace.classList.add('closed');
+    if (searchSpace) searchSpace.classList.add('closed');
 
     // Show full-text
     if (fullText) fullText.style.display = 'block';
@@ -2439,62 +2432,52 @@ var searchScrollPosition = 0;
 var fullTextScrollPosition = 0;
 
 // Toggle Search Function using jQuery event delegation
-// Toggle Search Function using jQuery event delegation
 $(document).on('click', '.toggle_search', function(event) {
     event.preventDefault();
-    // event.stopPropagation(); // Usually not needed here
+    // event.stopPropagation();
 
-    console.log('Toggle button clicked. isSearchVisible:', isSearchVisible); // Debugging
+    console.log('Toggle button clicked'); // Debugging
 
     if (isSearchVisible) {
-        // --- Currently showing Search, switch to Reading View ---
-        searchScrollPosition = $(window).scrollTop(); // Save search scroll position
+        console.log('Hiding searchSpace, showing fullText');
 
-        $('#search-view-container').addClass('closed');   // Hide Search Container
-        $('#reading-view-container').removeClass('closed'); // Show Reading Container
+        // Save the scroll position of the search view
+        searchScrollPosition = $(window).scrollTop();
 
-        // Restore reading view scroll position IF it exists and is relevant
-        // This might need adjustment depending on exact behaviour needed
-        if (fullTextScrollPosition > 0) {
-             // Use requestAnimationFrame for smoother scroll restoration
-            requestAnimationFrame(() => {
-                $(window).scrollTop(fullTextScrollPosition);
-             });
-        }
+        // Hide the searchSpace by adding the 'closed' class
+        $('.search-space').addClass('closed');
 
+        // Show full-text
+        $('#full-text').show();
 
-        // Update state
+        // Restore the scroll position of the full-text view
+        $(window).scrollTop(fullTextScrollPosition);
+
+        // Optionally adjust bottom-flex-box
+        $('#bottom-flex-box').css('display', 'flex');
+
+        // Update visibility state
         isSearchVisible = false;
-         readingModeActivated = true; // Assuming toggle always enters reading mode visually
-         toggleButtonVisibility(true); // Hide floating buttons in reading mode
-
-
     } else {
-        // --- Currently showing Reading View, switch to Search View ---
-        fullTextScrollPosition = $(window).scrollTop(); // Save reading scroll position
 
-        $('#reading-view-container').addClass('closed'); // Hide Reading Container
-        $('#search-view-container').removeClass('closed'); // Show Search Container
+        // Save the scroll position of the full-text view
+        fullTextScrollPosition = $(window).scrollTop();
 
-        // Restore search scroll position
-        // Use requestAnimationFrame for smoother scroll restoration
-         requestAnimationFrame(() => {
-            $(window).scrollTop(searchScrollPosition);
-        });
+        // Hide full-text
+        $('#full-text').hide();
 
-        // Update state
+        // Show the searchSpace by removing the 'closed' class
+        $('.search-space').removeClass('closed');
+
+        // Restore the scroll position of the search view
+        $(window).scrollTop(searchScrollPosition);
+
+        // Optionally adjust bottom-flex-box
+        $('#bottom-flex-box').css('display', 'flex');
+
+        // Update visibility state
         isSearchVisible = true;
-        readingModeActivated = false; // Back to search view
-        toggleButtonVisibility(false); // Show floating buttons if appropriate
-
-
-         // Hide the specific #full-text div when going back to search
-        if (fullText) fullText.style.display = 'none';
-        // Hide the bottom flex box as well
-        if (bottomFlexBox) bottomFlexBox.style.display = 'none';
-
     }
-     adjustChatboxStyle(); // Adjust layout after switching views
 });
 
 
