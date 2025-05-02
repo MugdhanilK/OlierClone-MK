@@ -2439,62 +2439,44 @@ var searchScrollPosition = 0;
 var fullTextScrollPosition = 0;
 
 // Toggle Search Function using jQuery event delegation
-// Toggle Search Function using jQuery event delegation
 $(document).on('click', '.toggle_search', function(event) {
     event.preventDefault();
-    // event.stopPropagation(); // Usually not needed here
+    // event.stopPropagation();
 
     console.log('Toggle button clicked. isSearchVisible:', isSearchVisible); // Debugging
-
     if (isSearchVisible) {
-        // --- Currently showing Search, switch to Reading View ---
-        searchScrollPosition = $(window).scrollTop(); // Save search scroll position
+                // Save scroll
+                searchScrollPosition = $(window).scrollTop(); // Save search scroll position
+        
+                $('#search-view-container').addClass('closed');   // Hide Search Container
+                $('#reading-view-container').removeClass('closed'); // Show Reading Container
 
-        $('#search-view-container').addClass('closed');   // Hide Search Container
-        $('#reading-view-container').removeClass('closed'); // Show Reading Container
-
-        // Restore reading view scroll position IF it exists and is relevant
+                 // Restore reading view scroll position IF it exists and is relevant
         // This might need adjustment depending on exact behaviour needed
         if (fullTextScrollPosition > 0) {
-             // Use requestAnimationFrame for smoother scroll restoration
-            requestAnimationFrame(() => {
-                $(window).scrollTop(fullTextScrollPosition);
-             });
-        }
+            // Use requestAnimationFrame for smoother scroll restoration
+           requestAnimationFrame(() => {
+               $(window).scrollTop(fullTextScrollPosition);
+            });
+       }
 
 
-        // Update state
-        isSearchVisible = false;
-         readingModeActivated = true; // Assuming toggle always enters reading mode visually
-         toggleButtonVisibility(true); // Hide floating buttons in reading mode
-
-
+       // Update state
+       isSearchVisible = false;
+        readingModeActivated = true; // Assuming toggle always enters reading mode visually
+        toggleButtonVisibility(true); // Hide floating buttons in reading mode
     } else {
-        // --- Currently showing Reading View, switch to Search View ---
-        fullTextScrollPosition = $(window).scrollTop(); // Save reading scroll position
 
-        $('#reading-view-container').addClass('closed'); // Hide Reading Container
-        $('#search-view-container').removeClass('closed'); // Show Search Container
+        // Save scroll
+        fullTextScrollPosition = $(window).scrollTop();
 
-        // Restore search scroll position
-        // Use requestAnimationFrame for smoother scroll restoration
-         requestAnimationFrame(() => {
-            $(window).scrollTop(searchScrollPosition);
-        });
+        // Show search pane, hide full-text pane
+        $('.search-container').removeClass('closed');
+        $('.fulltext-container').addClass('closed');
 
-        // Update state
-        isSearchVisible = true;
-        readingModeActivated = false; // Back to search view
-        toggleButtonVisibility(false); // Show floating buttons if appropriate
-
-
-         // Hide the specific #full-text div when going back to search
-        if (fullText) fullText.style.display = 'none';
-        // Hide the bottom flex box as well
-        if (bottomFlexBox) bottomFlexBox.style.display = 'none';
-
+        // Restore search scroll
+        $(window).scrollTop(searchScrollPosition);
     }
-     adjustChatboxStyle(); // Adjust layout after switching views
 });
 
 
