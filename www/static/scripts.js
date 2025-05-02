@@ -1026,7 +1026,7 @@ if (isAndroid || isTablet) {
 }
 
 // --- START: Add back iOS focus/blur position handling ---
-if (isIOS) {
+/*if (isIOS) {
     // On focus: change CSS directly
     chatInput.addEventListener('focus', () => {
       const chatInputContainer = document.getElementById('chat-input-container');
@@ -1046,7 +1046,25 @@ if (isIOS) {
       // Relying on the visualViewport resize event that fires after blur.
       console.log('iOS blur: Reverting position.'); // Debug log
     });
-}
+}*/
+if (isIOS && window.visualViewport) {
+    const chatInputContainer = document.getElementById('chat-input-container');
+  
+    // anytime the viewport height shrinks (keyboard up/down), reposition the box
+    window.visualViewport.addEventListener('resize', () => {
+      // how tall is the keyboard?
+      const kbHeight = window.innerHeight - window.visualViewport.height;
+  
+      // pin **inside** our chatbox container
+      // so that when the chatbox height has been reduced by adjustChatboxHeight(),
+      // this element sits flush at the new bottom edge (keyboard top)
+      chatInputContainer.style.position = 'absolute';
+      chatInputContainer.style.bottom   = `${kbHeight}px`;
+      chatInputContainer.style.left     = `0`;
+      chatInputContainer.style.width    = `100%`;
+    });
+  }
+  
 
 // --- END: Add back iOS focus/blur position handling ---
 
