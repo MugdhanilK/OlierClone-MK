@@ -1419,6 +1419,11 @@ function closeChatbox() {
     $("#chatbox").removeClass("open");
     toggleOlierButton();
     
+    // Restore body scrolling when chat is closed
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+
+
     // Reset flags
     isFirstMessageAfterOliClick = false;
     hasImageButtonBeenClicked = false;
@@ -1489,6 +1494,12 @@ function openChatboxSimplified() {
     // Open the chatbox
     $("#chatbox").addClass("open");
     toggleOlierButton();
+
+
+    // Prevent body from scrolling when chat is open
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+
 
     // Show necessary buttons
     $("#send-btn").show();
