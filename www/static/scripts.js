@@ -2406,6 +2406,13 @@ $('#decrease-font-btn').on('click', function(event) {
 
 // Apply Reading Mode Settings
 function applyReadingMode() {
+      // --- START NEW CODE ---
+    // Explicitly hide the main search container using the CSS class
+    $('.search-container').addClass('closed');
+    // Explicitly show the fulltext container by removing the CSS class
+    $('.fulltext-container').removeClass('closed');
+    // --- END NEW CODE ---
+    
     // Hide the searchSpace by adding the 'closed' class
     if (searchSpace) searchSpace.classList.add('closed');
 
@@ -2439,44 +2446,24 @@ $(document).on('click', '.toggle_search', function(event) {
     console.log('Toggle button clicked'); // Debugging
 
     if (isSearchVisible) {
-        console.log('Hiding searchSpace, showing fullText');
-
-        // Save the scroll position of the search view
-        searchScrollPosition = $(window).scrollTop();
-
-        // Hide the searchSpace by adding the 'closed' class
-        $('.search-space').addClass('closed');
-
-        // Show full-text
-        $('#full-text').show();
-
-        // Restore the scroll position of the full-text view
-        $(window).scrollTop(fullTextScrollPosition);
-
-        // Optionally adjust bottom-flex-box
-        $('#bottom-flex-box').css('display', 'flex');
-
-        // Update visibility state
-        isSearchVisible = false;
+                // Save scroll
+                searchScrollPosition = $(window).scrollTop();
+        
+                // Hide the **entire** search pane
+                $('.search-container').addClass('closed');
+               // Show the **entire** full-text pane
+               $('.fulltext-container').removeClass('closed');
     } else {
 
-        // Save the scroll position of the full-text view
+        // Save scroll
         fullTextScrollPosition = $(window).scrollTop();
 
-        // Hide full-text
-        $('#full-text').hide();
+        // Show search pane, hide full-text pane
+        $('.search-container').removeClass('closed');
+        $('.fulltext-container').addClass('closed');
 
-        // Show the searchSpace by removing the 'closed' class
-        $('.search-space').removeClass('closed');
-
-        // Restore the scroll position of the search view
+        // Restore search scroll
         $(window).scrollTop(searchScrollPosition);
-
-        // Optionally adjust bottom-flex-box
-        $('#bottom-flex-box').css('display', 'flex');
-
-        // Update visibility state
-        isSearchVisible = true;
     }
 });
 
