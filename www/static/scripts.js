@@ -1,6 +1,6 @@
 $(document).ready(function() {
     const serverUrl = 'https://8c31be54e6fac00f.ngrok.app/';
-
+    
 // ===============================================
     // PLATFORM DETECTION
 // ===============================================
@@ -141,7 +141,6 @@ const sampleQuestions = document.querySelector('.sample-questions');
 const fullText = document.getElementById('full-text');
 
 let readingModeActivated = false; // Global flag to track if reading mode is active
-let lastScrollTop = 0; // <-- ADD THIS LINE HERE
 
 
 
@@ -152,33 +151,6 @@ let lastScrollTop = 0; // <-- ADD THIS LINE HERE
 // SEARCH FUNCTIONS AND UI
 // ===============================================
 
-    // --- Load and Apply Saved Preferences ---
-    try {
-        const savedScope = localStorage.getItem('searchScopePreference');
-        if (savedScope && ['all', 'aurobindo', 'mother'].includes(savedScope)) {
-            $('input[name="searchScope"][value="' + savedScope + '"]').prop('checked', true);
-            console.log("Applied saved search scope:", savedScope);
-        } else {
-            $('input[name="searchScope"][value="all"]').prop('checked', true);
-            if (savedScope) console.warn("Invalid saved scope found ('"+ savedScope +"'), defaulting to 'all'.");
-            else console.log("No saved scope found, defaulting to 'all'.");
-        }
-    } catch (e) {
-        console.error("Error retrieving or applying saved scope preference:", e);
-        $('input[name="searchScope"][value="all"]').prop('checked', true);
-    }
-    // *** End Load Scope ***
-
-       // *** Save Scope Preference on Change (Reverted to this method) ***
-       $('input[name="searchScope"]').on('change', function() {
-        const selectedValue = $(this).val();
-        try {
-            localStorage.setItem('searchScopePreference', selectedValue);
-            console.log("Saved search scope preference:", selectedValue);
-        } catch (e) {
-            console.error("Error saving scope preference to localStorage:", e);
-        }
-    });
 // Initially hide the loader and the full-text section
 $("#loader-container").hide();
 $('#full-text').hide();
@@ -212,40 +184,37 @@ $('<style>')
   `)
   .appendTo('head');
 
-// Variables and functions to handle the "loading" animation for search
+// Variables and functions to handle the "loading" animation
 let fadeInterval;
 
 /**
  * startLoaderAnimation:
- * Displays a loader container (#loader-container) with a book icon (.book-loader).
- * The icon repeatedly fades in and out.
+ * Displays a loader container with a book icon (or any loader element).
+ * The icon repeatedly fades in and out to indicate something is loading.
  */
 function startLoaderAnimation() {
-    // Show the loader container and center its contents
-    $("#loader-container").css({
-        'display': 'flex',
-        'justify-content': 'center',
-        'align-items': 'center',
-        'margin-top': '20px'
-    });
+  // Show the loader container and center its contents
+  $("#loader-container").css({
+    'display': 'flex',
+    'justify-content': 'center',
+    'align-items': 'center',
+    'margin-top': '20px'
+  });
 
-    // Style the loader icon
-    $(".book-loader").css({
-        'font-size': '36px',
-        'color': '#228B22',  // A green shade
-        'opacity': 1
-    });
+  // Style the loader icon
+  $(".book-loader").css({
+    'font-size': '36px',
+    'color': '#228B22',   // A green shade
+    'opacity': 1
+  });
 
-    // Start a fade animation: toggles between 1 and 0.6 opacity
-    let opacity = 1;
-    // Clear any existing interval to prevent multiple animations
-    clearInterval(fadeInterval);
-    fadeInterval = setInterval(function() {
-        // Toggle opacity between 1 and 0.6
-        opacity = opacity > 0.6 ? 0.6 : 1;
-        // Animate the opacity change smoothly
-        $(".book-loader").animate({ 'opacity': opacity }, 600, 'linear'); // Faster transition
-    }, 700); // Shorter interval for faster fade timing
+  // Start a fade animation: toggles between 1 and 0.6 opacity
+  let opacity = 1;
+  fadeInterval = setInterval(function() {
+    // Toggle opacity between 1 and 0.6
+    opacity = opacity > 0.6 ? 0.6 : 1;
+    $(".book-loader").animate({ 'opacity': opacity }, 600, 'linear'); // Faster transition
+  }, 700); // Shorter interval for faster fade timing
 }
 
 /**
@@ -253,528 +222,131 @@ function startLoaderAnimation() {
  * Stops the fade animation and hides the loader container.
  */
 function stopLoaderAnimation() {
-    // Clear the interval that toggles opacity
-    clearInterval(fadeInterval);
-    // Hide the entire loader container
-    $("#loader-container").hide();
+  // Clear the interval that toggles opacity
+  clearInterval(fadeInterval);
+  // Hide the entire loader container
+  $("#loader-container").hide();
 }
 
 
-// **** ADDED BACK: Handle clicks on sample questions ****
+// Handle clicks on sample questions
 $('.sample-question').click(function(e) {
     e.preventDefault(); // Prevent default link behavior
 
-    // Get the text of the clicked sample question
     var questionText = $(this).text().trim();
-    // Set the search input value to this text
     $('#query').val(questionText);
+    
 
-    // Programmatically trigger a click on the main search button
+    // Trigger the search
     $('#search-btn').click();
 });
-// **** END OF ADDED BACK CODE ****
+
+// Updated Search Button Click Handler 
+$searchBtn.click(function() {
+var query = $('#query').val();
+startLoaderAnimation();
+
+$('#results').empty(); // Clear previous results
+$('.sample-questions').hide(); // Hide sample questions when search is initiated
+
+// Add hidden class to open_chatbot button when not in flex-box and zoom_to_top button
+$('.open_chatbot:not(.in-flex-box), .zoom_to_top').addClass('hidden');
 
 
-// --- Search Button Click Handler (Modified) ---
-$('#search-btn').click(function() {
-    var query = $('#query').val();
-    startLoaderAnimation(); // Start loader animation
 
-    $('#results').empty(); // Clear previous results display area
-    $('.sample-questions').hide(); // Hide sample questions section
+// Determine the search mode and set the appropriate URL
+var isVectorSearch = !$searchToggle.is(':checked');
+var searchUrl = isVectorSearch ? serverUrl + '/api/search' : serverUrl + '/api/keyword-search';
+console.log("Search URL:", searchUrl);
 
-    // ***** Hide summary button and container initially on new search *****
-    $('#summarize-results-btn').hide();
-    $('#ai-summary-container').hide().find('#ai-summary-content').empty(); // Hide and clear previous summary
+$.post(searchUrl, { query: query }, function(data) {
+    console.log("Search results received", data);
+    stopLoaderAnimation();
 
-    // Add hidden class to other buttons if needed
-    $('.open_chatbot:not(.in-flex-box), .zoom_to_top').addClass('hidden');
-
-
-    // --- Determine Search Type and Scope ---
-    var isVectorSearch = !$('#searchToggle').is(':checked');
-    // Ensure serverUrl is defined in your script's scope
-    var serverUrl = 'https://8c31be54e6fac00f.ngrok.app/'; // Make sure this is correctly defined
-    var searchUrl = isVectorSearch ? serverUrl + '/api/search' : serverUrl + '/api/keyword-search';
-    console.log("Search Type:", isVectorSearch ? "Vector" : "Keyword");
-    console.log("Search URL:", searchUrl);
-
-    // *** Read the selected search scope from radio buttons ***
-    var selectedScope = $('input[name="searchScope"]:checked').val() || 'all'; // Default to 'all'
-    console.log("Selected Scope:", selectedScope);
-
-    // --- End Determine Search Type and Scope ---
-
-    // --- Prepare Request Data ---
-    // Create an object to hold the data to be sent
-    var requestData = {
-        query: query
-        // Scope will be added conditionally below
-    };
-
-    // *** Add scope ONLY if it's a Vector Search ***
-    if (isVectorSearch) {
-        requestData.scope = selectedScope;
+    // If no results are found, show a message and re-display sample questions
+    if (data.length === 0) {
+        $('#results').html('<p>No results found. Please try a different query.</p>');
+        $('.sample-questions').show();
+        return;
     }
-    console.log("Sending request data:", requestData);
-    // --- End Prepare Request Data ---
 
-    // --- Perform AJAX Request ---
-    // *** Send the requestData object ***
-    $.post(searchUrl, requestData, function(data) {
-        // --- Success Callback ---
-        console.log("Search results received", data);
-        stopLoaderAnimation(); // Stop loader
+    var $resultsContainer = $('<div id="top-results"></div>');
 
-        // Handle no results
-        if (!data || data.length === 0) {
-            $('#results').html('<p class="text-center text-gray-600 mt-4">No results found. Please try a different query or scope.</p>');
-            $('.sample-questions').show(); // Show sample questions again
-            $('#summarize-results-btn').hide();
-            $('#results').removeData('fullResultsData'); // Clear stored data
-            return;
+    data.forEach(function(result, index) {
+        // Use highlighted_text for preview, fallback to text if not available
+        var preview = result.highlighted_text || result.text;
+        preview = preview.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+
+        // Truncate the preview to approximately 100 words, preserving HTML tags
+        var previewWords = preview.split(" ");
+        if (previewWords.length > 100) {
+            preview = previewWords.slice(0, 100).join(" ") + "...";
         }
 
-        // Store the full results data for potential summarization
-        $('#results').data('fullResultsData', data);
-        console.log("Stored full results data.");
-
-        var $resultsContainer = $('<div id="top-results" class="space-y-4"></div>'); // Add spacing
-
-        // --- Success Callback ---
-        console.log("Search results received", data);
-        stopLoaderAnimation(); // Stop loader animation
-
-        // Handle no results
-        if (!data || data.length === 0) { // Added check for null/undefined data
-            $('#results').html('<p>No results found. Please try a different query.</p>');
-            $('.sample-questions').show(); // Show sample questions again
-            $('#summarize-results-btn').hide(); // Ensure button is hidden
-            // Clear any previously stored results data
-            $('#results').removeData('fullResultsData');
-            return;
-        }
-
-        // ***** Store the full results data *****
-        // Store the original array received from the server.
-        // We'll use this for the summary function later.
-        $('#results').data('fullResultsData', data);
-        console.log("Stored full results data."); // Debug log
-
-        var $resultsContainer = $('<div id="top-results"></div>');
-
-        // Loop through data to build HTML for display
-        data.forEach(function(result, index) {
-            // Use highlighted_text for preview, fallback to text if not available
-            var preview = result.highlighted_text || result.text || ''; // Added fallback for empty text
-            preview = preview.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
-
-            // Truncate the preview for display purposes
-            var previewWords = preview.split(" ");
-            if (previewWords.length > 100) {
-                preview = previewWords.slice(0, 100).join(" ") + "...";
-            }
-
-            // Conditionally display the relevance score
-            var relevanceScoreHtml = '';
-            if (isVectorSearch && result.relevance_score !== undefined) {
-                relevanceScoreHtml = `
-                    <div class="result-score">
-                        Relevance Score: ${result.relevance_score.toFixed(2)}
-                    </div>
-                `;
-            }
-
-            // Build the HTML for one result item
-            var resultItem = `
-                <div class="result-item" data-search-id="${result.search_id || index}"> 
-                    <div class="result-preview">${preview}</div>
-                    <div class="result-metadata">
-                        ${result.author || 'Unknown Author'},
-                        ${result.book_title ? result.book_title.trim() : 'Unknown Book'},
-                        "${result.chapter_title ? result.chapter_title.trim() : 'Unknown Chapter'}"
-                    </div>
-                    ${relevanceScoreHtml}
-                    <div class="result-actions">
-                        <button class="view-detail-link"
-                                data-id="${result.search_id || index}"
-                                data-file-path="${result.file_path || ''}"
-                                data-book-title="${result.book_title ? result.book_title.trim() : 'Unknown Book'}"
-                                data-author="${result.author || 'Unknown Author'}"
-                                data-chapter-title="${result.chapter_title ? result.chapter_title.trim() : 'Unknown Chapter'}">
-                            Text
-                        </button>
-                        <button class="oli-button"
-                                data-full-text="${encodeURIComponent(result.text || '')}"
-                                data-author="${result.author || 'Unknown Author'}"
-                                data-chapter-title="${result.chapter_title ? result.chapter_title.trim() : 'Unknown Chapter'}"
-                                data-book-title="${result.book_title ? result.book_title.trim() : 'Unknown Book'}">
-                            Oli!
-                        </button>
-                    </div>
+        // Conditionally display the relevance score only for vector search
+        var relevanceScoreHtml = '';
+        if (isVectorSearch && result.relevance_score !== undefined) {
+            relevanceScoreHtml = `
+                <div class="result-score">
+                    Relevance Score: ${result.relevance_score.toFixed(2)}
                 </div>
             `;
-            $resultsContainer.append(resultItem);
-        });
-
-        // Append the results container to the results section
-        $('#results').append($resultsContainer);
-
-        // ***** Show the Summarize button IF there are results *****
-        if (data.length > 0) {
-            $('#summarize-results-btn').show();
-            console.log("Summarize button shown."); // Debug log
         }
 
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-        // --- Failure Callback ---
-        console.log("Search request failed", textStatus, errorThrown);
-        stopLoaderAnimation(); // Stop loader animation
-        $('#results').prepend('<p>An error occurred while searching. Please try again.</p>');
-        $('.sample-questions').show(); // Show sample questions again
-        $('#summarize-results-btn').hide(); // Hide button on failure
-        // Clear any previously stored results data
-        $('#results').removeData('fullResultsData');
+        var resultItem = `
+            <div class="result-item">
+                <div class="result-preview">${preview}</div>
+                <div class="result-metadata">
+                    ${result.author || 'Unknown Author'}, 
+                    ${result.book_title ? result.book_title.trim() : 'Unknown Book'}, 
+                    "${result.chapter_title ? result.chapter_title.trim() : 'Unknown Chapter'}"
+                </div>
+                ${relevanceScoreHtml}
+                <div class="result-actions">
+                    <button class="view-detail-link" 
+                            data-id="${result.search_id}" 
+                            data-file-path="${result.file_path}" 
+                            data-book-title="${result.book_title ? result.book_title.trim() : 'Unknown Book'}" 
+                            data-author="${result.author || 'Unknown Author'}" 
+                            data-chapter-title="${result.chapter_title ? result.chapter_title.trim() : 'Unknown Chapter'}">
+                        Text
+                    </button>
+                    <button class="oli-button" 
+                            data-full-text="${encodeURIComponent(result.text)}" 
+                            data-author="${result.author || 'Unknown Author'}" 
+                            data-chapter-title="${result.chapter_title ? result.chapter_title.trim() : 'Unknown Chapter'}" 
+                            data-book-title="${result.book_title ? result.book_title.trim() : 'Unknown Book'}">
+                        Oli!
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Append the resultItem to the results container
+        $resultsContainer.append(resultItem);
     });
+
+    // Append the results container to the results section
+    $('#results').append($resultsContainer);
+
+}).fail(function(jqXHR, textStatus, errorThrown) {
+    console.log("Search request failed", textStatus, errorThrown);
+    stopLoaderAnimation();
+    $('#results').prepend('<p>An error occurred while searching. Please try again.</p>');
+    // Show sample questions again if there was an error
+    $('.sample-questions').show();
+});
 });
 
 
-// --- Clear Results/Button on Input Clear ---
+// Show sample questions if the search input is cleared
 $('#query').on('input', function() {
     if ($(this).val().trim() === '') {
         $('#results').empty();
-        $('.sample-questions').show(); // Show sample questions when input is empty
-        $('#summarize-results-btn').hide(); // Hide button
-        $('#ai-summary-container').hide().find('#ai-summary-content').empty(); // Hide and clear summary
-        // Clear any previously stored results data
-        $('#results').removeData('fullResultsData');
+        $('.sample-questions').show();
     }
 });
 
-//Summarise
-
-//Changes done
-
-// (Make sure markdownit and DOMPurify are loaded/initialized)
-const md = window.markdownit(); // Initialize markdown-it
-
-// --- Summarize Button Click Handler (Modified for Streaming) ---
-$(document).on('click', '#summarize-results-btn', async function() { // Add async here
-    // 0. Ensure chatbox is open
-    if (!$("#chatbox").hasClass("open")) {
-        $(".open_chatbot").first().trigger("click");
-    }
-    $("#messages .empty-div").hide();
-
-    // 1. Get messages area
-    const messagesBox = document.querySelector("#messages .messages-box");
-    if (!messagesBox) {
-        console.error("Messages area not found.");
-        return;
-    }
-
-    // 2. Create placeholder bubble
-    let placeholderBubble = document.createElement("div");
-    placeholderBubble.classList.add("box", "ai-message");
-    let messageWrapper = document.createElement("div");
-    messageWrapper.style.position = "relative";
-    let placeholderMessage = document.createElement("div");
-    placeholderMessage.classList.add("messages");
-    placeholderMessage.style.whiteSpace = "pre-wrap";
-    let meditatingElement = document.createElement("div"); // Separate element for "Meditating..."
-    meditatingElement.classList.add("meditating-message"); // Use existing class
-    meditatingElement.textContent = 'Creating the Olier Overview...';
-    placeholderMessage.appendChild(meditatingElement); // Add meditating text initially
-    messageWrapper.appendChild(placeholderMessage);
-    placeholderBubble.appendChild(messageWrapper);
-    messagesBox.appendChild(placeholderBubble);
-    // --- UI Adjustments & Scroll (AI Placeholder) ---
-    autoScrollEnabled = true; // Ensure scroll enabled for placeholder
-    requestAnimationFrame(() => { // Ensure DOM update before scrolling
-        scrollToBottom();
-        if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-        if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-    });
-   // --- END UI Adjustments (AI Placeholder) ---
-
-    //scrollToBottom(); // Scroll initially
-
-    // 2a. Animate dots (Keep this part)
-    let dotCount = 0;
-    const meditatingInterval = setInterval(() => {
-        dotCount = (dotCount + 1) % 4;
-        if (meditatingElement && meditatingElement.parentNode) { // Check if element still exists
-             meditatingElement.textContent = 'Creating the Olier Overview' + '.'.repeat(dotCount);
-        } else {
-             clearInterval(meditatingInterval); // Stop if element is removed
-        }
-    }, 500);
-
-    // 3. Prepare payload (same as before)
-    const fullResultsData = $('#results').data('fullResultsData') || [];
-    if (fullResultsData.length === 0) {
-        if (meditatingElement && meditatingElement.parentNode) meditatingElement.textContent = "No results available for summarization.";
-        clearInterval(meditatingInterval);
-        return;
-    }
-    const topResults = fullResultsData.slice(0, 10);
-    const userQuery = $('#query').val().trim();
-    const payload = {
-        results: topResults,
-        query: userQuery
-    };
-
-    // 4. Fetch request for streaming summarization
-    try {
-        const response = await fetch(serverUrl + 'api/summarize-results', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-             body: JSON.stringify(payload) // Use body for fetch
-        });
-
-        if (!response.ok) {
-            // Handle HTTP errors before trying to read stream
-            clearInterval(meditatingInterval);
-            if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove(); // Remove meditating text
-            placeholderMessage.textContent = `Error: ${response.status} ${response.statusText}`;
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let accumulatedText = '';
-        let firstChunkReceived = false;
-
-        // Inside the 'while (true)' loop for summary streaming
-
-        while (true) {
-            const { done, value } = await reader.read();
-
-            if (value) {
-                // --- First chunk logic (keep as is) ---
-                if (!firstChunkReceived) {
-                    clearInterval(meditatingInterval);
-                    if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
-                    placeholderMessage.innerHTML = ''; // Clear "Meditating..."
-                    firstChunkReceived = true;
-                }
-                // ---
-
-                let chunk = decoder.decode(value);
-
-                // Check for backend error signal (keep as is)
-                if (chunk.startsWith("STREAM_ERROR:")) {
-                     placeholderMessage.innerHTML = `<span style="color: red;">${chunk.substring("STREAM_ERROR:".length).trim()}</span>`;
-                     console.error("Summarization stream error:", chunk);
-                     break; // Stop processing stream on error
-                }
-
-
-                accumulatedText += chunk;
-
-                // ***** CORRECTED RENDERING ORDER *****
-                // 1. Render Markdown from the accumulated text FIRST.
-                //    This will process any markdown syntax but leave the [Marker] tags untouched.
-                let renderedMarkdown = md.render(accumulatedText);
-
-                // 2. Now, replace the [Marker] tags within the RENDERED HTML string.
-                let htmlWithLinks = replaceReferenceMarkers(renderedMarkdown);
-
-                // 3. Sanitize the final HTML which now contains rendered markdown AND the links.
-                let cleanHtml = DOMPurify.sanitize(htmlWithLinks);
-
-                // 4. Update the DOM.
-                placeholderMessage.innerHTML = cleanHtml;
-                //messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-                // ***** END OF CORRECTED RENDERING ORDER *****
-
-
-                // --- UI Adjustments (keep as is) ---
-                 if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-                 if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-                 
-                 
-                 //scrollToBottom(); // Keep scrolling as content arrives
-                 // ---
-            }
-
-            if (done) {
-                // --- Final UI Adjustments and Button Addition (keep as is) ---
-                clearInterval(meditatingInterval);
-                if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
-
-                // Add copy button AFTER streaming is complete
-                addCopyButton(messageWrapper);
-
-                // Final layout adjustment after all content is rendered
-                if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-                if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-                scrollToBottom(); // Final scroll
-
-                break; // Exit the loop
-            }
-        }
-        
-/*
-        while (true) {
-            const { done, value } = await reader.read();
-
-            if (value) {
-                // --- First chunk logic ---
-                if (!firstChunkReceived) {
-                    clearInterval(meditatingInterval);
-                    if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
-                    placeholderMessage.innerHTML = ''; // Clear "Meditating..."
-                    firstChunkReceived = true;
-                }
-                // ---
-
-                let chunk = decoder.decode(value);
-
-                // Check for backend error signal
-                if (chunk.startsWith("STREAM_ERROR:")) {
-                     placeholderMessage.innerHTML = `<span style="color: red;">${chunk.substring("STREAM_ERROR:".length).trim()}</span>`;
-                     console.error("Summarization stream error:", chunk);
-                     break; // Stop processing stream on error
-                }
-
-
-                accumulatedText += chunk;
-
-                // Render progressively with reference links
-                let textWithLinks = replaceReferenceMarkers(accumulatedText);
-                let dirtyHtml = md.render(textWithLinks); // Use markdown-it
-                let cleanHtml = DOMPurify.sanitize(dirtyHtml); // Sanitize
-                placeholderMessage.innerHTML = cleanHtml; // Update content
-
-
-                // --- Optional: Adjust height during streaming (can be intensive) ---
-                // You might throttle this if needed
-                 if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-                 if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-                 scrollToBottom(); // Keep scrolling as content arrives
-                 // ---
-            }
-
-            if (done) {
-                clearInterval(meditatingInterval); // Ensure cleared if loop finishes quickly
-                if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove(); // Ensure removed
-
-                // Add copy button AFTER streaming is complete
-                addCopyButton(messageWrapper);
-
-                // Final layout adjustment after all content is rendered
-                if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-                if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-                scrollToBottom(); // Final scroll
-
-                break; // Exit the loop
-            }
-        }
-*/
-
-
-    } catch (error) {
-        clearInterval(meditatingInterval); // Clear interval on fetch error
-        if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
-        placeholderMessage.textContent = "Sorry, an error occurred while creating the Olier Overview. Please try again later.";
-        console.error("Summarization request failed:", error);
-    }
-}); // End of summarize button click handler
-//Changes finished
-
-
-// --- Helper function to replace new-style reference markers with clickable links ---
-function replaceReferenceMarkers(text) {
-    // Matches:
-    //  [CWSA – 'Book Title', 'Chapter Title']
-    //  [CWM - 'Book Title', 'Chapter Title']
-    //  [Mother’s Agenda - 'Book Title', 'Chapter Title']
-    return text.replace(
-    /\[(CWSA|CWM|Mother['’]s Agenda)\s*[-–]\s*'(.+?)'\s*,\s*'(.+?)'\]/g,
-    (match, series, book, chapter) => {
-      return `<a href="#" class="reference-link"
-                  data-book-title="${book}"
-                  data-chapter-title="${chapter}"
-              >${match}</a>`;
-    }
-  );
-}
-  
-
-
-// Helper function to set chat input value and trigger the send button
-// (Keep this if your overall code uses it; otherwise, you may remove or adjust it as needed.)
-function setInputValueAndSend(prompt) {
-    const $chatInput = $('#chat-input');
-    $chatInput.val(prompt);
-    $chatInput.trigger('input'); // Trigger input event for auto-resize if needed
-    console.log("Setting chat input and triggering send.");
-    $('#send-btn').click();
-}
-
-// --- Event Listener for Reference Links ---
-$(document).on('click', '.reference-link', function(e) {
-    e.preventDefault();
-    
-    // ① Read the link’s data attributes up front
-    const bookTitle   = $(this).data('book-title');
-    const chapterTitle= $(this).data('chapter-title');
-  
-    // ② On mobile, first close the chat pane (reusing your existing toggle)
-    if ( $('body').hasClass('is-mobile') ) {
-      $('.close-icon').trigger('click');
-  
-      // ③ Wait for your 0.3s slide‑out animation to finish, then scroll the page
-      setTimeout(() => {
-        const $result = $(".result-item").filter(function(){
-          const md = $(this).find(".result-metadata").text().toLowerCase();
-          return md.includes(bookTitle.toLowerCase()) &&
-                 md.includes(chapterTitle.toLowerCase());
-        }).first();
-        if (!$result.length) return;
-  
-        // ④ Scroll the window exactly as on desktop
-        $('html, body').animate({
-          scrollTop: $result.offset().top - 20
-        }, 500);
-  
-        // ⑤ Highlight it
-        $result.addClass('highlight-golden');
-        setTimeout(() => $result.removeClass('highlight-golden'), 5000);
-      }, 300);
-  
-      return;
-    } 
-
-  // 2️⃣ If on desktop, perform the normal scroll + highlight logic:
-  
-    //const bookTitle = $(this).data('book-title');
-   // const chapterTitle = $(this).data('chapter-title');
-   
-   // Find the first result-item whose metadata includes both the book title and chapter title (ignoring case)
-    const $result = $(".result-item").filter(function(){
-        const metadata = $(this).find(".result-metadata").text();
-        return metadata.toLowerCase().includes(bookTitle.toLowerCase()) &&
-               metadata.toLowerCase().includes(chapterTitle.toLowerCase());
-    }).first();
-
-    if ($result.length) {
-        $('html, body').animate({ scrollTop: $result.offset().top - 20 }, 500);
-        $result.addClass('highlight-golden');
-        setTimeout(() => {
-            $result.removeClass('highlight-golden');
-        }, 5000);
-    }
-});
-
-
-
-// --- Other existing code (platform detection, chatbox logic, etc.) ---
-// ... (Make sure the rest of your necessary code is included elsewhere in your project) ...
-// ... (Ensure isMobile, openChatboxSimplified, openChatboxAndAdjustScroll are defined) ...
-// ... (Ensure sendMessage function and #send-btn handler are defined as provided) ...
 
 
 // Hide the View Detail loader and overlay initially
@@ -1011,26 +583,7 @@ $.get(adjustedFilePath, function(data) {
 
 // Resizing functions for chatbox height to accommodate mobile keyboard
 
-
-// 1) iOS: use visualViewport resize event:
-if (isIOS && window.visualViewport) {
-    const chatInputContainer = document.getElementById('chat-input-container');
-  
-    // anytime the viewport height shrinks (keyboard up/down), reposition the box
-    window.visualViewport.addEventListener('resize', () => {
-      // how tall is the keyboard?
-      const kbHeight = window.innerHeight - window.visualViewport.height;
-  
-      // pin **inside** our chatbox container
-      chatInputContainer.style.position = 'absolute';
-      chatInputContainer.style.bottom   = `${kbHeight}px`;
-      chatInputContainer.style.left     = '0';
-      chatInputContainer.style.width    = '100%';
-    });
-  }
-
-
-// 2) Android OR Tablet: use visualViewport or window resize
+// 1) Android OR Tablet: use visualViewport or window resize
 if (isAndroid || isTablet) {
   function setupViewportResizeListener() {
     if (window.visualViewport) {
@@ -1044,150 +597,66 @@ if (isAndroid || isTablet) {
   setupViewportResizeListener();
 }
 
-// --- START: Add back iOS focus/blur position handling ---
-/*if (isIOS) {
-    // On focus: change CSS directly
-    chatInput.addEventListener('focus', () => {
-      const chatInputContainer = document.getElementById('chat-input-container');
-      chatInputContainer.style.position = 'absolute';
-      // Setting bottom to 'auto' or '0px' can be experimented with if needed,
-      // but 'auto' seemed to work in the original. Let's stick with that.
-      chatInputContainer.style.bottom = 'auto';
-      // We DON'T call adjustChatboxHeight here. Let the viewport resize handle it.
-    });
-
-    // On blur: revert CSS
-    chatInput.addEventListener('blur', () => {
-      const chatInputContainer = document.getElementById('chat-input-container');
-      chatInputContainer.style.position = ''; // Revert to default/static positioning
-      chatInputContainer.style.bottom = '';   // Revert bottom style
-      // We DON'T explicitly call adjustChatboxHeight here.
-      // Relying on the visualViewport resize event that fires after blur.
-      console.log('iOS blur: Reverting position.'); // Debug log
-    });
-}*/
-
-// --- END: Add back iOS focus/blur position handling ---
-
-/*
 if (isIOS) {
     // On focus: change CSS directly
     chatInput.addEventListener('focus', () => {
       const chatInputContainer = document.getElementById('chat-input-container');
       chatInputContainer.style.position = 'absolute';
-     // Explicitly set bottom to 0 relative to the chatbox container (which has height: 100vh)
-      // This might work better than 'auto' when positioned absolutely
-      chatInputContainer.style.bottom = '0px';
+      chatInputContainer.style.bottom = 'auto';
+      
 
-      // You might still want adjustChatboxHeight here if focus itself changes layout
-      // requestAnimationFrame(adjustChatboxHeight);
     });
-
-    // On blur: revert CSS AND explicitly recalculate height
+  
+    // On blur: revert CSS
     chatInput.addEventListener('blur', () => {
       const chatInputContainer = document.getElementById('chat-input-container');
-      chatInputContainer.style.position = ''; // Revert to default/static positioning
-      chatInputContainer.style.bottom = '';   // Revert bottom style
-
-      // --- KEY CHANGE: Explicitly call adjustChatboxHeight ---
-      // Use requestAnimationFrame to ensure the style changes have been
-      // processed by the browser before recalculating the layout.
-      requestAnimationFrame(() => {
-          console.log('iOS blur: Reverting position and recalculating height.'); // Debug log
-          adjustChatboxHeight();
-          // Optional: If content sometimes gets cut off after resize,
-          // you might need a final scroll check/adjustment here.
-          // scrollToBottom();
-      });
-      // --- END KEY CHANGE ---
+      chatInputContainer.style.position = '';
+      chatInputContainer.style.bottom = '';
+      
     });
-}*/
-  // Keep the visualViewport listener as well, as it handles the initial appearance
-// and potentially other resize events.
-if (isAndroid || isTablet || isIOS) { // Add isIOS here if not already present
-    function setupViewportResizeListener() {
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', () => {
-            console.log('visualViewport resize triggered.'); // Debug log
-            requestAnimationFrame(adjustChatboxHeight); // Use rAF for resize too
-        });
-      } else {
-        // Fallback for older browsers/devices without visualViewport
-        window.addEventListener('resize', () => {
-           console.log('window resize triggered.'); // Debug log
-           requestAnimationFrame(adjustChatboxHeight);
-        });
-      }
-    }
-    setupViewportResizeListener();
-  }
-  
-  // --- Ensure the sendMessage function STILL has the focus prevention for iOS ---
-  async function sendMessage() {
-      // ... (existing code) ...
-  
-      // --- Input clearing and focus ---
-      $('#chat-input').val('');
-      if (typeof autoResize === 'function') autoResize();
-      requestAnimationFrame(() => { // Adjust layout AFTER clearing and resizing input
-        adjustChatboxHeight();
-        updateScrollButtonVisibility();
-   });
-      // Only refocus the input field if it's NOT an iOS device
-      if (!isIOS) {
-          $('#chat-input').focus();
-      }
-      // ---
-  
-      // ... (rest of the sendMessage function) ...
   }
   
 
     function adjustChatboxHeight() {
+  
         // This function adjusts the chatbox height dynamically based on the viewport
         // and the dimensions of the top chatbox and chat input container. 
-        const chatbox = document.getElementById('chatbox'); // Get chatbox element
-
+      
         const chatInputContainer = document.getElementById('chat-input-container');  // Reference to the chat input container element
         const messages = document.getElementById('messages');                       // Reference to the messages container element
         const topChatbox = document.querySelector('.top-chatbox');                  // Reference to the top chatbox element
       
-        if (!chatbox || !chatInputContainer || !messages || !topChatbox) {
-            console.error("Required elements for adjustChatboxHeight not found.");
-            return;
+        // If any of these elements are missing, we won't proceed with the height adjustment
+        if (!chatInputContainer || !messages || !topChatbox) {
+          return;
         }
-    
-        console.log('⚙️ adjustChatboxHeight called');
-    
-        // Use visualViewport height if available, otherwise fallback to innerHeight
+      
+        // Determine the height of the visible viewport (prioritizing window.visualViewport, then fallback to window.innerHeight)
         let viewportHeight = window.visualViewport
-            ? window.visualViewport.height
-            : window.innerHeight;
-    
-        // --- Let CSS handle the main chatbox height (e.g., height: 100vh) ---
-        // We don't need to set chatbox.style.height dynamically here if CSS handles it.
-        // However, if you *need* JS to set it due to visualViewport changes, use viewportHeight:
-        chatbox.style.height = `${viewportHeight}px`; // Keep this line if 100vh in CSS is problematic with keyboard
-    
-        // --- Calculate the height available *for the messages area* ---
+          ? window.visualViewport.height
+          : window.innerHeight;
+      
+        // Find how far down the chatbox starts from the top of the screen
+        let chatboxTopOffset = chatbox.getBoundingClientRect().top;
+        // Calculate remaining space below the chatbox top offset
+        let availableHeight = viewportHeight - chatboxTopOffset;
+      
+        // Set the chatbox element's height to this available space
+        chatbox.style.height = `${availableHeight}px`;
+      
+        // Get the heights of the chat input container and the top chatbox
         const chatInputContainerHeight = chatInputContainer.offsetHeight;
         const topChatboxHeight = topChatbox.offsetHeight;
-    
-        // Calculate messages height based on the *viewport height* minus header and footer
-        const messagesHeight = viewportHeight - topChatboxHeight - chatInputContainerHeight;
-    
-        // Apply calculated height to the messages container
-        messages.style.height = `${Math.max(0, messagesHeight)}px`;
-    
-        // Scroll to the bottom (consider if this should always happen,
-        // might conflict with user scrolling up intentionally)
-        // Check if autoScroll is enabled before forcing scroll
-        /*if (autoScrollEnabled) {
-             messages.scrollTop = messages.scrollHeight;
-        }*/
-        console.log(`ViewportH: ${viewportHeight}, TopH: ${topChatboxHeight}, InputH: ${chatInputContainerHeight}, MessagesH: ${messagesHeight}`);
-    
-    }
+        // The remaining space is allocated for the messages area
+        const messagesHeight = availableHeight - topChatboxHeight - chatInputContainerHeight;
+      
+        // Adjust the messages container height
+        messages.style.height = `${messagesHeight}px`;
+      
+        // Scroll to the bottom of the messages container to show the latest messages
+        messages.scrollTop = messages.scrollHeight;
+      
+      }
       
 
   
@@ -1280,10 +749,9 @@ function resizerDown(e) {
       resizer.classList.add('resizer-active');
   
       // Disconnect the ResizeObserver (if present) to avoid conflicting size adjustments
-      /*
       if (chatboxResizeObserver) {
         chatboxResizeObserver.disconnect();
-      }*/
+      }
   
       // Capture the initial horizontal coordinate, based on whether it's a mouse or touch event
       if (e.type === 'mousedown') {
@@ -1351,12 +819,12 @@ function resizerDown(e) {
       localStorage.setItem('chatboxWidth', chatboxWidth);
   
       // Reconnect the ResizeObserver so it continues to observe changes automatically
-      /*if (chatboxResizeObserver) {
+      if (chatboxResizeObserver) {
         const chatboxElement = document.getElementById('chatbox');
         if (chatboxElement) {
           chatboxResizeObserver.observe(chatboxElement);
         }
-      }*/
+      }
     }
   }
   
@@ -1438,11 +906,6 @@ function closeChatbox() {
     $("#chatbox").removeClass("open");
     toggleOlierButton();
     
-    // Restore body scrolling when chat is closed
-    document.documentElement.style.overflow = '';
-    document.body.style.overflow = '';
-
-
     // Reset flags
     isFirstMessageAfterOliClick = false;
     hasImageButtonBeenClicked = false;
@@ -1514,12 +977,6 @@ function openChatboxSimplified() {
     $("#chatbox").addClass("open");
     toggleOlierButton();
 
-
-    // Prevent body from scrolling when chat is open
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow = 'hidden';
-
-
     // Show necessary buttons
     $("#send-btn").show();
     $("#img-btn").hide();
@@ -1535,14 +992,8 @@ function openChatboxSimplified() {
 
 
 function openChatboxAndAdjustScroll() {
-
-    
     // 1) Capture the closest page number element from the bottom
     var pageNumElement = getClosestPageNumElementFromBottom();
-
-
-// 1.1) Debug: did we even enter this function?
-    console.log('🚀 openChatboxAndAdjustScroll called; pageNumElement =', pageNumElement);
 
     // 2) Open the chatbox
     $("#chatbox").addClass("open");
@@ -1587,15 +1038,6 @@ function openChatboxAndAdjustScroll() {
 $(".open_chatbot").on("click", function(event) {
     event.stopPropagation(); // Prevent the event from reaching the document click handler
 
-     // --- ADD THIS ---
-    // Immediately hide the clicked button (the floating one)
-    const floatingChatButton = document.querySelector('.open_chatbot:not(.in-flex-box)');
-    if (floatingChatButton) {
-        floatingChatButton.classList.add('hidden');
-        // Optionally, if you prefer the vanish animation on click:
-        // floatingChatButton.classList.add('vanish');
-    }
-    // --- END ADDED ---
     if (isMobile) {
         // Use the simplified function for mobile devices
         openChatboxSimplified();
@@ -1615,34 +1057,22 @@ function checkIfAtBottom() {
     return messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight <= threshold;
 }
 
-// Scroll event listener to update auto-scroll flag and button visibility
+// Scroll event listener to update auto-scroll flag
 messagesContainer.addEventListener('scroll', function() {
-    const isCurrentlyAtBottom = checkIfAtBottom();
-
-    if (isCurrentlyAtBottom) {
+    if (checkIfAtBottom()) {
         autoScrollEnabled = true;
-         // Hide scroll-to-bottom button when at bottom
-        if (scrollButton) scrollButton.style.display = 'none';
     } else {
-        // User has scrolled up, disable auto-scroll
         autoScrollEnabled = false;
-         // Show scroll-to-bottom button if overflowing and not at bottom
-         if (isOverflowing() && scrollButton) {
-            // Use flex if that's how you center the icon, otherwise 'block'
-            scrollButton.style.display = 'flex'; // Or 'block'
-         }
     }
 });
 
 // Immediate interaction handlers to disable auto-scroll
 ['mousedown', 'touchstart', 'wheel'].forEach(eventType => {
     messagesContainer.addEventListener(eventType, function() {
-        // Directly disable auto-scroll on any interaction start
         autoScrollEnabled = false;
-        // Update button visibility *immediately* based on new state
-        updateScrollButtonVisibility();
     });
 });
+
 // Modify scrollToBottom function
 function scrollToBottom() {
     if (autoScrollEnabled) {
@@ -1651,83 +1081,35 @@ function scrollToBottom() {
 }
 
 // Automatically scroll to the bottom as new messages are added
-// Automatically scroll to the bottom as new messages are added OR content changes
-const observer = new MutationObserver((mutationsList) => {
-    let relevantMutation = false;
-    for (const mutation of mutationsList) {
-        // Check if a node was added/removed OR if text content changed
-        if (mutation.type === 'childList' || mutation.type === 'characterData') {
-            // Ensure the change happened within the messages container we care about
-            if (messagesContainer && messagesContainer.contains(mutation.target)) {
-                 relevantMutation = true;
-                 break; // One relevant mutation is enough to trigger the scroll check
-            }
-        }
-    }
+const observer = new MutationObserver(scrollToBottom);
+observer.observe(messagesContainer, { childList: true, subtree: true });
 
-    // If a relevant change happened, call scrollToBottom.
-    // scrollToBottom itself will check the autoScrollEnabled flag.
-    if (relevantMutation) {
-        scrollToBottom();
-    }
-});
-
-// Ensure the observer is observing the correct element with the right options
-if (messagesContainer) {
-    observer.observe(messagesContainer, {
-        childList: true,      // Detect adding/removing message bubbles (for general chat)
-        subtree: true,        // Detect changes within message bubbles
-        characterData: true   // Detect text content changes (for summary streaming)
-    });
-} else {
-     console.error("Could not find messagesContainer to observe.");
-}
 
 // Define the autoResize function
 function autoResize() {
     const chatInput = document.getElementById('chat-input');
-    if (!chatInput) {
-        console.error("#chat-input element not found for autoResize.");
-        return;
-   }
-    
     const lineHeight = parseInt(window.getComputedStyle(chatInput).lineHeight) || 20; // Fetch the line-height from CSS or default to 20
-    const maxHeight = 120; // Define max height in pixels (e.g., 120px for ~6 lines)
-    const minHeight = 40; // Define min height (e.g., 40px for ~2 lines)
+    const maxHeight = 120;
+    const minHeight = 40;
 
     // Reset the height to allow shrinking when deleting text
     chatInput.style.height = 'auto';
 
-     // Calculate the desired height based on content, constrained by min/max
-     let newHeight = Math.max(minHeight, Math.min(chatInput.scrollHeight, maxHeight));
+    // Calculate the number of lines (accounting for wrapping)
+    const lines = Math.ceil(chatInput.scrollHeight / lineHeight);
 
-     // Apply the calculated height
-     chatInput.style.height = newHeight + 'px';
- 
-     // Optional: If reaching max height, ensure overflow is visible
-     if (newHeight >= maxHeight) {
-         chatInput.style.overflowY = 'auto'; // Show scrollbar only when needed
-     } else {
-         chatInput.style.overflowY = 'hidden'; // Hide scrollbar when not needed
-     }
- 
-     // DO NOT call adjustChatboxHeight() from here.
-     // Resizing the input doesn't necessarily mean the whole chatbox needs height recalc immediately.
- }
+    // Calculate new height
+    let newHeight = Math.max(minHeight, Math.min(chatInput.scrollHeight, maxHeight));
+
+    // Apply new height
+    chatInput.style.height = newHeight + 'px';
+}
 
 // const chatInput = document.getElementById('chat-input');
 
-// Attach the autoResize function and subsequent layout adjustments to the input event
-chatInput.addEventListener('input', () => {
-    autoResize(); // Resize the textarea first
-    // Now, adjust the rest of the chatbox layout because the input height changed
-    
-    requestAnimationFrame(() => {
-    adjustChatboxHeight();
-    updateScrollButtonVisibility(); // Update scroll button based on new layout
-});
+// Attach the autoResize function to the input event
+chatInput.addEventListener('input', autoResize);
 
-});
 // Initialize the height
 autoResize();
 
@@ -1758,15 +1140,9 @@ function updateScrollButtonVisibility() {
 }
 
 // Handle scroll-to-bottom button click
-if (scrollButton) { // Check if button exists
-    scrollButton.addEventListener('click', function() {
-        autoScrollEnabled = true; // Re-enable auto-scroll
-        messagesDiv.scrollTo({ top: messagesDiv.scrollHeight, behavior: 'smooth' });
-        // Button will be hidden by the scroll listener once it reaches the bottom
-    });
-} else {
-    console.warn("Scroll-to-bottom button not found.");
-}
+scrollButton.addEventListener('click', function() {
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+});
 
 // Update visibility when the user scrolls
 messagesDiv.addEventListener('scroll', function() {
@@ -2221,23 +1597,22 @@ if (savedStyle && savedStyle !== 'poetic') {
     }
 }
 
-/* Retrieve saved speedyMode from localStorage */
-let savedSpeedyMode = localStorage.getItem('speedyModePreference'); // Use a new, distinct key
-console.log("Retrieved savedSpeedyMode:", savedSpeedyMode);
+/* Retrieve saved reflectiveMode from localStorage */
+let savedReflectiveMode = localStorage.getItem('reflectiveMode');
+console.log("Retrieved savedReflectiveMode:", savedReflectiveMode);
 
-const speedyCheckbox = document.querySelector("input[name='speedy-mode']"); // Find the correct checkbox
-if (speedyCheckbox) {
-    // If savedSpeedyMode === 'true' (string), check the box
-    speedyCheckbox.checked = (savedSpeedyMode === 'true');
-    console.log(`Set Speedy Mode checkbox checked state to: ${speedyCheckbox.checked} (based on localStorage)`);
+const reflectiveCheckbox = document.querySelector("input[name='reflective-mode']");
+if (reflectiveCheckbox) {
+    // If savedReflectiveMode === 'true', check the box
+    reflectiveCheckbox.checked = (savedReflectiveMode === 'true');
 
-    // Set up event listener to update localStorage when Speedy Mode is changed
-    speedyCheckbox.addEventListener('change', (e) => {
-        localStorage.setItem('speedyModePreference', e.target.checked); // Save the boolean value (will be stored as string 'true'/'false')
-        console.log("Speedy Mode preference saved to localStorage:", e.target.checked);
+    // Set up event listener to update localStorage when Reflective Mode is changed
+    reflectiveCheckbox.addEventListener('change', (e) => {
+        localStorage.setItem('reflectiveMode', e.target.checked);
+        console.log("Reflective Mode changed to:", e.target.checked);
     });
 } else {
-    console.warn("No 'speedy-mode' checkbox found in the HTML. Check the markup.");
+    console.warn("No 'reflective-mode' checkbox found in the HTML. Check the markup.");
 }
 
 /* Set up event listeners to update localStorage on style change */
@@ -2252,296 +1627,185 @@ styleRadios.forEach(radio => {
 });
 
 
+
 // ===============================================
 // DYNAMIC CHATBOT FUNCTIONS - SEND MESSAGE AND IMAGE GEN
 // ===============================================
 
-// Assume these functions/variables are defined elsewhere:
-// $, adjustChatboxHeight, updateScrollButtonVisibility, chatInput,
-// isFirstMessageAfterOliClick, serverUrl, markdownit, DOMPurify,
-// removeAllCopyButtons
-
 $('#send-btn').on('click', sendMessage);
 
-// REMOVE OR COMMENT OUT THE BLOCK BELOW (For keeping the Standard behavior where "Enter" creates a new line within the text area):
-/*
 $('#chat-input').on('keypress', function(e) {
     if (e.which === 13) { // 13 is the Enter key code
         e.preventDefault(); // Prevent default Enter key behavior
         sendMessage();
     }
 });
-*/
 
 async function sendMessage() {
-    let input_message = $('#chat-input').val();
-    if (input_message.trim() === '') {
-        alert('Please enter a message');
-        return;
+  let input_message = $('#chat-input').val();
+  if (input_message.trim() === '') {
+    alert('Please enter a message');
+    return;
+  }
+
+  document.querySelector("#messages .empty-div").style.display = "none";
+
+  const messageBox = document.createElement("div");
+  messageBox.classList.add("box", "right");
+
+  const message = document.createElement("div");
+  message.classList.add("messages");
+  message.textContent = input_message;
+  messageBox.appendChild(message);
+
+  document.querySelector("#messages .messages-box").appendChild(messageBox);
+
+  // Initial adjustment
+  adjustChatboxHeight(); 
+  updateScrollButtonVisibility();
+
+  $('#chat-input').val('');
+  chatInput.dispatchEvent(new Event('input'));
+  $('#chat-input').focus();
+  $('#chat-input').blur();
+
+  const allMessages = [...document.querySelectorAll("#messages .box")].map(el => {
+    const messageElement = el.querySelector('.messages');
+    if (messageElement) {
+      const role = el.classList.contains("right") ? "user" : "assistant";
+      const content = messageElement.textContent.trim();
+      return { role, content };
     }
+    return null;
+  }).filter(Boolean);
 
-    document.querySelector("#messages .empty-div").style.display = "none";
+  let chatHistory = allMessages.slice(-4);
 
-    // --- User message display ---
-    const messageBox = document.createElement("div");
-    messageBox.classList.add("box", "right");
-    const message = document.createElement("div");
-    message.classList.add("messages");
-    message.textContent = input_message;
-    messageBox.appendChild(message);
-    document.querySelector("#messages .messages-box").appendChild(messageBox);
+  const selectedStyle = document.querySelector("input[name='style']:checked").value;
+  
+  // Get the user's current reflective mode selection
+  const reflectiveCheckbox = document.querySelector("input[name='reflective-mode']");
+  let reflectiveMode = reflectiveCheckbox && reflectiveCheckbox.checked;
 
-    // --- UI Adjustments & Scroll (AI Placeholder) ---
-     autoScrollEnabled = true; // Ensure scroll enabled for placeholder
-     requestAnimationFrame(() => { // Ensure DOM update before scrolling
-         scrollToBottom();
-         if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-         if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-     });
-    // --- END UI Adjustments (AI Placeholder) ---
+  // --- NEW LOGIC: Override reflectiveMode if isFirstMessageAfterOliClick is true
+  if (isFirstMessageAfterOliClick) {
+    reflectiveMode = false;
+  }
 
-    // --- Input clearing and focus ---
-    $('#chat-input').val('');
-    if (typeof autoResize === 'function') autoResize(); // Resize input after clearing
-    
-     // $('#chat-input').focus(); // <--- THIS IS THE ORIGINAL LINE
+  // Create AI response container
+  let responseBox = document.createElement("div");
+  responseBox.classList.add("box", "ai-message");
 
-    // --- MODIFICATION START ---
-    // Only refocus the input field if it's NOT an iOS device
-    if (!isIOS) { // Assuming 'isIOS' is your globally defined boolean flag
-        $('#chat-input').focus();
-    }
-    // --- MODIFICATION END ---
+  let responseMessage = document.createElement("div");
+  responseMessage.classList.add("messages");
+  responseMessage.style.whiteSpace = "pre-wrap";
 
-    // --- History setup ---
-    const allMessages = [...document.querySelectorAll("#messages .box")].map(el => {
-        const messageElement = el.querySelector('.messages');
-        if (messageElement) {
-            const role = el.classList.contains("right") ? "user" : "assistant";
-            let content = '';
+  // "Meditating..." placeholder element
+  let meditatingElement = document.createElement("div");
+  meditatingElement.classList.add("loading-message");
+  meditatingElement.textContent = 'Meditating...';
+  responseMessage.appendChild(meditatingElement);
 
-            if (role === "assistant") {
-                // Clone the message element to avoid modifying the actual display
-                const clonedElement = messageElement.cloneNode(true);
-                // Find and remove the grounding links container *from the clone*
-                const linksContainer = clonedElement.querySelector('.grounding-links-container');
-                if (linksContainer) {
-                    linksContainer.remove();
-                }
-                // Get text content *from the modified clone*
-                content = clonedElement.textContent.trim();
-            } else {
-                // For user messages, just get the text content directly
-                content = messageElement.textContent.trim();
-            }
+  let messageWrapper = document.createElement("div");
+  messageWrapper.style.position = "relative";
+  messageWrapper.appendChild(responseMessage);
+  responseBox.appendChild(messageWrapper);
 
-            // Ensure content is not empty before adding
-            if (content) {
-            return { role, content };
-            }
-        }
-        return null;
-    }).filter(Boolean); // Keep filtering nulls
+  document.querySelector("#messages .messages-box").appendChild(responseBox);
 
-    // Keep only the last 4 valid messages for history
-    let chatHistory = allMessages.slice(-4);
-    console.log("Prepared Chat History:", JSON.stringify(chatHistory, null, 2)); // Add logging to verify
-// ---
-    // --- Style and Mode setup ---
-    const selectedStyle = document.querySelector("input[name='style']:checked").value;
-    const speedyCheckbox = document.querySelector("input[name='speedy-mode']"); // <-- Find the NEW checkbox
-    const isSpeedyMode = speedyCheckbox ? speedyCheckbox.checked : false; // <-- Get its state, default false if not found
-    // Note: The logic involving 'isFirstMessageAfterOliClick' was tied to reflective mode.
-    // Decide if you still need similar logic for speedy mode. If not, remove that check.
-    // For now, we'll just use the direct checkbox state.
-    console.log(`Style: ${selectedStyle}, Speedy Mode Active: ${isSpeedyMode}`); // Log the values being sent
+  // Adjust again after adding the placeholder
+  adjustChatboxHeight();  
+  updateScrollButtonVisibility();
 
+  // Animate dots after "Meditating"
+  let dotCount = 0;
+  const meditatingInterval = setInterval(() => {
+    dotCount = (dotCount + 1) % 4;
+    meditatingElement.textContent = 'Meditating' + '.'.repeat(dotCount);
+  }, 500);
 
-    // --- AI Response Container Setup ---
-    let responseBox = document.createElement("div");
-    responseBox.classList.add("box", "ai-message");
-    let responseMessage = document.createElement("div");
-    responseMessage.classList.add("messages"); // This is where the main text goes
-    responseMessage.style.whiteSpace = "pre-wrap";
-    let meditatingElement = document.createElement("div");
-    meditatingElement.classList.add("loading-message");
-    meditatingElement.textContent = 'Meditating...';
-    responseMessage.appendChild(meditatingElement);
-    let messageWrapper = document.createElement("div"); // Used for copy button positioning
-    messageWrapper.style.position = "relative";
-    messageWrapper.appendChild(responseMessage);
-    responseBox.appendChild(messageWrapper); // Add wrapper (containing message div) to the box
-    document.querySelector("#messages .messages-box").appendChild(responseBox);
-    if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-    if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+  try {
+    const response = await fetch(serverUrl + '/api/send-message', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+      body: JSON.stringify({
+        messages: chatHistory,
+        style: selectedStyle,
+        reflectiveMode: reflectiveMode  // <-- This will be false if isFirstMessageAfterOliClick was true
+      })
+    });
 
-    // --- Meditating Animation ---
-    let dotCount = 0;
-    const meditatingInterval = setInterval(() => {
-        dotCount = (dotCount + 1) % 4;
-        if (meditatingElement && meditatingElement.parentNode) {
-             meditatingElement.textContent = 'Meditating' + '.'.repeat(dotCount);
-        } else {
-            clearInterval(meditatingInterval);
-        }
-    }, 500);
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    const md = window.markdownit();
 
-    // --- Variables for grounding links ---
-    let finalGroundingJsonString = null;
-    const groundingMarker = "###GROUNDING_SOURCES_START###";
-    let markerFound = false;
-    // ---
+    let accumulatedText = '';
 
-    try {
-        const response = await fetch(serverUrl + '/api/send-message', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-            body: JSON.stringify({
-                messages: chatHistory,
-                style: selectedStyle,
-                // reflectiveMode: reflectiveMode // REMOVE THIS LINE
-                speedy_mode: isSpeedyMode      // <-- ADD THIS LINE (using snake_case for Python backend)
-            })
-        });
-
-        // --- Basic response check ---
-        if (!response.ok) {
-             clearInterval(meditatingInterval);
-             if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
-             throw new Error(`HTTP error! status: ${response.status}`);
-         }
-        // ---
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        const md = window.markdownit();
-        let accumulatedText = '';
-
-                       // Streaming
-                       while (true) {
-                        const { done, value } = await reader.read();
-            
-                        // Stop meditating animation
-                        if (value && meditatingElement && meditatingElement.parentNode) {
-                             clearInterval(meditatingInterval);
-                             meditatingElement.remove();
-                             if (!markerFound) {
-                                 responseMessage.innerHTML = ''; // Clear "Meditating..."
-                             }
-                        }
-            
-                        if (value) {
-                            let chunk = decoder.decode(value);
-            
-                            // Marker Detection Logic
-                            const markerIndex = chunk.indexOf(groundingMarker);
-            
-                            let cleanHtml = ''; // Declare cleanHtml here
-            
-                            if (markerIndex !== -1) {
-                                const textPart = chunk.substring(0, markerIndex);
-                                if (!markerFound) {
-                                    accumulatedText += textPart;
-                                    // Render final text part before marker
-                                    let dirtyHtml = md.render(accumulatedText.replace(/<\/s>/g, ''));
-                                    cleanHtml = DOMPurify.sanitize(dirtyHtml); // Assign here
-                                    responseMessage.innerHTML = cleanHtml;
-                                }
-                                // Store the JSON part
-                                finalGroundingJsonString = chunk.substring(markerIndex + groundingMarker.length).trimStart();
-                                markerFound = true;
-            
-                            } else if (!markerFound) {
-                                // Append chunk to main text and render progressively
-                                accumulatedText += chunk;
-                                let dirtyHtml = md.render(accumulatedText.replace(/<\/s>/g, ''));
-                                cleanHtml = DOMPurify.sanitize(dirtyHtml); // Assign here
-                                responseMessage.innerHTML = cleanHtml;
-                            }
-                            // If marker was found previously, finalGroundingJsonString will just keep accumulating
-                            // We don't update innerHTML again in that case until 'done'
-            
-                            // *** ADDED: Ensure scrolling and layout adjustments happen on each update ***
-                            
-                            requestAnimationFrame(() => {
-                            if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-                            if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-                            scrollToBottom(); });// <-- Explicitly scroll after content update
-                            // *** END ADDED ***
-            
-                        }
-            
-                        // Done condition check
-                        if (done) {
-                            clearInterval(meditatingInterval);
-                            if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
-            
-                            // Final rendering of accumulated text (only needed if marker was never found AND content changed)
-                            if (!markerFound) {
-                                 // No need to re-render if it was already done in the loop
-                                 // Only re-render if the last operation was just adding to finalGroundingJsonString
-                            }
-            
-            
-                            // --- Parse JSON and Display Links ---
-                            let groundingSources = [];
-                            console.log("Attempting to parse grounding JSON. String received:", finalGroundingJsonString);
-                            if (finalGroundingJsonString) {
-                                try {
-                                    groundingSources = JSON.parse(finalGroundingJsonString.trim());
-                                    console.log("Parsed Grounding Sources:", groundingSources);
-                                    displayDomainOnlyCardLinks(responseMessage, groundingSources); // Pass responseMessage div
-                                } catch (e) {
-                                    console.error("Error parsing final grounding JSON:", e, "Data:", finalGroundingJsonString);
-                                }
-                            } else {
-                                console.log("No grounding JSON string received (marker likely not found).");
-                            }
-                            // --- END ---
-            
-                            // Add Copy Button
-                            addCopyButton(messageWrapper);
-            
-                            // *** MOVED UI Adjustments into the loop, but a final scroll is safe ***
-                            requestAnimationFrame(() => {
-                                adjustChatboxHeight();
-                                updateScrollButtonVisibility();
-                                scrollToBottom(); // Final scroll after everything is done
-                             }); 
-                            // *** END MOVED ***
-            
-                            break; // Exit loop
-                        }
-                    } // End while loop
-
-    } catch (error) {
-        console.error('Error in sendMessage:', error);
+    // Streaming
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
         clearInterval(meditatingInterval);
-        if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
-        if (responseMessage) {
-            responseMessage.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
-        }
-    }
-    finally {
-        if (typeof isFirstMessageAfterOliClick !== 'undefined' && isFirstMessageAfterOliClick) {
-            isFirstMessageAfterOliClick = false;
-        }
-        $("#img-btn").hide();
-        $("#send-btn").show();
-        $('#chat-input').focus();
-    }
-}
+        meditatingElement.remove();
+
+        responseMessage.textContent = '';
+        accumulatedText = accumulatedText.replace(/<\/s>/g, '');
+
+        let dirtyHtml = md.render(accumulatedText);
+        let cleanHtml = DOMPurify.sanitize(dirtyHtml);
+        responseMessage.innerHTML = cleanHtml;
+
+        addCopyButton(messageWrapper);
 
 
-// Function to add copy button (Adjusted to exclude card container)
-function removeAllCopyButtons() {
-    document.querySelectorAll('.copy-button').forEach(button => button.remove());
+        break;
+      }
+
+      // As soon as data arrives, stop "Meditating..."
+      clearInterval(meditatingInterval);
+      meditatingElement.remove();
+
+      let chunk = decoder.decode(value);
+      accumulatedText += chunk;
+
+      let dirtyHtml = md.render(accumulatedText);
+      let cleanHtml = DOMPurify.sanitize(dirtyHtml);
+      responseMessage.innerHTML = cleanHtml;
+
+
+    }
+
+    $("#img-btn").hide();
+    $("#send-btn").show();
+  } catch (error) {
+    console.error('Error in sendMessage:', error);
+    alert(`An error occurred: ${error.message}`);
+
+    clearInterval(meditatingInterval);
+    document.getElementById("chat-input").value = "";
+    $("#img-btn").hide();
+    $("#send-btn").hide();
+  } 
+  finally {
+    // --- NEW LOGIC: After the message is sent, set the variable back to false
+    if (isFirstMessageAfterOliClick) {
+      isFirstMessageAfterOliClick = false;
+    }
+  }
 }
+
+    
+      // Function to add copy button
+
+        // Function to remove all existing copy buttons
+        function removeAllCopyButtons() {
+            document.querySelectorAll('.copy-button').forEach(button => button.remove());
+        }
 
 function addCopyButton(wrapper) {
     removeAllCopyButtons();
     let copyButton = document.createElement("button");
-    copyButton.innerHTML = '<div class="copy-icon"></div>'; // Use CSS for the icon
+    copyButton.innerHTML = '<div class="copy-icon"></div>'; // Initial icon
     copyButton.classList.add("copy-button");
     copyButton.style.position = "absolute";
     copyButton.style.bottom = "5px";
@@ -2553,30 +1817,16 @@ function addCopyButton(wrapper) {
 
     copyButton.addEventListener("click", function() {
         const allMessages = document.querySelectorAll("#messages .box");
-        const messageBox = wrapper.closest('.box.ai-message');
-        if (!messageBox) return;
-
-        const userMessageBox = messageBox.previousElementSibling;
-        const messagesToCopy = [];
-        if (userMessageBox && userMessageBox.classList.contains('right')) {
-            messagesToCopy.push(userMessageBox);
-        }
-        messagesToCopy.push(messageBox);
-
+        const lastTwoMessages = Array.from(allMessages).slice(-2);
         let textToCopyPlain = "";
         let textToCopyHTML = "";
 
-        messagesToCopy.forEach((box) => {
-            const messageElement = box.querySelector('.messages');
+        lastTwoMessages.forEach((messageBox) => {
+            const messageElement = messageBox.querySelector('.messages');
             if (messageElement) {
-                const role = box.classList.contains("right") ? "User" : "Olier";
-                const clonedElement = messageElement.cloneNode(true);
-                const linksContainer = clonedElement.querySelector('.grounding-links-container');
-                if (linksContainer) {
-                    linksContainer.remove();
-                }
-                const contentPlain = clonedElement.textContent.trim();
-                const contentHTML = clonedElement.innerHTML.trim();
+                const role = messageBox.classList.contains("right") ? "User" : "Olier";
+                const contentPlain = messageElement.textContent.trim();
+                const contentHTML = messageElement.innerHTML.trim();
 
                 textToCopyPlain += `${role}: ${contentPlain}\n\n`;
                 textToCopyHTML += `<p><strong>${role}:</strong></p>${contentHTML}<br>`;
@@ -2590,160 +1840,18 @@ function addCopyButton(wrapper) {
             });
 
             navigator.clipboard.write([clipboardItem]).then(() => {
+                // Change icon to tick on success
                 copyButton.innerHTML = '<div class="tick-icon">✓</div>';
             }).catch(err => {
                 console.error('Failed to copy text: ', err);
             });
         } else {
-            console.log("No messages found to copy.");
+            console.log("No messages to copy.");
         }
     });
 
     wrapper.appendChild(copyButton);
 }
-
-
-// --- NEW: Function displayDomainOnlyCardLinks with Toggle ---
-function displayDomainOnlyCardLinks(messageContentDiv, sources) {
-    if (!Array.isArray(sources) || sources.length === 0) {
-        console.log("No valid grounding sources to display.");
-        return;
-    }
-
-    const existingContainer = messageContentDiv.querySelector('.grounding-links-container');
-    if (existingContainer) {
-        existingContainer.remove();
-    }
-
-    const linksOuterContainer = document.createElement('div');
-    linksOuterContainer.classList.add('grounding-links-container');
-    linksOuterContainer.style.marginTop = '15px';
-    linksOuterContainer.style.paddingTop = '10px';
-    linksOuterContainer.style.borderTop = '1px solid #eee';
-
-    // --- Clickable title/toggle area ---
-    const titleToggleArea = document.createElement('div');
-    titleToggleArea.style.display = 'flex';
-    titleToggleArea.style.alignItems = 'center';
-    titleToggleArea.style.cursor = 'pointer';
-    titleToggleArea.style.marginBottom = '8px';
-
-    const titleElement = document.createElement('strong');
-    titleElement.textContent = 'Sources';
-    titleElement.style.fontSize = '0.9em';
-    titleElement.style.marginRight = '5px';
-
-    const toggleIcon = document.createElement('span');
-    toggleIcon.classList.add('toggle-icon');
-    toggleIcon.innerHTML = '&#9662;'; // Down arrow
-    toggleIcon.style.fontSize = '0.8em';
-    toggleIcon.style.transition = 'transform 0.2s ease';
-
-    titleToggleArea.appendChild(titleElement);
-    titleToggleArea.appendChild(toggleIcon);
-    linksOuterContainer.appendChild(titleToggleArea);
-
-    // --- Flex container for the cards (Initially Hidden) ---
-    const cardsFlexContainer = document.createElement('div');
-    cardsFlexContainer.classList.add('grounding-cards-flex-container');
-    cardsFlexContainer.style.display = 'none'; // Hidden
-    cardsFlexContainer.style.flexWrap = 'wrap';
-    cardsFlexContainer.style.gap = '8px'; // Slightly smaller gap
-    cardsFlexContainer.style.marginTop = '5px';
-
-    // --- Add each source as a card ---
-    sources.forEach((source, index) => {
-        if (typeof source === 'object' && source !== null && source.uri) {
-            const cardLink = document.createElement('a');
-            cardLink.href = source.uri; // Link still uses redirect URL
-            cardLink.target = '_blank';
-            cardLink.rel = 'noopener noreferrer';
-            cardLink.classList.add('grounding-source-card');
-
-            // Card Styling
-            cardLink.style.display = 'inline-block'; // Changed to inline-block for better wrapping
-            cardLink.style.border = '1px solid #e0e0e0';
-            cardLink.style.borderRadius = '12px'; // More rounded
-            cardLink.style.padding = '6px 10px'; // Adjusted padding
-            cardLink.style.textDecoration = 'none';
-            cardLink.style.color = '#333'; // Darker text
-            cardLink.style.backgroundColor = '#f9f9f9';
-            cardLink.style.fontSize = '0.8em'; // Slightly smaller font
-            cardLink.style.transition = 'background-color 0.2s ease, border-color 0.2s ease';
-            cardLink.style.whiteSpace = 'nowrap'; // Prevent domain wrapping
-
-            cardLink.onmouseover = () => { cardLink.style.backgroundColor = '#eee'; cardLink.style.borderColor = '#ccc'; };
-            cardLink.onmouseout = () => { cardLink.style.backgroundColor = '#f9f9f9'; cardLink.style.borderColor = '#e0e0e0'; };
-
-            // --- Determine and display Domain ONLY ---
-            let displayDomain = 'Source'; // Default fallback
-            // Prioritize source.title if it looks like a domain
-            if (source.title && source.title.includes('.') && !source.title.includes(' ') && !source.title.includes('<')) {
-                 displayDomain = source.title.replace(/^www\./, '');
-            } else {
-                 // Fallback: Try to parse the original redirect URI
-                 try {
-                     const url = new URL(source.uri);
-                     // Heuristic: If hostname is vertex..., it's likely a fallback itself, prefer title if available
-                     if (url.hostname.includes('vertexaisearch') && source.title && source.title.trim() !== '') {
-                         displayDomain = source.title.trim(); // Use title if vertex URL detected
-                     } else {
-                         displayDomain = url.hostname.replace(/^www\./, '');
-                     }
-                 } catch (e) {
-                    // Final fallback if parsing fails or title wasn't domain-like
-                    displayDomain = (source.title && source.title.trim() !== '') ? source.title.trim() : `Source ${index + 1}`;
-                 }
-            }
-            cardLink.textContent = displayDomain; // Set the visible domain text directly on the link
-            // ---
-
-            cardsFlexContainer.appendChild(cardLink);
-        } else {
-            console.warn("Skipping invalid source item:", source);
-        }
-    });
-
-    // Append the flex container (initially hidden)
-    linksOuterContainer.appendChild(cardsFlexContainer);
-
-    // --- Add Toggle Functionality ---
-titleToggleArea.addEventListener('click', () => {
-    // ***** 1. Get the messages container and save current scroll position *****
-    const messagesContainer = document.getElementById('messages');
-    const currentScrollTop = messagesContainer.scrollTop;
-    // ***********************************************************************
-
-    const isHidden = cardsFlexContainer.style.display === 'none';
-    cardsFlexContainer.style.display = isHidden ? 'flex' : 'none'; // Toggle display
-    toggleIcon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)'; // Rotate arrow
-
-    // Let these functions run - adjustChatboxHeight WILL scroll to bottom here
-    if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-    if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-
-    // ***** 2. Immediately restore the saved scroll position *****
-    messagesContainer.scrollTop = currentScrollTop;
-    // **********************************************************
-
-    // Optional: You might call updateScrollButtonVisibility *again* after restoring
-    // scroll position, just in case the restored position affects the button state.
-    // if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-});
-// ---
-    // ---
-
-    // Append the whole links section to the message content div only if cards were added
-    if (cardsFlexContainer.hasChildNodes()) {
-        messageContentDiv.appendChild(linksOuterContainer);
-    } else {
-        console.log("No valid links were generated from sources.");
-    }
-}
-// --- END UPDATED ---
-
-
-
 
 
 
@@ -3139,80 +2247,7 @@ $("#send-btn").show();
             toggleButtonVisibility(false);
         }
     });
-/*______________________New toggleOlierButton Function__________________________*/
 
-function toggleOlierButton() {
-    const olierButton = document.querySelector('.open_chatbot:not(.in-flex-box)');
-    const zoomToTopButton = document.querySelector('.zoom_to_top');
-    const chatbox = document.getElementById('chatbox'); // Keep chatbox check
-
-    if (!olierButton || !zoomToTopButton || !chatbox) return; // Exit if elements not found
-
-    let currentScrollTop = window.scrollY || window.pageYOffset;
-    const isChatboxOpen = chatbox.classList.contains('open');
-
-    // --- Reading Mode Handling (uses .vanish) ---
-    if (readingModeActivated) {
-        olierButton.classList.add('vanish');
-        zoomToTopButton.classList.add('vanish');
-        // Ensure .hidden is removed if reading mode takes precedence
-        olierButton.classList.remove('hidden');
-        zoomToTopButton.classList.remove('hidden');
-        lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // Update scroll pos even when vanished
-        return; // Exit early
-    } else {
-        // Ensure .vanish is removed if not in reading mode
-        olierButton.classList.remove('vanish');
-        zoomToTopButton.classList.remove('vanish');
-    }
-
- // --- Mobile + Chatbox Open Handling (Priority 2) ---
-    // <<< START FIX >>>
-    if (isChatboxOpen && isMobile) {
-        olierButton.classList.add('hidden');     // Always hide chat button when chatbox open
-        zoomToTopButton.classList.add('hidden'); // <<< THIS IS THE FIX: Always hide books button on mobile when chatbox open
-        lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // Still update scroll pos
-        return; // Exit early as mobile/open case is handled
-    }
-    // <<< END FIX >>>
-
-    // --- Scroll Direction Handling (uses .hidden) ---
-
-    // Always show buttons if chatbox is open AND user is near the top (or scrolls up to near top)
-     if (isChatboxOpen && currentScrollTop <= 10) {
-         olierButton.classList.add('hidden'); // Chat button stays hidden when chatbox open
-         zoomToTopButton.classList.remove('hidden'); // Show Books button
-     }
-     // Always show buttons if chatbox is closed AND user is near the top (or scrolls up to near top)
-     else if (!isChatboxOpen && currentScrollTop <= 10) {
-        olierButton.classList.remove('hidden');
-        zoomToTopButton.classList.remove('hidden');
-     }
-     // Handle scrolling down (hide buttons)
-     else if (currentScrollTop > lastScrollTop) {
-        olierButton.classList.add('hidden');
-        zoomToTopButton.classList.add('hidden');
-     }
-     // Handle scrolling up (show buttons, respecting chatbox state)
-     else if (currentScrollTop < lastScrollTop) {
-         if (!isChatboxOpen) { // Show both if chatbox closed
-             olierButton.classList.remove('hidden');
-             zoomToTopButton.classList.remove('hidden');
-         } else { // If chatbox open, only show Books button when scrolling up
-            olierButton.classList.add('hidden');
-            zoomToTopButton.classList.remove('hidden');
-         }
-     }
-
-    // Update last scroll position for the next event
-    lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // For Mobile or negative scrolling
-}
-
-/*______________________End of New toggleOlierButton Function__________________________*/
-
-
-
-/*______________________Old toggleOlierButton Function__________________________
     function toggleOlierButton() {
         // Get references to elements
         const olierButton = document.querySelector('.open_chatbot:not(.in-flex-box)');
@@ -3257,34 +2292,25 @@ function toggleOlierButton() {
                 }
             }
         }
-    //______________________Removing this for Stopping the Auto Scrolling of Chatbox to the Bottom__________________________
-        //adjustChatboxStyle();
-    }*/
-   
-/*______________________End of Old toggleOlierButton Function__________________________ */ 
     
+        adjustChatboxStyle();
+    }
+
     
-// New Event listener for scroll event (Throttled)
-
-window.addEventListener('scroll', throttle(toggleOlierButton, 100)); // Adjust throttle time (e.g., 100ms) if needed
-
-
-/*    // Old Event listener for scroll event
-
+    // Event listener for scroll event
     window.addEventListener('scroll', function() {
         toggleOlierButton();
-    });*/
+    });
     
-// Initial setup on DOMContentLoaded
-document.addEventListener('DOMContentLoaded', function() {
-    adjustChatboxStyle();
-    lastScrollTop = window.scrollY || window.pageYOffset; // <-- ADD THIS LINE HERE
-    toggleOlierButton(); // Initial state check
-
-    // Initially hide the image and send buttons
-    $("#img-btn").hide();
-    $("#send-btn").hide();
-});
+    // Initial setup on DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function() {
+        adjustChatboxStyle();
+        toggleOlierButton();
+    
+        // Initially hide the image and send buttons
+        $("#img-btn").hide();
+        $("#send-btn").hide();
+    });
 
 
 // Handle click for opening the settings menu
@@ -3314,35 +2340,6 @@ $(document).on('click', '#settings-menu-dropdown .close-menu-btn', function(even
 
 
 // Handle click forzoom_to_top 
-
-// Handle click for .zoom_to_top (Books button)
-$(document).on('click', '.zoom_to_top', function(event) {
-    console.log('Clicked:', $(this).attr('id') || $(this).attr('class'));
-
-    // Prevent default anchor behavior and stop event bubbling
-    event.preventDefault();
-    event.stopPropagation();
-
-    // Always toggle the main menu dropdown regardless of scroll position
-    $('#main-menu-dropdown').toggleClass('active');
-
-    // Toggle ARIA expanded state for accessibility
-    let isExpanded = $(this).attr('aria-expanded') === 'true';
-    $(this).attr('aria-expanded', !isExpanded);
-
-    // --- REMOVED the else block that caused scrolling to top ---
-
-    // If the menu is being opened and reading mode is active, expand the current book
-    if ($('#main-menu-dropdown').hasClass('active') && readingModeActivated) {
-        // Ensure the function exists before calling
-        if (typeof expandCurrentBookInMenu === 'function') {
-            expandCurrentBookInMenu();
-        }
-    }
-});
-
-//_______________________Old zoom_to_top Function__________________________
-/*
 $(document).on('click', '.zoom_to_top', function(event) {
     console.log('Clicked:', $(this).attr('id') || $(this).attr('class'));
     let scrollPosition = $(window).scrollTop();
@@ -3363,7 +2360,7 @@ $(document).on('click', '.zoom_to_top', function(event) {
         window.scrollTo(0, 0);
     }
 });
-*/
+
 
 
 // Font Size Adjuster
