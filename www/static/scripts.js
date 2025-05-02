@@ -1011,7 +1011,26 @@ $.get(adjustedFilePath, function(data) {
 
 // Resizing functions for chatbox height to accommodate mobile keyboard
 
-// 1) Android OR Tablet: use visualViewport or window resize
+
+// 1) iOS: use visualViewport resize event:
+if (isIOS && window.visualViewport) {
+    const chatInputContainer = document.getElementById('chat-input-container');
+  
+    // anytime the viewport height shrinks (keyboard up/down), reposition the box
+    window.visualViewport.addEventListener('resize', () => {
+      // how tall is the keyboard?
+      const kbHeight = window.innerHeight - window.visualViewport.height;
+  
+      // pin **inside** our chatbox container
+      chatInputContainer.style.position = 'absolute';
+      chatInputContainer.style.bottom   = `${kbHeight}px`;
+      chatInputContainer.style.left     = '0';
+      chatInputContainer.style.width    = '100%';
+    });
+  }
+
+
+// 2) Android OR Tablet: use visualViewport or window resize
 if (isAndroid || isTablet) {
   function setupViewportResizeListener() {
     if (window.visualViewport) {
@@ -1047,24 +1066,6 @@ if (isAndroid || isTablet) {
       console.log('iOS blur: Reverting position.'); // Debug log
     });
 }*/
-if (isIOS && window.visualViewport) {
-    const chatInputContainer = document.getElementById('chat-input-container');
-  
-    // anytime the viewport height shrinks (keyboard up/down), reposition the box
-    window.visualViewport.addEventListener('resize', () => {
-      // how tall is the keyboard?
-      const kbHeight = window.innerHeight - window.visualViewport.height;
-  
-      // pin **inside** our chatbox container
-      // so that when the chatbox height has been reduced by adjustChatboxHeight(),
-      // this element sits flush at the new bottom edge (keyboard top)
-      chatInputContainer.style.position = 'absolute';
-      chatInputContainer.style.bottom   = `${kbHeight}px`;
-      chatInputContainer.style.left     = `0`;
-      chatInputContainer.style.width    = `100%`;
-    });
-  }
-  
 
 // --- END: Add back iOS focus/blur position handling ---
 
