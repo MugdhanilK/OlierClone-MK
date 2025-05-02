@@ -2414,7 +2414,7 @@ function applyReadingMode() {
     // --- END UPDATED CODE ---
 
     // Hide the searchSpace by adding the 'closed' class
-    //if (searchSpace) searchSpace.classList.add('closed');
+    if (searchSpace) searchSpace.classList.add('closed');
 
     // Show full-text
     if (fullText) fullText.style.display = 'block';
