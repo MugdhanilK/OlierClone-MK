@@ -1055,7 +1055,7 @@ const messagesContainer = document.getElementById('messages');
 
 // Helper function to check if user is at the bottom
 function checkIfAtBottom() {
-    const threshold = 30; // Adjust as needed
+    const threshold = 100; // Adjust as needed
     return messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight <= threshold;
 }
 
