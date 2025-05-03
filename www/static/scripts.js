@@ -2741,80 +2741,62 @@ $('#decrease-font-btn').on('click', function(event) {
 // ===============================================
 
 // Apply Reading Mode Settings
-function applyReadingMode() {
-    // Hide the searchSpace by adding the 'closed' class
-    if (searchSpace) searchSpace.classList.add('closed');
+/* =========================================================
+ *    Search  ↔  Reading  view logic
+ * =======================================================*/
 
-    // Show full-text
-    if (fullText) fullText.style.display = 'block';
+/* ---------- cached elements ---------- */
+const fullTextDiv   = document.getElementById('full-text');      // reading pane
 
-    // Activate bottom-flex-box
+/* ---------- UI flags & scroll memory ---------- */
+let isSearchVisible        = true;   // true when Search pane is on screen
+let searchScrollPosition   = 0;
+let fullTextScrollPosition = 0;
+
+/* ---------------------------------------------------------
+ * 1.  Activate reading mode after user clicks a result
+ * --------------------------------------------------------*/
+function applyReadingMode () {
+    if (searchSpace) searchSpace.classList.add('closed');   // hide search
+    if (fullTextDiv)  fullTextDiv.style.display = 'block';  // show reading pane
     if (bottomFlexBox) bottomFlexBox.style.display = 'flex';
 
-    // Use toggleButtonVisibility to hide both buttons
-    toggleButtonVisibility(true);
-
-    // Set the reading mode flag to true
+    toggleButtonVisibility(true);   // your helper to hide global buttons
     readingModeActivated = true;
-    // Synchronize isSearchVisible with UI state
-    isSearchVisible = false;
+    isSearchVisible      = false;
 }
 
-// Ensure isSearchVisible is accessible
-var isSearchVisible = true; // Global variable to track visibility state
-
-// Variables to store scroll positions
-var searchScrollPosition = 0;
-var fullTextScrollPosition = 0;
-
-// Toggle Search Function using jQuery event delegation
-$(document).on('click', '.toggle_search', function(event) {
+/* ---------------------------------------------------------
+ * 2.  Toggle button inside the bottom flex bar
+ * --------------------------------------------------------*/
+$(document).on('click', '.toggle_search', function (event) {
     event.preventDefault();
-    // event.stopPropagation();
-
-    console.log('Toggle button clicked'); // Debugging
 
     if (isSearchVisible) {
-        console.log('Hiding searchSpace, showing fullText');
-
-        // Save the scroll position of the search view
+        /* --- hide Search, show Reading --- */
         searchScrollPosition = $(window).scrollTop();
 
-        // Hide the searchSpace by adding the 'closed' class
         $('.search-space').addClass('closed');
-
-        // Show full-text
         $('#full-text').show();
 
-        // Restore the scroll position of the full-text view
         $(window).scrollTop(fullTextScrollPosition);
-
-        // Optionally adjust bottom-flex-box
         $('#bottom-flex-box').css('display', 'flex');
 
-        // Update visibility state
         isSearchVisible = false;
     } else {
-
-        // Save the scroll position of the full-text view
+        /* --- show Search, hide Reading --- */
         fullTextScrollPosition = $(window).scrollTop();
 
-        // Hide full-text
         $('#full-text').hide();
-
-        // Show the searchSpace by removing the 'closed' class
         $('.search-space').removeClass('closed');
 
-        // Restore the scroll position of the search view
         $(window).scrollTop(searchScrollPosition);
-
-        // Optionally adjust bottom-flex-box
         $('#bottom-flex-box').css('display', 'flex');
 
-        // Update visibility state
         isSearchVisible = true;
     }
 });
+
 
 
 // Utility function to throttle execution
