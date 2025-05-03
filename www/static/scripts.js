@@ -66,13 +66,13 @@ $(document).ready(function() {
       }
 
       // Apply lock scrolling only if Android
-      if (isAndroid) {
+     /* if (isAndroid) {
         document.documentElement.classList.add('mobile-tablet-lock-scroll');
         document.body.classList.add('mobile-tablet-lock-scroll');
       } else {
         document.documentElement.classList.remove('mobile-tablet-lock-scroll');
         document.body.classList.remove('mobile-tablet-lock-scroll');
-      }
+      }*/
 
       // Debugging banner
 
@@ -643,7 +643,7 @@ $(document).on('click', '.reference-link', function(e) {
     const chapterTitle= $(this).data('chapter-title');
   
     // ② On mobile, first close the chat pane (reusing your existing toggle)
-    if ( $('body').hasClass('is-mobile') ) {
+    if ($('body').hasClass('is-mobile') || $('body').hasClass('is-tablet')) {
       $('.close-icon').trigger('click');
   
       // ③ Wait for your 0.3s slide‑out animation to finish, then scroll the page
@@ -1233,6 +1233,12 @@ $(".close-icon").on("click", function(event) {
     closeChatbox();
 });
 function closeChatbox() {
+
+     /* --- NEW: be sure the page can scroll again --- */
+  document.documentElement.classList.remove('mobile-tablet-lock-scroll');
+  document.body.classList.remove('mobile-tablet-lock-scroll');
+  document.documentElement.style.overflow = '';
+  document.body.style.overflow  = '';
     let pageNumElement = null;
     
     // --------------------
@@ -2161,7 +2167,7 @@ async function sendMessage() {
              clearInterval(messageRotationInterval);
              if (dotInterval) clearInterval(dotInterval); // Clear other interval too
         }
-    }, 4000); // 4 seconds
+    }, 3000); // 3 seconds
 
     // Helper function to clear both intervals
     const clearMeditatingIntervals = () => {
@@ -2925,6 +2931,80 @@ $("#send-btn").show();
             toggleButtonVisibility(false);
         }
     });
+/*______________________New toggleOlierButton Function__________________________*/
+
+function toggleOlierButton() {
+    const olierButton = document.querySelector('.open_chatbot:not(.in-flex-box)');
+    const zoomToTopButton = document.querySelector('.zoom_to_top');
+    const chatbox = document.getElementById('chatbox'); // Keep chatbox check
+
+    if (!olierButton || !zoomToTopButton || !chatbox) return; // Exit if elements not found
+
+    let currentScrollTop = window.scrollY || window.pageYOffset;
+    const isChatboxOpen = chatbox.classList.contains('open');
+
+    // --- Reading Mode Handling (uses .vanish) ---
+    if (readingModeActivated) {
+        olierButton.classList.add('vanish');
+        zoomToTopButton.classList.add('vanish');
+        // Ensure .hidden is removed if reading mode takes precedence
+        olierButton.classList.remove('hidden');
+        zoomToTopButton.classList.remove('hidden');
+        lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // Update scroll pos even when vanished
+        return; // Exit early
+    } else {
+        // Ensure .vanish is removed if not in reading mode
+        olierButton.classList.remove('vanish');
+        zoomToTopButton.classList.remove('vanish');
+    }
+
+ // --- Mobile + Chatbox Open Handling (Priority 2) ---
+    // <<< START FIX >>>
+    if (isChatboxOpen && isMobile) {
+        olierButton.classList.add('hidden');     // Always hide chat button when chatbox open
+        zoomToTopButton.classList.add('hidden'); // <<< THIS IS THE FIX: Always hide books button on mobile when chatbox open
+        lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // Still update scroll pos
+        return; // Exit early as mobile/open case is handled
+    }
+    // <<< END FIX >>>
+
+    // --- Scroll Direction Handling (uses .hidden) ---
+
+    // Always show buttons if chatbox is open AND user is near the top (or scrolls up to near top)
+     if (isChatboxOpen && currentScrollTop <= 10) {
+         olierButton.classList.add('hidden'); // Chat button stays hidden when chatbox open
+         zoomToTopButton.classList.remove('hidden'); // Show Books button
+     }
+     // Always show buttons if chatbox is closed AND user is near the top (or scrolls up to near top)
+     else if (!isChatboxOpen && currentScrollTop <= 10) {
+        olierButton.classList.remove('hidden');
+        zoomToTopButton.classList.remove('hidden');
+     }
+     // Handle scrolling down (hide buttons)
+     else if (currentScrollTop > lastScrollTop) {
+        olierButton.classList.add('hidden');
+        zoomToTopButton.classList.add('hidden');
+     }
+     // Handle scrolling up (show buttons, respecting chatbox state)
+     else if (currentScrollTop < lastScrollTop) {
+         if (!isChatboxOpen) { // Show both if chatbox closed
+             olierButton.classList.remove('hidden');
+             zoomToTopButton.classList.remove('hidden');
+         } else { // If chatbox open, only show Books button when scrolling up
+            olierButton.classList.add('hidden');
+            zoomToTopButton.classList.remove('hidden');
+         }
+     }
+
+    // Update last scroll position for the next event
+    lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // For Mobile or negative scrolling
+}
+
+/*______________________End of New toggleOlierButton Function__________________________*/
+
+
+
+/*______________________Old toggleOlierButton Function__________________________
 
     function toggleOlierButton() {
         // Get references to elements
@@ -2973,6 +3053,7 @@ $("#send-btn").show();
     
         adjustChatboxStyle();
     }
+/*______________________End of Old toggleOlierButton Function__________________________ */ 
 
     
     // Event listener for scroll event
