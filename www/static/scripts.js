@@ -653,8 +653,10 @@ if (isIOS) {
         // Adjust the messages container height
         messages.style.height = `${messagesHeight}px`;
       
-        // Scroll to the bottom of the messages container to show the latest messages
-        messages.scrollTop = messages.scrollHeight;
+        if (autoScrollEnabled && messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+       }
+   
       
       }
       
@@ -1053,7 +1055,7 @@ const messagesContainer = document.getElementById('messages');
 
 // Helper function to check if user is at the bottom
 function checkIfAtBottom() {
-    const threshold = 10; // Adjust as needed
+    const threshold = 30; // Adjust as needed
     return messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight <= threshold;
 }
 
@@ -1706,9 +1708,9 @@ async function sendMessage() {
 
     // --- MODIFICATION START ---
     // Only refocus the input field if it's NOT an iOS device
-    if (!isIOS) { // Assuming 'isIOS' is your globally defined boolean flag
-        $('#chat-input').focus();
-    }
+    // if (!isIOS) { // Assuming 'isIOS' is your globally defined boolean flag
+    //     $('#chat-input').focus();
+    // }
     // --- MODIFICATION END ---
 
     // --- History setup ---
@@ -1772,7 +1774,7 @@ async function sendMessage() {
     // --- Rotating Meditating Animation --- START ---
     const meditatingMessages = [
         'Meditating 🙏', // Include emoji directly
-        'Seeking deeper meaning',
+        'Seeking light',
         'Connecting thoughts',
         'Working hard',
         'Working real hard',
@@ -1971,9 +1973,9 @@ async function sendMessage() {
         // $("#send-btn").show();
 
         // Re-focus input if not iOS (already handled earlier, but safe to keep)
-        if (!isIOS) {
-             $('#chat-input').focus();
-        }
+        // if (!isIOS) {
+        //      $('#chat-input').focus();
+        // }
     }
 }
 
@@ -2157,7 +2159,7 @@ function displayDomainOnlyCardLinks(messageContentDiv, sources) {
 titleToggleArea.addEventListener('click', () => {
     // ***** 1. Get the messages container and save current scroll position *****
     const messagesContainer = document.getElementById('messages');
-    const currentScrollTop = messagesContainer.scrollTop;
+    // const currentScrollTop = messagesContainer.scrollTop;
     // ***********************************************************************
 
     const isHidden = cardsFlexContainer.style.display === 'none';
@@ -2169,7 +2171,7 @@ titleToggleArea.addEventListener('click', () => {
     if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
 
     // ***** 2. Immediately restore the saved scroll position *****
-    messagesContainer.scrollTop = currentScrollTop;
+    // messagesContainer.scrollTop = currentScrollTop;
     // **********************************************************
 
     // Optional: You might call updateScrollButtonVisibility *again* after restoring
