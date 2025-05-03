@@ -1,0 +1,11 @@
+quart
+quart-cors
+aiofiles
+toml
+fal-client
+meilisearch
+cohere
+sentence-transformers
+fireworks-ai
+qdrant-client
+numpy

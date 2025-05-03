@@ -1628,9 +1628,15 @@ styleRadios.forEach(radio => {
 
 
 
+
 // ===============================================
 // DYNAMIC CHATBOT FUNCTIONS - SEND MESSAGE AND IMAGE GEN
 // ===============================================
+
+// Assume these functions/variables are defined elsewhere:
+// $, adjustChatboxHeight, updateScrollButtonVisibility, chatInput,
+// isFirstMessageAfterOliClick, serverUrl, markdownit, DOMPurify,
+// removeAllCopyButtons
 
 $('#send-btn').on('click', sendMessage);
 
@@ -1642,170 +1648,268 @@ $('#chat-input').on('keypress', function(e) {
 });
 
 async function sendMessage() {
-  let input_message = $('#chat-input').val();
-  if (input_message.trim() === '') {
-    alert('Please enter a message');
-    return;
-  }
-
-  document.querySelector("#messages .empty-div").style.display = "none";
-
-  const messageBox = document.createElement("div");
-  messageBox.classList.add("box", "right");
-
-  const message = document.createElement("div");
-  message.classList.add("messages");
-  message.textContent = input_message;
-  messageBox.appendChild(message);
-
-  document.querySelector("#messages .messages-box").appendChild(messageBox);
-
-  // Initial adjustment
-  adjustChatboxHeight(); 
-  updateScrollButtonVisibility();
-
-  $('#chat-input').val('');
-  chatInput.dispatchEvent(new Event('input'));
-  $('#chat-input').focus();
-  $('#chat-input').blur();
-
-  const allMessages = [...document.querySelectorAll("#messages .box")].map(el => {
-    const messageElement = el.querySelector('.messages');
-    if (messageElement) {
-      const role = el.classList.contains("right") ? "user" : "assistant";
-      const content = messageElement.textContent.trim();
-      return { role, content };
+    let input_message = $('#chat-input').val();
+    if (input_message.trim() === '') {
+        alert('Please enter a message');
+        return;
     }
-    return null;
-  }).filter(Boolean);
 
-  let chatHistory = allMessages.slice(-4);
+    document.querySelector("#messages .empty-div").style.display = "none";
 
-  const selectedStyle = document.querySelector("input[name='style']:checked").value;
-  
-  // Get the user's current reflective mode selection
-  const reflectiveCheckbox = document.querySelector("input[name='reflective-mode']");
-  let reflectiveMode = reflectiveCheckbox && reflectiveCheckbox.checked;
+    // --- User message display ---
+    const messageBox = document.createElement("div");
+    messageBox.classList.add("box", "right");
+    const message = document.createElement("div");
+    message.classList.add("messages");
+    message.textContent = input_message;
+    messageBox.appendChild(message);
+    document.querySelector("#messages .messages-box").appendChild(messageBox);
 
-  // --- NEW LOGIC: Override reflectiveMode if isFirstMessageAfterOliClick is true
-  if (isFirstMessageAfterOliClick) {
-    reflectiveMode = false;
-  }
+    // --- UI Adjustments & Scroll (AI Placeholder) ---
+     autoScrollEnabled = true; // Ensure scroll enabled for placeholder
+     requestAnimationFrame(() => { // Ensure DOM update before scrolling
+         scrollToBottom();
+         if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+         if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+     });
+    // --- END UI Adjustments (AI Placeholder) ---
 
-  // Create AI response container
-  let responseBox = document.createElement("div");
-  responseBox.classList.add("box", "ai-message");
+    // --- Input clearing and focus ---
+    $('#chat-input').val('');
+    if (typeof autoResize === 'function') autoResize(); // Resize input after clearing
+    
+     // $('#chat-input').focus(); // <--- THIS IS THE ORIGINAL LINE
 
-  let responseMessage = document.createElement("div");
-  responseMessage.classList.add("messages");
-  responseMessage.style.whiteSpace = "pre-wrap";
+    // --- MODIFICATION START ---
+    // Only refocus the input field if it's NOT an iOS device
+    if (!isIOS) { // Assuming 'isIOS' is your globally defined boolean flag
+        $('#chat-input').focus();
+    }
+    // --- MODIFICATION END ---
 
-  // "Meditating..." placeholder element
-  let meditatingElement = document.createElement("div");
-  meditatingElement.classList.add("loading-message");
-  meditatingElement.textContent = 'Meditating...';
-  responseMessage.appendChild(meditatingElement);
+    // --- History setup ---
+    const allMessages = [...document.querySelectorAll("#messages .box")].map(el => {
+        const messageElement = el.querySelector('.messages');
+        if (messageElement) {
+            const role = el.classList.contains("right") ? "user" : "assistant";
+            let content = '';
 
-  let messageWrapper = document.createElement("div");
-  messageWrapper.style.position = "relative";
-  messageWrapper.appendChild(responseMessage);
-  responseBox.appendChild(messageWrapper);
+            if (role === "assistant") {
+                // Clone the message element to avoid modifying the actual display
+                const clonedElement = messageElement.cloneNode(true);
+                // Find and remove the grounding links container *from the clone*
+                const linksContainer = clonedElement.querySelector('.grounding-links-container');
+                if (linksContainer) {
+                    linksContainer.remove();
+                }
+                // Get text content *from the modified clone*
+                content = clonedElement.textContent.trim();
+            } else {
+                // For user messages, just get the text content directly
+                content = messageElement.textContent.trim();
+            }
 
-  document.querySelector("#messages .messages-box").appendChild(responseBox);
+            // Ensure content is not empty before adding
+            if (content) {
+            return { role, content };
+            }
+        }
+        return null;
+    }).filter(Boolean); // Keep filtering nulls
 
-  // Adjust again after adding the placeholder
-  adjustChatboxHeight();  
-  updateScrollButtonVisibility();
+    // Keep only the last 4 valid messages for history
+    let chatHistory = allMessages.slice(-4);
+    console.log("Prepared Chat History:", JSON.stringify(chatHistory, null, 2)); // Add logging to verify
+// ---
+    // --- Style and Mode setup ---
+    const selectedStyle = document.querySelector("input[name='style']:checked").value;
+    const speedyCheckbox = document.querySelector("input[name='speedy-mode']"); // <-- Find the NEW checkbox
+    const isSpeedyMode = speedyCheckbox ? speedyCheckbox.checked : false; // <-- Get its state, default false if not found
+    // Note: The logic involving 'isFirstMessageAfterOliClick' was tied to reflective mode.
+    // Decide if you still need similar logic for speedy mode. If not, remove that check.
+    // For now, we'll just use the direct checkbox state.
+    console.log(`Style: ${selectedStyle}, Speedy Mode Active: ${isSpeedyMode}`); // Log the values being sent
 
-  // Animate dots after "Meditating"
-  let dotCount = 0;
-  const meditatingInterval = setInterval(() => {
-    dotCount = (dotCount + 1) % 4;
-    meditatingElement.textContent = 'Meditating' + '.'.repeat(dotCount);
-  }, 500);
 
-  try {
-    const response = await fetch(serverUrl + '/api/send-message', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-      body: JSON.stringify({
-        messages: chatHistory,
-        style: selectedStyle,
-        reflectiveMode: reflectiveMode  // <-- This will be false if isFirstMessageAfterOliClick was true
-      })
-    });
+    // --- AI Response Container Setup ---
+    let responseBox = document.createElement("div");
+    responseBox.classList.add("box", "ai-message");
+    let responseMessage = document.createElement("div");
+    responseMessage.classList.add("messages"); // This is where the main text goes
+    responseMessage.style.whiteSpace = "pre-wrap";
+    let meditatingElement = document.createElement("div");
+    meditatingElement.classList.add("loading-message");
+    meditatingElement.textContent = 'Meditating...';
+    responseMessage.appendChild(meditatingElement);
+    let messageWrapper = document.createElement("div"); // Used for copy button positioning
+    messageWrapper.style.position = "relative";
+    messageWrapper.appendChild(responseMessage);
+    responseBox.appendChild(messageWrapper); // Add wrapper (containing message div) to the box
+    document.querySelector("#messages .messages-box").appendChild(responseBox);
+    if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+    if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    const md = window.markdownit();
+    // --- Meditating Animation ---
+    let dotCount = 0;
+    const meditatingInterval = setInterval(() => {
+        dotCount = (dotCount + 1) % 4;
+        if (meditatingElement && meditatingElement.parentNode) {
+             meditatingElement.textContent = 'Meditating' + '.'.repeat(dotCount);
+        } else {
+            clearInterval(meditatingInterval);
+        }
+    }, 500);
 
-    let accumulatedText = '';
+    // --- Variables for grounding links ---
+    let finalGroundingJsonString = null;
+    const groundingMarker = "###GROUNDING_SOURCES_START###";
+    let markerFound = false;
+    // ---
 
-    // Streaming
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
+    try {
+        const response = await fetch(serverUrl + '/api/send-message', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+            body: JSON.stringify({
+                messages: chatHistory,
+                style: selectedStyle,
+                // reflectiveMode: reflectiveMode // REMOVE THIS LINE
+                speedy_mode: isSpeedyMode      // <-- ADD THIS LINE (using snake_case for Python backend)
+            })
+        });
+
+        // --- Basic response check ---
+        if (!response.ok) {
+             clearInterval(meditatingInterval);
+             if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+             throw new Error(`HTTP error! status: ${response.status}`);
+         }
+        // ---
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        const md = window.markdownit();
+        let accumulatedText = '';
+
+                       // Streaming
+                       while (true) {
+                        const { done, value } = await reader.read();
+            
+                        // Stop meditating animation
+                        if (value && meditatingElement && meditatingElement.parentNode) {
+                             clearInterval(meditatingInterval);
+                             meditatingElement.remove();
+                             if (!markerFound) {
+                                 responseMessage.innerHTML = ''; // Clear "Meditating..."
+                             }
+                        }
+            
+                        if (value) {
+                            let chunk = decoder.decode(value);
+            
+                            // Marker Detection Logic
+                            const markerIndex = chunk.indexOf(groundingMarker);
+            
+                            let cleanHtml = ''; // Declare cleanHtml here
+            
+                            if (markerIndex !== -1) {
+                                const textPart = chunk.substring(0, markerIndex);
+                                if (!markerFound) {
+                                    accumulatedText += textPart;
+                                    // Render final text part before marker
+                                    let dirtyHtml = md.render(accumulatedText.replace(/<\/s>/g, ''));
+                                    cleanHtml = DOMPurify.sanitize(dirtyHtml); // Assign here
+                                    responseMessage.innerHTML = cleanHtml;
+                                }
+                                // Store the JSON part
+                                finalGroundingJsonString = chunk.substring(markerIndex + groundingMarker.length).trimStart();
+                                markerFound = true;
+            
+                            } else if (!markerFound) {
+                                // Append chunk to main text and render progressively
+                                accumulatedText += chunk;
+                                let dirtyHtml = md.render(accumulatedText.replace(/<\/s>/g, ''));
+                                cleanHtml = DOMPurify.sanitize(dirtyHtml); // Assign here
+                                responseMessage.innerHTML = cleanHtml;
+                            }
+                            // If marker was found previously, finalGroundingJsonString will just keep accumulating
+                            // We don't update innerHTML again in that case until 'done'
+            
+                            // *** ADDED: Ensure scrolling and layout adjustments happen on each update ***
+                            if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                            if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+                            scrollToBottom(); // <-- Explicitly scroll after content update
+                            // *** END ADDED ***
+            
+                        }
+            
+                        // Done condition check
+                        if (done) {
+                            clearInterval(meditatingInterval);
+                            if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+            
+                            // Final rendering of accumulated text (only needed if marker was never found AND content changed)
+                            if (!markerFound) {
+                                 // No need to re-render if it was already done in the loop
+                                 // Only re-render if the last operation was just adding to finalGroundingJsonString
+                            }
+            
+            
+                            // --- Parse JSON and Display Links ---
+                            let groundingSources = [];
+                            console.log("Attempting to parse grounding JSON. String received:", finalGroundingJsonString);
+                            if (finalGroundingJsonString) {
+                                try {
+                                    groundingSources = JSON.parse(finalGroundingJsonString.trim());
+                                    console.log("Parsed Grounding Sources:", groundingSources);
+                                    displayDomainOnlyCardLinks(responseMessage, groundingSources); // Pass responseMessage div
+                                } catch (e) {
+                                    console.error("Error parsing final grounding JSON:", e, "Data:", finalGroundingJsonString);
+                                }
+                            } else {
+                                console.log("No grounding JSON string received (marker likely not found).");
+                            }
+                            // --- END ---
+            
+                            // Add Copy Button
+                            addCopyButton(messageWrapper);
+            
+                            // *** MOVED UI Adjustments into the loop, but a final scroll is safe ***
+                             scrollToBottom(); // Final scroll after everything is done
+                            // *** END MOVED ***
+            
+                            break; // Exit loop
+                        }
+                    } // End while loop
+
+    } catch (error) {
+        console.error('Error in sendMessage:', error);
         clearInterval(meditatingInterval);
-        meditatingElement.remove();
-
-        responseMessage.textContent = '';
-        accumulatedText = accumulatedText.replace(/<\/s>/g, '');
-
-        let dirtyHtml = md.render(accumulatedText);
-        let cleanHtml = DOMPurify.sanitize(dirtyHtml);
-        responseMessage.innerHTML = cleanHtml;
-
-        addCopyButton(messageWrapper);
-
-
-        break;
-      }
-
-      // As soon as data arrives, stop "Meditating..."
-      clearInterval(meditatingInterval);
-      meditatingElement.remove();
-
-      let chunk = decoder.decode(value);
-      accumulatedText += chunk;
-
-      let dirtyHtml = md.render(accumulatedText);
-      let cleanHtml = DOMPurify.sanitize(dirtyHtml);
-      responseMessage.innerHTML = cleanHtml;
-
-
+        if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+        if (responseMessage) {
+            responseMessage.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+        }
     }
-
-    $("#img-btn").hide();
-    $("#send-btn").show();
-  } catch (error) {
-    console.error('Error in sendMessage:', error);
-    alert(`An error occurred: ${error.message}`);
-
-    clearInterval(meditatingInterval);
-    document.getElementById("chat-input").value = "";
-    $("#img-btn").hide();
-    $("#send-btn").hide();
-  } 
-  finally {
-    // --- NEW LOGIC: After the message is sent, set the variable back to false
-    if (isFirstMessageAfterOliClick) {
-      isFirstMessageAfterOliClick = false;
+    finally {
+        if (typeof isFirstMessageAfterOliClick !== 'undefined' && isFirstMessageAfterOliClick) {
+            isFirstMessageAfterOliClick = false;
+        }
+        $("#img-btn").hide();
+        $("#send-btn").show();
+        $('#chat-input').focus();
     }
-  }
 }
 
-    
-      // Function to add copy button
 
-        // Function to remove all existing copy buttons
-        function removeAllCopyButtons() {
-            document.querySelectorAll('.copy-button').forEach(button => button.remove());
-        }
+// Function to add copy button (Adjusted to exclude card container)
+function removeAllCopyButtons() {
+    document.querySelectorAll('.copy-button').forEach(button => button.remove());
+}
 
 function addCopyButton(wrapper) {
     removeAllCopyButtons();
     let copyButton = document.createElement("button");
-    copyButton.innerHTML = '<div class="copy-icon"></div>'; // Initial icon
+    copyButton.innerHTML = '<div class="copy-icon"></div>'; // Use CSS for the icon
     copyButton.classList.add("copy-button");
     copyButton.style.position = "absolute";
     copyButton.style.bottom = "5px";
@@ -1817,16 +1921,30 @@ function addCopyButton(wrapper) {
 
     copyButton.addEventListener("click", function() {
         const allMessages = document.querySelectorAll("#messages .box");
-        const lastTwoMessages = Array.from(allMessages).slice(-2);
+        const messageBox = wrapper.closest('.box.ai-message');
+        if (!messageBox) return;
+
+        const userMessageBox = messageBox.previousElementSibling;
+        const messagesToCopy = [];
+        if (userMessageBox && userMessageBox.classList.contains('right')) {
+            messagesToCopy.push(userMessageBox);
+        }
+        messagesToCopy.push(messageBox);
+
         let textToCopyPlain = "";
         let textToCopyHTML = "";
 
-        lastTwoMessages.forEach((messageBox) => {
-            const messageElement = messageBox.querySelector('.messages');
+        messagesToCopy.forEach((box) => {
+            const messageElement = box.querySelector('.messages');
             if (messageElement) {
-                const role = messageBox.classList.contains("right") ? "User" : "Olier";
-                const contentPlain = messageElement.textContent.trim();
-                const contentHTML = messageElement.innerHTML.trim();
+                const role = box.classList.contains("right") ? "User" : "Olier";
+                const clonedElement = messageElement.cloneNode(true);
+                const linksContainer = clonedElement.querySelector('.grounding-links-container');
+                if (linksContainer) {
+                    linksContainer.remove();
+                }
+                const contentPlain = clonedElement.textContent.trim();
+                const contentHTML = clonedElement.innerHTML.trim();
 
                 textToCopyPlain += `${role}: ${contentPlain}\n\n`;
                 textToCopyHTML += `<p><strong>${role}:</strong></p>${contentHTML}<br>`;
@@ -1840,19 +1958,157 @@ function addCopyButton(wrapper) {
             });
 
             navigator.clipboard.write([clipboardItem]).then(() => {
-                // Change icon to tick on success
                 copyButton.innerHTML = '<div class="tick-icon">✓</div>';
             }).catch(err => {
                 console.error('Failed to copy text: ', err);
             });
         } else {
-            console.log("No messages to copy.");
+            console.log("No messages found to copy.");
         }
     });
 
     wrapper.appendChild(copyButton);
 }
 
+
+// --- NEW: Function displayDomainOnlyCardLinks with Toggle ---
+function displayDomainOnlyCardLinks(messageContentDiv, sources) {
+    if (!Array.isArray(sources) || sources.length === 0) {
+        console.log("No valid grounding sources to display.");
+        return;
+    }
+
+    const existingContainer = messageContentDiv.querySelector('.grounding-links-container');
+    if (existingContainer) {
+        existingContainer.remove();
+    }
+
+    const linksOuterContainer = document.createElement('div');
+    linksOuterContainer.classList.add('grounding-links-container');
+    linksOuterContainer.style.marginTop = '15px';
+    linksOuterContainer.style.paddingTop = '10px';
+    linksOuterContainer.style.borderTop = '1px solid #eee';
+
+    // --- Clickable title/toggle area ---
+    const titleToggleArea = document.createElement('div');
+    titleToggleArea.style.display = 'flex';
+    titleToggleArea.style.alignItems = 'center';
+    titleToggleArea.style.cursor = 'pointer';
+    titleToggleArea.style.marginBottom = '8px';
+
+    const titleElement = document.createElement('strong');
+    titleElement.textContent = 'Sources';
+    titleElement.style.fontSize = '0.9em';
+    titleElement.style.marginRight = '5px';
+
+    const toggleIcon = document.createElement('span');
+    toggleIcon.classList.add('toggle-icon');
+    toggleIcon.innerHTML = '&#9662;'; // Down arrow
+    toggleIcon.style.fontSize = '0.8em';
+    toggleIcon.style.transition = 'transform 0.2s ease';
+
+    titleToggleArea.appendChild(titleElement);
+    titleToggleArea.appendChild(toggleIcon);
+    linksOuterContainer.appendChild(titleToggleArea);
+
+    // --- Flex container for the cards (Initially Hidden) ---
+    const cardsFlexContainer = document.createElement('div');
+    cardsFlexContainer.classList.add('grounding-cards-flex-container');
+    cardsFlexContainer.style.display = 'none'; // Hidden
+    cardsFlexContainer.style.flexWrap = 'wrap';
+    cardsFlexContainer.style.gap = '8px'; // Slightly smaller gap
+    cardsFlexContainer.style.marginTop = '5px';
+
+    // --- Add each source as a card ---
+    sources.forEach((source, index) => {
+        if (typeof source === 'object' && source !== null && source.uri) {
+            const cardLink = document.createElement('a');
+            cardLink.href = source.uri; // Link still uses redirect URL
+            cardLink.target = '_blank';
+            cardLink.rel = 'noopener noreferrer';
+            cardLink.classList.add('grounding-source-card');
+
+            // Card Styling
+            cardLink.style.display = 'inline-block'; // Changed to inline-block for better wrapping
+            cardLink.style.border = '1px solid #e0e0e0';
+            cardLink.style.borderRadius = '12px'; // More rounded
+            cardLink.style.padding = '6px 10px'; // Adjusted padding
+            cardLink.style.textDecoration = 'none';
+            cardLink.style.color = '#333'; // Darker text
+            cardLink.style.backgroundColor = '#f9f9f9';
+            cardLink.style.fontSize = '0.8em'; // Slightly smaller font
+            cardLink.style.transition = 'background-color 0.2s ease, border-color 0.2s ease';
+            cardLink.style.whiteSpace = 'nowrap'; // Prevent domain wrapping
+
+            cardLink.onmouseover = () => { cardLink.style.backgroundColor = '#eee'; cardLink.style.borderColor = '#ccc'; };
+            cardLink.onmouseout = () => { cardLink.style.backgroundColor = '#f9f9f9'; cardLink.style.borderColor = '#e0e0e0'; };
+
+            // --- Determine and display Domain ONLY ---
+            let displayDomain = 'Source'; // Default fallback
+            // Prioritize source.title if it looks like a domain
+            if (source.title && source.title.includes('.') && !source.title.includes(' ') && !source.title.includes('<')) {
+                 displayDomain = source.title.replace(/^www\./, '');
+            } else {
+                 // Fallback: Try to parse the original redirect URI
+                 try {
+                     const url = new URL(source.uri);
+                     // Heuristic: If hostname is vertex..., it's likely a fallback itself, prefer title if available
+                     if (url.hostname.includes('vertexaisearch') && source.title && source.title.trim() !== '') {
+                         displayDomain = source.title.trim(); // Use title if vertex URL detected
+                     } else {
+                         displayDomain = url.hostname.replace(/^www\./, '');
+                     }
+                 } catch (e) {
+                    // Final fallback if parsing fails or title wasn't domain-like
+                    displayDomain = (source.title && source.title.trim() !== '') ? source.title.trim() : `Source ${index + 1}`;
+                 }
+            }
+            cardLink.textContent = displayDomain; // Set the visible domain text directly on the link
+            // ---
+
+            cardsFlexContainer.appendChild(cardLink);
+        } else {
+            console.warn("Skipping invalid source item:", source);
+        }
+    });
+
+    // Append the flex container (initially hidden)
+    linksOuterContainer.appendChild(cardsFlexContainer);
+
+    // --- Add Toggle Functionality ---
+titleToggleArea.addEventListener('click', () => {
+    // ***** 1. Get the messages container and save current scroll position *****
+    const messagesContainer = document.getElementById('messages');
+    const currentScrollTop = messagesContainer.scrollTop;
+    // ***********************************************************************
+
+    const isHidden = cardsFlexContainer.style.display === 'none';
+    cardsFlexContainer.style.display = isHidden ? 'flex' : 'none'; // Toggle display
+    toggleIcon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)'; // Rotate arrow
+
+    // Let these functions run - adjustChatboxHeight WILL scroll to bottom here
+    if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+    if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+
+    // ***** 2. Immediately restore the saved scroll position *****
+    messagesContainer.scrollTop = currentScrollTop;
+    // **********************************************************
+
+    // Optional: You might call updateScrollButtonVisibility *again* after restoring
+    // scroll position, just in case the restored position affects the button state.
+    // if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+});
+// ---
+    // ---
+
+    // Append the whole links section to the message content div only if cards were added
+    if (cardsFlexContainer.hasChildNodes()) {
+        messageContentDiv.appendChild(linksOuterContainer);
+    } else {
+        console.log("No valid links were generated from sources.");
+    }
+}
+// --- END UPDATED ---
 
 
 
