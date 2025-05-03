@@ -1057,22 +1057,34 @@ function checkIfAtBottom() {
     return messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight <= threshold;
 }
 
-// Scroll event listener to update auto-scroll flag
+// Scroll event listener to update auto-scroll flag and button visibility
 messagesContainer.addEventListener('scroll', function() {
-    if (checkIfAtBottom()) {
+    const isCurrentlyAtBottom = checkIfAtBottom();
+
+    if (isCurrentlyAtBottom) {
         autoScrollEnabled = true;
+         // Hide scroll-to-bottom button when at bottom
+        if (scrollButton) scrollButton.style.display = 'none';
     } else {
+        // User has scrolled up, disable auto-scroll
         autoScrollEnabled = false;
+         // Show scroll-to-bottom button if overflowing and not at bottom
+         if (isOverflowing() && scrollButton) {
+            // Use flex if that's how you center the icon, otherwise 'block'
+            scrollButton.style.display = 'flex'; // Or 'block'
+         }
     }
 });
 
 // Immediate interaction handlers to disable auto-scroll
 ['mousedown', 'touchstart', 'wheel'].forEach(eventType => {
     messagesContainer.addEventListener(eventType, function() {
+        // Directly disable auto-scroll on any interaction start
         autoScrollEnabled = false;
+        // Update button visibility *immediately* based on new state
+        updateScrollButtonVisibility();
     });
 });
-
 // Modify scrollToBottom function
 function scrollToBottom() {
     if (autoScrollEnabled) {
@@ -1081,8 +1093,21 @@ function scrollToBottom() {
 }
 
 // Automatically scroll to the bottom as new messages are added
-const observer = new MutationObserver(scrollToBottom);
-observer.observe(messagesContainer, { childList: true, subtree: true });
+const observer = new MutationObserver((mutationsList) => {
+    // Only auto‑scroll if an AI message (.box.ai-message) was just added and never on a reference‑link click
+    const addedAiMessage = mutationsList.some(mutation =>
+      Array.from(mutation.addedNodes).some(node =>
+        node.nodeType === Node.ELEMENT_NODE &&
+        node.classList.contains('box') &&
+        node.classList.contains('ai-message')
+      )
+    );
+    if (addedAiMessage) {
+      scrollToBottom();
+    }
+  });
+  observer.observe(messagesContainer, { childList: true, subtree: true, characterData: true,  });
+
 
 
 // Define the autoResize function
