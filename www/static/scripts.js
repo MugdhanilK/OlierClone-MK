@@ -1636,7 +1636,8 @@ styleRadios.forEach(radio => {
 // Assume these functions/variables are defined elsewhere:
 // $, adjustChatboxHeight, updateScrollButtonVisibility, chatInput,
 // isFirstMessageAfterOliClick, serverUrl, markdownit, DOMPurify,
-// removeAllCopyButtons
+// removeAllCopyButtons, isIOS, autoResize, scrollToBottom,
+// addCopyButton, displayDomainOnlyCardLinks
 
 $('#send-btn').on('click', sendMessage);
 
@@ -1666,19 +1667,17 @@ async function sendMessage() {
     document.querySelector("#messages .messages-box").appendChild(messageBox);
 
     // --- UI Adjustments & Scroll (AI Placeholder) ---
-     autoScrollEnabled = true; // Ensure scroll enabled for placeholder
-     requestAnimationFrame(() => { // Ensure DOM update before scrolling
-         scrollToBottom();
-         if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-         if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-     });
+      let autoScrollEnabled = true; // Ensure scroll enabled for placeholder (you might manage this globally)
+      requestAnimationFrame(() => { // Ensure DOM update before scrolling
+          scrollToBottom();
+          if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+          if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+      });
     // --- END UI Adjustments (AI Placeholder) ---
 
     // --- Input clearing and focus ---
     $('#chat-input').val('');
     if (typeof autoResize === 'function') autoResize(); // Resize input after clearing
-    
-     // $('#chat-input').focus(); // <--- THIS IS THE ORIGINAL LINE
 
     // --- MODIFICATION START ---
     // Only refocus the input field if it's NOT an iOS device
@@ -1711,7 +1710,7 @@ async function sendMessage() {
 
             // Ensure content is not empty before adding
             if (content) {
-            return { role, content };
+               return { role, content };
             }
         }
         return null;
@@ -1725,11 +1724,7 @@ async function sendMessage() {
     const selectedStyle = document.querySelector("input[name='style']:checked").value;
     const speedyCheckbox = document.querySelector("input[name='speedy-mode']"); // <-- Find the NEW checkbox
     const isSpeedyMode = speedyCheckbox ? speedyCheckbox.checked : false; // <-- Get its state, default false if not found
-    // Note: The logic involving 'isFirstMessageAfterOliClick' was tied to reflective mode.
-    // Decide if you still need similar logic for speedy mode. If not, remove that check.
-    // For now, we'll just use the direct checkbox state.
     console.log(`Style: ${selectedStyle}, Speedy Mode Active: ${isSpeedyMode}`); // Log the values being sent
-
 
     // --- AI Response Container Setup ---
     let responseBox = document.createElement("div");
@@ -1739,7 +1734,7 @@ async function sendMessage() {
     responseMessage.style.whiteSpace = "pre-wrap";
     let meditatingElement = document.createElement("div");
     meditatingElement.classList.add("loading-message");
-    meditatingElement.textContent = 'Meditating...';
+    // meditatingElement.textContent = 'Meditating...'; // REMOVED - Set by new logic
     responseMessage.appendChild(meditatingElement);
     let messageWrapper = document.createElement("div"); // Used for copy button positioning
     messageWrapper.style.position = "relative";
@@ -1749,16 +1744,65 @@ async function sendMessage() {
     if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
     if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
 
-    // --- Meditating Animation ---
+    // --- Rotating Meditating Animation --- START ---
+    const meditatingMessages = [
+        'Meditating 🙏', // Include emoji directly
+        'Seeking deeper meaning',
+        'Connecting thoughts',
+        'Working hard',
+        'Working real hard',
+    ];
+    let currentMessageIndex = 0;
     let dotCount = 0;
-    const meditatingInterval = setInterval(() => {
-        dotCount = (dotCount + 1) % 4;
+    let dotInterval = null; // Renamed from meditatingInterval
+    let messageRotationInterval = null;
+
+    // Function to update the text content (base message + dots)
+    const updateMeditatingText = () => {
         if (meditatingElement && meditatingElement.parentNode) {
-             meditatingElement.textContent = 'Meditating' + '.'.repeat(dotCount);
-        } else {
-            clearInterval(meditatingInterval);
+            const baseMessage = meditatingMessages[currentMessageIndex];
+            meditatingElement.textContent = baseMessage + '.'.repeat(dotCount);
+        }
+    };
+
+    // Set initial message
+    updateMeditatingText();
+
+    // Interval for animating the dots (every 500ms)
+    dotInterval = setInterval(() => {
+        dotCount = (dotCount + 1) % 4;
+        updateMeditatingText(); // Update text with new dot count
+        // Check if element still exists (redundant check, good practice)
+        if (!meditatingElement || !meditatingElement.parentNode) {
+             clearInterval(dotInterval);
+             if (messageRotationInterval) clearInterval(messageRotationInterval); // Clear other interval too
         }
     }, 500);
+
+    // Interval for rotating the base message (every 3 seconds)
+    messageRotationInterval = setInterval(() => {
+        currentMessageIndex = (currentMessageIndex + 1) % meditatingMessages.length;
+        // No need to call updateMeditatingText() here, dotInterval handles the visual update
+        // We just need to update the index for the *next* dotInterval cycle.
+        // However, to make the change immediate:
+        updateMeditatingText(); // Update immediately with new message and current dots
+
+        // Check if element still exists (redundant check, good practice)
+        if (!meditatingElement || !meditatingElement.parentNode) {
+             clearInterval(messageRotationInterval);
+             if (dotInterval) clearInterval(dotInterval); // Clear other interval too
+        }
+    }, 3000); // 3 seconds
+
+    // Helper function to clear both intervals
+    const clearMeditatingIntervals = () => {
+        if (dotInterval) clearInterval(dotInterval);
+        if (messageRotationInterval) clearInterval(messageRotationInterval);
+        dotInterval = null;
+        messageRotationInterval = null;
+    };
+    // --- Rotating Meditating Animation --- END ---
+
 
     // --- Variables for grounding links ---
     let finalGroundingJsonString = null;
@@ -1773,14 +1817,13 @@ async function sendMessage() {
             body: JSON.stringify({
                 messages: chatHistory,
                 style: selectedStyle,
-                // reflectiveMode: reflectiveMode // REMOVE THIS LINE
-                speedy_mode: isSpeedyMode      // <-- ADD THIS LINE (using snake_case for Python backend)
+                speedy_mode: isSpeedyMode // <-- Using snake_case for Python backend
             })
         });
 
         // --- Basic response check ---
         if (!response.ok) {
-             clearInterval(meditatingInterval);
+             clearMeditatingIntervals(); // Clear intervals on error
              if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
              throw new Error(`HTTP error! status: ${response.status}`);
          }
@@ -1791,114 +1834,124 @@ async function sendMessage() {
         const md = window.markdownit();
         let accumulatedText = '';
 
-                       // Streaming
-                       while (true) {
-                        const { done, value } = await reader.read();
-            
-                        // Stop meditating animation
-                        if (value && meditatingElement && meditatingElement.parentNode) {
-                             clearInterval(meditatingInterval);
-                             meditatingElement.remove();
-                             if (!markerFound) {
-                                 responseMessage.innerHTML = ''; // Clear "Meditating..."
-                             }
+                   // Streaming
+                   while (true) {
+                    const { done, value } = await reader.read();
+
+                    // Stop meditating animation and remove element on first chunk
+                    if (value && meditatingElement && meditatingElement.parentNode) {
+                        clearMeditatingIntervals(); // Clear intervals
+                        meditatingElement.remove();
+                        meditatingElement = null; // Nullify to prevent further checks
+                        if (!markerFound) {
+                            responseMessage.innerHTML = ''; // Clear placeholder space
                         }
-            
-                        if (value) {
-                            let chunk = decoder.decode(value);
-            
-                            // Marker Detection Logic
-                            const markerIndex = chunk.indexOf(groundingMarker);
-            
-                            let cleanHtml = ''; // Declare cleanHtml here
-            
-                            if (markerIndex !== -1) {
-                                const textPart = chunk.substring(0, markerIndex);
-                                if (!markerFound) {
-                                    accumulatedText += textPart;
-                                    // Render final text part before marker
-                                    let dirtyHtml = md.render(accumulatedText.replace(/<\/s>/g, ''));
-                                    cleanHtml = DOMPurify.sanitize(dirtyHtml); // Assign here
-                                    responseMessage.innerHTML = cleanHtml;
-                                }
-                                // Store the JSON part
-                                finalGroundingJsonString = chunk.substring(markerIndex + groundingMarker.length).trimStart();
-                                markerFound = true;
-            
-                            } else if (!markerFound) {
-                                // Append chunk to main text and render progressively
-                                accumulatedText += chunk;
+                    }
+
+                    if (value) {
+                        let chunk = decoder.decode(value);
+
+                        // Marker Detection Logic
+                        const markerIndex = chunk.indexOf(groundingMarker);
+
+                        let cleanHtml = ''; // Declare cleanHtml here
+
+                        if (markerIndex !== -1) {
+                            const textPart = chunk.substring(0, markerIndex);
+                            if (!markerFound) {
+                                accumulatedText += textPart;
+                                // Render final text part before marker
                                 let dirtyHtml = md.render(accumulatedText.replace(/<\/s>/g, ''));
                                 cleanHtml = DOMPurify.sanitize(dirtyHtml); // Assign here
                                 responseMessage.innerHTML = cleanHtml;
                             }
-                            // If marker was found previously, finalGroundingJsonString will just keep accumulating
-                            // We don't update innerHTML again in that case until 'done'
-            
-                            // *** ADDED: Ensure scrolling and layout adjustments happen on each update ***
-                            if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-                            if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-                            scrollToBottom(); // <-- Explicitly scroll after content update
-                            // *** END ADDED ***
-            
+                            // Store the JSON part
+                            finalGroundingJsonString = chunk.substring(markerIndex + groundingMarker.length).trimStart();
+                            markerFound = true;
+
+                        } else if (!markerFound) {
+                            // Append chunk to main text and render progressively
+                            accumulatedText += chunk;
+                            let dirtyHtml = md.render(accumulatedText.replace(/<\/s>/g, ''));
+                            cleanHtml = DOMPurify.sanitize(dirtyHtml); // Assign here
+                            responseMessage.innerHTML = cleanHtml;
                         }
-            
-                        // Done condition check
-                        if (done) {
-                            clearInterval(meditatingInterval);
-                            if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
-            
-                            // Final rendering of accumulated text (only needed if marker was never found AND content changed)
-                            if (!markerFound) {
-                                 // No need to re-render if it was already done in the loop
-                                 // Only re-render if the last operation was just adding to finalGroundingJsonString
-                            }
-            
-            
-                            // --- Parse JSON and Display Links ---
-                            let groundingSources = [];
-                            console.log("Attempting to parse grounding JSON. String received:", finalGroundingJsonString);
-                            if (finalGroundingJsonString) {
-                                try {
-                                    groundingSources = JSON.parse(finalGroundingJsonString.trim());
-                                    console.log("Parsed Grounding Sources:", groundingSources);
-                                    displayDomainOnlyCardLinks(responseMessage, groundingSources); // Pass responseMessage div
-                                } catch (e) {
-                                    console.error("Error parsing final grounding JSON:", e, "Data:", finalGroundingJsonString);
-                                }
-                            } else {
-                                console.log("No grounding JSON string received (marker likely not found).");
-                            }
-                            // --- END ---
-            
-                            // Add Copy Button
-                            addCopyButton(messageWrapper);
-            
-                            // *** MOVED UI Adjustments into the loop, but a final scroll is safe ***
-                             scrollToBottom(); // Final scroll after everything is done
-                            // *** END MOVED ***
-            
-                            break; // Exit loop
+                        // If marker was found previously, finalGroundingJsonString will just keep accumulating
+                        // We don't update innerHTML again in that case until 'done'
+
+                        // *** ADDED: Ensure scrolling and layout adjustments happen on each update ***
+                        if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                        if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+                        scrollToBottom(); // <-- Explicitly scroll after content update
+                        // *** END ADDED ***
+
+                    }
+
+                    // Done condition check
+                    if (done) {
+                        clearMeditatingIntervals(); // Ensure cleared on done
+                        if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove(); // Final cleanup if needed
+
+                        // Final rendering of accumulated text (only needed if marker was never found AND content changed)
+                        if (!markerFound) {
+                             // No need to re-render if it was already done in the loop
                         }
-                    } // End while loop
+
+
+                        // --- Parse JSON and Display Links ---
+                        let groundingSources = [];
+                        console.log("Attempting to parse grounding JSON. String received:", finalGroundingJsonString);
+                        if (finalGroundingJsonString) {
+                            try {
+                                groundingSources = JSON.parse(finalGroundingJsonString.trim());
+                                console.log("Parsed Grounding Sources:", groundingSources);
+                                displayDomainOnlyCardLinks(responseMessage, groundingSources); // Pass responseMessage div
+                            } catch (e) {
+                                console.error("Error parsing final grounding JSON:", e, "Data:", finalGroundingJsonString);
+                            }
+                        } else {
+                            console.log("No grounding JSON string received (marker likely not found).");
+                        }
+                        // --- END ---
+
+                        // Add Copy Button
+                        addCopyButton(messageWrapper);
+
+                        // *** MOVED UI Adjustments into the loop, but a final scroll is safe ***
+                          scrollToBottom(); // Final scroll after everything is done
+                        // *** END MOVED ***
+
+                        break; // Exit loop
+                    }
+                } // End while loop
 
     } catch (error) {
         console.error('Error in sendMessage:', error);
-        clearInterval(meditatingInterval);
+        clearMeditatingIntervals(); // Clear intervals on catch
         if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
         if (responseMessage) {
             responseMessage.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
         }
     }
     finally {
+        // Ensure intervals are cleared in finally block as a safety net,
+        // though they should be cleared earlier in most cases.
+        clearMeditatingIntervals();
+
         if (typeof isFirstMessageAfterOliClick !== 'undefined' && isFirstMessageAfterOliClick) {
             isFirstMessageAfterOliClick = false;
         }
-        $("#img-btn").hide();
-        $("#send-btn").show();
-        $('#chat-input').focus();
+        // Assuming these buttons exist and are managed elsewhere
+        // $("#img-btn").hide();
+        // $("#send-btn").show();
+
+        // Re-focus input if not iOS (already handled earlier, but safe to keep)
+        if (!isIOS) {
+             $('#chat-input').focus();
+        }
     }
 }
+
 
 
 // Function to add copy button (Adjusted to exclude card container)
