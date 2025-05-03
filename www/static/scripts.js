@@ -2161,7 +2161,7 @@ async function sendMessage() {
              clearInterval(messageRotationInterval);
              if (dotInterval) clearInterval(dotInterval); // Clear other interval too
         }
-    }, 3000); // 3 seconds
+    }, 4000); // 4 seconds
 
     // Helper function to clear both intervals
     const clearMeditatingIntervals = () => {
