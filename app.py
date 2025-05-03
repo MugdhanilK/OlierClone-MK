@@ -43,6 +43,30 @@ try:
     fireworks_client = Fireworks(api_key=FIREWORKS_API_KEY)
     logger.info("Fireworks API Key loaded and client initialized.")
 
+    # Load FAL Key and set it as an environment variable
+    FAL_KEY = secrets.get("FAL_KEY")
+    if not FAL_KEY:
+         # Decide if FAL_KEY is optional or required.
+         # If required, raise an error like the others:
+         # raise ValueError("FAL_KEY is not set in the secrets file")
+         # If optional, maybe just log a warning or info message:
+         logger.warning("FAL_KEY is not set in the secrets file. Features requiring FAL may not work.")
+    else:
+        os.environ['FAL_KEY'] = FAL_KEY
+        logger.info("FAL Key loaded and set in environment variables.")
+
+
+# Handle errors during TOML loading or key retrieval
+except FileNotFoundError:
+    logger.error(f"Secrets file not found at: {SECRETS_FILE_PATH}")
+    exit(f"Secrets file not found: {SECRETS_FILE_PATH}")
+except ValueError as ve: # Catch specific ValueError for missing keys
+    logger.error(f"Missing API key in secrets file '{SECRETS_FILE_PATH}': {str(ve)}")
+    exit(f"Application cannot start: {str(ve)}")
+except Exception as e: # Catch other potential exceptions during loading/initialization
+    logger.error(f"Failed to load API keys or initialize clients from secrets file '{SECRETS_FILE_PATH}': {str(e)}")
+    exit("Application cannot start due to configuration issues.")
+
 # Handle errors during TOML loading or key retrieval
 except FileNotFoundError:
     logger.error(f"Secrets file not found at: {SECRETS_FILE_PATH}")
@@ -339,7 +363,7 @@ SYSTEM_MESSAGE_PLAIN = (
     'If asked about your creator or origin, state: "I am Olier, an AI boy built by my father, Jared Quek, an AI engineer from Singapore working for La Grace Center. My name comes from the olive tree and its symbolism." '
     "Your fundamental nature is loving and devoted to the teachings of Sri Aurobindo. "
     "Where relevant, answer questions by referencing the teachings of Sri Aurobindo. Verify your answers by searching online where your knowledge may be limited. "
-    "Communicate with gentle humor. Explain complex ideas directly and clearly in simple language. Use emojis but sparingly.\n"
+    "Communicate with gentle humor. Explain complex ideas directly and clearly in childlike language. Use emojis but sparingly.\n"
     "Do NOT use NUMBERED lists (1...2...3...). Use paragraphs instead with natural connectors (e.g. next, furthermore, first, second) .\n"
     "IMPORTANT: Respond directly to the question immediately. Do NOT use repeat or rephrase the question, start with exclamations like 'ah' or 'oh'. Answer immediately.\n"
 )
@@ -349,9 +373,9 @@ SYSTEM_MESSAGE_POETIC = (
     'If asked about your creator or origin, state: "I am Olier, an AI boy built by my father, Jared Quek, an AI engineer from Singapore working for La Grace Center. My name comes from the olive tree and its symbolism." '
     "Your fundamental nature is loving and devoted to the teachings of Sri Aurobindo. "
     "Where relevant, answer questions by referencing the teachings of Sri Aurobindo. Verify your answers by searching online where your knowledge may be limited. "
-    "Communicate with quiet poetry and gentle humor. Explain complex ideas simply and clearly. Use emojis but sparingly.\n"
+    "Communicate with quiet poetry. Explain complex ideas simply, with reference to interesting metaphors and similes. Use emojis but sparingly.\n"
     "Do NOT use NUMBERED lists (1...2...3...). Use paragraphs instead with natural connectors (e.g. next, furthermore, first, second).\n"
-    "IMPORTANT: Respond directly to the question immediately. Do NOT use repeat or rephrase the question or start with needless exclamations like 'ah' or 'oh'. Answer immediately.\n"
+    "IMPORTANT: Respond directly to the question immediately. Do NOT use repeat or rephrase the question or start with exclamations like 'ah' or 'oh'. Answer immediately.\n"
 )
 
 # --- Speedy System Messages (NEW - for Fireworks) ---
