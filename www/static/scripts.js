@@ -249,6 +249,10 @@ startLoaderAnimation();
 $('#results').empty(); // Clear previous results
 $('.sample-questions').hide(); // Hide sample questions when search is initiated
 
+ // ***** Hide summary button and container initially on new search *****
+ $('#summarize-results-btn').hide();
+ $('#ai-summary-container').hide().find('#ai-summary-content').empty(); // Hide and clear previous summary
+
 // Add hidden class to open_chatbot button when not in flex-box and zoom_to_top button
 $('.open_chatbot:not(.in-flex-box), .zoom_to_top').addClass('hidden');
 
@@ -264,11 +268,16 @@ $.post(searchUrl, { query: query }, function(data) {
     stopLoaderAnimation();
 
     // If no results are found, show a message and re-display sample questions
-    if (data.length === 0) {
+    if (!data || data.length === 0) {
         $('#results').html('<p>No results found. Please try a different query.</p>');
         $('.sample-questions').show();
+        $('#summarize-results-btn').hide();
+        $('#results').removeData('fullResultsData'); // Clear stored data
         return;
     }
+ // Store the full results data for potential summarization
+ $('#results').data('fullResultsData', data);
+ console.log("Stored full results data.");
 
     var $resultsContainer = $('<div id="top-results"></div>');
 
@@ -329,12 +338,21 @@ $.post(searchUrl, { query: query }, function(data) {
     // Append the results container to the results section
     $('#results').append($resultsContainer);
 
+ // ***** Show the Summarize button IF there are results *****
+ if (data.length > 0) {
+    $('#summarize-results-btn').show();
+    console.log("Summarize button shown."); // Debug log
+}
+
 }).fail(function(jqXHR, textStatus, errorThrown) {
+    // --- Failure Callback ---
     console.log("Search request failed", textStatus, errorThrown);
-    stopLoaderAnimation();
+    stopLoaderAnimation(); // Stop loader animation
     $('#results').prepend('<p>An error occurred while searching. Please try again.</p>');
-    // Show sample questions again if there was an error
-    $('.sample-questions').show();
+    $('.sample-questions').show(); // Show sample questions again
+    $('#summarize-results-btn').hide(); // Hide button on failure
+    // Clear any previously stored results data
+    $('#results').removeData('fullResultsData');
 });
 });
 
@@ -343,10 +361,334 @@ $.post(searchUrl, { query: query }, function(data) {
 $('#query').on('input', function() {
     if ($(this).val().trim() === '') {
         $('#results').empty();
-        $('.sample-questions').show();
+        $('.sample-questions').show(); // Show sample questions when input is empty
+        $('#summarize-results-btn').hide(); // Hide button
+        $('#ai-summary-container').hide().find('#ai-summary-content').empty(); // Hide and clear summary
+        // Clear any previously stored results data
+        $('#results').removeData('fullResultsData');
     }
 });
 
+
+
+//Summarise
+
+//Changes done
+
+// (Make sure markdownit and DOMPurify are loaded/initialized)
+const md = window.markdownit(); // Initialize markdown-it
+
+// --- Summarize Button Click Handler (Modified for Streaming) ---
+$(document).on('click', '#summarize-results-btn', async function() { // Add async here
+    // 0. Ensure chatbox is open
+    if (!$("#chatbox").hasClass("open")) {
+        $(".open_chatbot").first().trigger("click");
+    }
+    $("#messages .empty-div").hide();
+
+    // 1. Get messages area
+    const messagesBox = document.querySelector("#messages .messages-box");
+    if (!messagesBox) {
+        console.error("Messages area not found.");
+        return;
+    }
+
+    // 2. Create placeholder bubble
+    let placeholderBubble = document.createElement("div");
+    placeholderBubble.classList.add("box", "ai-message");
+    let messageWrapper = document.createElement("div");
+    messageWrapper.style.position = "relative";
+    let placeholderMessage = document.createElement("div");
+    placeholderMessage.classList.add("messages");
+    placeholderMessage.style.whiteSpace = "pre-wrap";
+    let meditatingElement = document.createElement("div"); // Separate element for "Meditating..."
+    meditatingElement.classList.add("meditating-message"); // Use existing class
+    meditatingElement.textContent = 'Creating the Olier Overview...';
+    placeholderMessage.appendChild(meditatingElement); // Add meditating text initially
+    messageWrapper.appendChild(placeholderMessage);
+    placeholderBubble.appendChild(messageWrapper);
+    messagesBox.appendChild(placeholderBubble);
+    // --- UI Adjustments & Scroll (AI Placeholder) ---
+    autoScrollEnabled = true; // Ensure scroll enabled for placeholder
+    requestAnimationFrame(() => { // Ensure DOM update before scrolling
+        scrollToBottom();
+        if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+        if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+    });
+   // --- END UI Adjustments (AI Placeholder) ---
+
+    //scrollToBottom(); // Scroll initially
+
+    // 2a. Animate dots (Keep this part)
+    let dotCount = 0;
+    const meditatingInterval = setInterval(() => {
+        dotCount = (dotCount + 1) % 4;
+        if (meditatingElement && meditatingElement.parentNode) { // Check if element still exists
+             meditatingElement.textContent = 'Creating the Olier Overview' + '.'.repeat(dotCount);
+        } else {
+             clearInterval(meditatingInterval); // Stop if element is removed
+        }
+    }, 500);
+
+    // 3. Prepare payload (same as before)
+    const fullResultsData = $('#results').data('fullResultsData') || [];
+    if (fullResultsData.length === 0) {
+        if (meditatingElement && meditatingElement.parentNode) meditatingElement.textContent = "No results available for summarization.";
+        clearInterval(meditatingInterval);
+        return;
+    }
+    const topResults = fullResultsData.slice(0, 10);
+    const userQuery = $('#query').val().trim();
+    const payload = {
+        results: topResults,
+        query: userQuery
+    };
+
+    // 4. Fetch request for streaming summarization
+    try {
+        const response = await fetch(serverUrl + 'api/summarize-results', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify(payload) // Use body for fetch
+        });
+
+        if (!response.ok) {
+            // Handle HTTP errors before trying to read stream
+            clearInterval(meditatingInterval);
+            if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove(); // Remove meditating text
+            placeholderMessage.textContent = `Error: ${response.status} ${response.statusText}`;
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedText = '';
+        let firstChunkReceived = false;
+
+        // Inside the 'while (true)' loop for summary streaming
+
+        while (true) {
+            const { done, value } = await reader.read();
+
+            if (value) {
+                // --- First chunk logic (keep as is) ---
+                if (!firstChunkReceived) {
+                    clearInterval(meditatingInterval);
+                    if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+                    placeholderMessage.innerHTML = ''; // Clear "Meditating..."
+                    firstChunkReceived = true;
+                }
+                // ---
+
+                let chunk = decoder.decode(value);
+
+                // Check for backend error signal (keep as is)
+                if (chunk.startsWith("STREAM_ERROR:")) {
+                     placeholderMessage.innerHTML = `<span style="color: red;">${chunk.substring("STREAM_ERROR:".length).trim()}</span>`;
+                     console.error("Summarization stream error:", chunk);
+                     break; // Stop processing stream on error
+                }
+
+
+                accumulatedText += chunk;
+
+                // ***** CORRECTED RENDERING ORDER *****
+                // 1. Render Markdown from the accumulated text FIRST.
+                //    This will process any markdown syntax but leave the [Marker] tags untouched.
+                let renderedMarkdown = md.render(accumulatedText);
+
+                // 2. Now, replace the [Marker] tags within the RENDERED HTML string.
+                let htmlWithLinks = replaceReferenceMarkers(renderedMarkdown);
+
+                // 3. Sanitize the final HTML which now contains rendered markdown AND the links.
+                let cleanHtml = DOMPurify.sanitize(htmlWithLinks);
+
+                // 4. Update the DOM.
+                placeholderMessage.innerHTML = cleanHtml;
+                //messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                // ***** END OF CORRECTED RENDERING ORDER *****
+
+
+                // --- UI Adjustments (keep as is) ---
+                 if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                 if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+                 
+                 
+                 //scrollToBottom(); // Keep scrolling as content arrives
+                 // ---
+            }
+
+            if (done) {
+                // --- Final UI Adjustments and Button Addition (keep as is) ---
+                clearInterval(meditatingInterval);
+                if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+
+                // Add copy button AFTER streaming is complete
+                addCopyButton(messageWrapper);
+
+                // Final layout adjustment after all content is rendered
+                if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+                scrollToBottom(); // Final scroll
+
+                break; // Exit the loop
+            }
+        }
+        
+/*
+        while (true) {
+            const { done, value } = await reader.read();
+
+            if (value) {
+                // --- First chunk logic ---
+                if (!firstChunkReceived) {
+                    clearInterval(meditatingInterval);
+                    if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+                    placeholderMessage.innerHTML = ''; // Clear "Meditating..."
+                    firstChunkReceived = true;
+                }
+                // ---
+
+                let chunk = decoder.decode(value);
+
+                // Check for backend error signal
+                if (chunk.startsWith("STREAM_ERROR:")) {
+                     placeholderMessage.innerHTML = `<span style="color: red;">${chunk.substring("STREAM_ERROR:".length).trim()}</span>`;
+                     console.error("Summarization stream error:", chunk);
+                     break; // Stop processing stream on error
+                }
+
+
+                accumulatedText += chunk;
+
+                // Render progressively with reference links
+                let textWithLinks = replaceReferenceMarkers(accumulatedText);
+                let dirtyHtml = md.render(textWithLinks); // Use markdown-it
+                let cleanHtml = DOMPurify.sanitize(dirtyHtml); // Sanitize
+                placeholderMessage.innerHTML = cleanHtml; // Update content
+
+
+                // --- Optional: Adjust height during streaming (can be intensive) ---
+                // You might throttle this if needed
+                 if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                 if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+                 scrollToBottom(); // Keep scrolling as content arrives
+                 // ---
+            }
+
+            if (done) {
+                clearInterval(meditatingInterval); // Ensure cleared if loop finishes quickly
+                if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove(); // Ensure removed
+
+                // Add copy button AFTER streaming is complete
+                addCopyButton(messageWrapper);
+
+                // Final layout adjustment after all content is rendered
+                if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+                scrollToBottom(); // Final scroll
+
+                break; // Exit the loop
+            }
+        }
+*/
+
+
+    } catch (error) {
+        clearInterval(meditatingInterval); // Clear interval on fetch error
+        if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+        placeholderMessage.textContent = "Sorry, an error occurred while creating the Olier Overview. Please try again later.";
+        console.error("Summarization request failed:", error);
+    }
+}); // End of summarize button click handler
+//Changes finished
+
+
+// --- Helper function to replace new-style reference markers with clickable links ---
+function replaceReferenceMarkers(text) {
+    // Matches:
+    //  [CWSA – 'Book Title', 'Chapter Title']
+    //  [CWM - 'Book Title', 'Chapter Title']
+    //  [Mother’s Agenda - 'Book Title', 'Chapter Title']
+    return text.replace(
+    /\[(CWSA|CWM|Mother['’]s Agenda)\s*[-–]\s*'(.+?)'\s*,\s*'(.+?)'\]/g,
+    (match, series, book, chapter) => {
+      return `<a href="#" class="reference-link"
+                  data-book-title="${book}"
+                  data-chapter-title="${chapter}"
+              >${match}</a>`;
+    }
+  );
+}
+  
+
+
+// Helper function to set chat input value and trigger the send button
+// (Keep this if your overall code uses it; otherwise, you may remove or adjust it as needed.)
+function setInputValueAndSend(prompt) {
+    const $chatInput = $('#chat-input');
+    $chatInput.val(prompt);
+    $chatInput.trigger('input'); // Trigger input event for auto-resize if needed
+    console.log("Setting chat input and triggering send.");
+    $('#send-btn').click();
+}
+
+// --- Event Listener for Reference Links ---
+$(document).on('click', '.reference-link', function(e) {
+    e.preventDefault();
+    
+    // ① Read the link’s data attributes up front
+    const bookTitle   = $(this).data('book-title');
+    const chapterTitle= $(this).data('chapter-title');
+  
+    // ② On mobile, first close the chat pane (reusing your existing toggle)
+    if ( $('body').hasClass('is-mobile') ) {
+      $('.close-icon').trigger('click');
+  
+      // ③ Wait for your 0.3s slide‑out animation to finish, then scroll the page
+      setTimeout(() => {
+        const $result = $(".result-item").filter(function(){
+          const md = $(this).find(".result-metadata").text().toLowerCase();
+          return md.includes(bookTitle.toLowerCase()) &&
+                 md.includes(chapterTitle.toLowerCase());
+        }).first();
+        if (!$result.length) return;
+  
+        // ④ Scroll the window exactly as on desktop
+        $('html, body').animate({
+          scrollTop: $result.offset().top - 20
+        }, 500);
+  
+        // ⑤ Highlight it
+        $result.addClass('highlight-golden');
+        setTimeout(() => $result.removeClass('highlight-golden'), 5000);
+      }, 300);
+  
+      return;
+    } 
+
+  // 2️⃣ If on desktop, perform the normal scroll + highlight logic:
+  
+    //const bookTitle = $(this).data('book-title');
+   // const chapterTitle = $(this).data('chapter-title');
+   
+   // Find the first result-item whose metadata includes both the book title and chapter title (ignoring case)
+    const $result = $(".result-item").filter(function(){
+        const metadata = $(this).find(".result-metadata").text();
+        return metadata.toLowerCase().includes(bookTitle.toLowerCase()) &&
+               metadata.toLowerCase().includes(chapterTitle.toLowerCase());
+    }).first();
+
+    if ($result.length) {
+        $('html, body').animate({ scrollTop: $result.offset().top - 20 }, 500);
+        $result.addClass('highlight-golden');
+        setTimeout(() => {
+            $result.removeClass('highlight-golden');
+        }, 5000);
+    }
+});
+// --- END OF SUMMARIZE BUTTON CLICK HANDLER ---
 
 
 // Hide the View Detail loader and overlay initially
