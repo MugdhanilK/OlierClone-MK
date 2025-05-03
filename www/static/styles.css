@@ -93,9 +93,6 @@ body.ios-device::before {
 
 /* Common styles for .container */
 .container {
-    max-width: 900px;    /* or your preferred line-length */
-    width: 100%;         /* fluid on small screens */
-    margin: 0 auto;      /* auto left/right center */
     flex-basis: 100%;  
     margin: auto;
     text-align: center;
@@ -240,36 +237,23 @@ button:focus {
 
 /* Add this to www/static/styles.css */
 
-/* Class to hide the top-level view containers */
-#search-view-container.closed,
-#reading-view-container.closed {
+/* Class to hide the container without leaving space */
+.container.closed {
     display: none;
-    /* Optionally keep other styles if needed, but display:none is key */
     height: 0;
     overflow: hidden;
     margin: 0;
     padding: 0;
-    visibility: hidden; /* Add visibility hidden */
 }
 
-.search-space {
-    max-width: 900px;    /* or whatever line-length you prefer */
-    width: 100%;         /* so it’s fluid on small screens */
-    margin: 0 auto;      /* auto left/right gutters */
-  }
+
 
 /* Class to hide the searchSpace */
 .search-space.closed {
     display: none; /* Hide the searchSpace completely */
 }
 
-/* 2. Constrain & center the full-text pane */
-#full-text {
-  max-width: 900px;
-  width: 100%;
-  margin: 0 auto;
-  /* (if your text is nested inside a .full-text-content, you can target that instead) */
-}
+
 
 /* SEARCH */
 
