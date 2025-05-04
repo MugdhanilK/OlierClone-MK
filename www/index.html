@@ -224,7 +224,10 @@
                                     [scopeAllCard, scopeAurobindoCard, scopeMotherCard]
                                         .forEach(c => c.classList.remove('selected-card'));
                                     chosenCard.classList.add('selected-card');
-                                    selectedScope.value = value;                 // ← no more TypeError
+                                    selectedScope.value = value;  
+
+                                           // persist the choice for next visit
+                                            localStorage.setItem('seekScope', value);  // ← no more TypeError
                                 }
 
                                 /* click wiring */
@@ -770,7 +773,7 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-                <input autocomplete="off" class="form-control selected-card" id="query"
+                <input autocomplete="off" class="form-control selected-card;" id="query"
                     onfocus="this.style.textAlign='left'; this.placeholder='';"
                     onblur="if(this.value===''){ this.style.textAlign='center'; this.placeholder='Find quotes from Sri Aurobindo &amp; the Mother!'; }"
                     placeholder="Find quotes from Sri Aurobindo &amp; the Mother!" type="text" />
