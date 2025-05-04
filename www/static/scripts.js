@@ -402,10 +402,9 @@ $('#query').on('input', function() {
 });
 
 
-
-//Summarise
-
-//Changes done
+//==========================================
+//SUMMARIZE BUTTON FUNCTIONALITY
+//==========================================
 
 // (Make sure markdownit and DOMPurify are loaded/initialized)
 const md = window.markdownit(); // Initialize markdown-it
@@ -1941,9 +1940,10 @@ function saveCurrentChat(showAlert = true) {
         }
     }
 }
-/* ───────────────────────────────────────────
-   AI-STYLE  (Plain | Poetic)  – no radios
-───────────────────────────────────────────*/
+
+/* ===============================================
+   AI-STYLE  (Plain | Poetic)  – No Radiobuttons
+==================================================*/
 
 const plainCard  = document.getElementById('plain-olier-card');
 const poeticCard = document.getElementById('poetic-olier-card');
@@ -1983,6 +1983,46 @@ document.addEventListener('click', function(event) {
         chatHistoryDropdown.classList.remove('active');
     }
 });
+
+/* ─────────────────────────────────────────────
+   SEEK-SCOPE selector  (All | Aurobindo | Mother)
+   Mirrors the Plain/Poetic pattern 1-for-1
+───────────────────────────────────────────── */
+/* ─────────────────────────────────────────────
+   SEEK-SCOPE selector  (All | Aurobindo | Mother)
+   Mirrors the Plain/Poetic pattern 1-for-1
+───────────────────────────────────────────── */
+
+const scopeAllCard       = document.getElementById('scope-all-card');
+const scopeAurobindoCard = document.getElementById('scope-aurobindo-card');
+const scopeMotherCard    = document.getElementById('scope-mother-card');
+const hiddenScopeInput   = document.getElementById('selectedScope');   // same as Style
+
+// ❶  Helper → update UI, hidden input, localStorage
+function setScope(scope, card) {
+    [scopeAllCard, scopeAurobindoCard, scopeMotherCard]
+        .forEach(c => c.classList.remove('selected-card'));
+
+    card.classList.add('selected-card');          // gold outline
+    hiddenScopeInput.value = scope;               // keep form state
+    localStorage.setItem('seekScope', scope);     // persist
+}
+
+// ❷  Restore last choice (or default to all)
+const savedScope = localStorage.getItem('seekScope') || 'all';
+switch (savedScope) {
+    case 'aurobindo': setScope('aurobindo', scopeAurobindoCard); break;
+    case 'mother':    setScope('mother',    scopeMotherCard   ); break;
+    default:          setScope('all',       scopeAllCard      );
+}
+
+// ❸  Wire clicks
+scopeAllCard      .addEventListener('click', () => setScope('all',       scopeAllCard      ));
+scopeAurobindoCard.addEventListener('click', () => setScope('aurobindo', scopeAurobindoCard));
+scopeMotherCard   .addEventListener('click', () => setScope('mother',    scopeMotherCard   ));
+
+
+
 
 
 // Prevent clicks inside the dropdown from closing it
