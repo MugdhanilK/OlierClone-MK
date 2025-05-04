@@ -173,19 +173,107 @@
                     <div class="text-center">
                         <label class="mb-0 align-items-center">
                             <input type="checkbox" name="reflective-mode" value="reflective" />
-                            Speedy Mode <span class="badge badge-secondary">Beta</span>
+                            Speedy Mode <!--<span class="badge badge-secondary">Beta</span>-->
                         </label>
                         <br />
                         <small class="text-muted">
-                            In speedy mode, Olier answers faster but less comprehensively and accurately. Olier is unable to search online in this mode.
+                            In speedy mode, Olier answers faster but less comprehensively and accurately. Olier is
+                            unable to search online in this mode.
                         </small>
                         <br />
                         <!-- Hidden input if needed -->
                         <input type="hidden" id="selectedStyle" value="poetic" />
                     </div>
+                </div>
+                <!-- ─────────────────────────  SEEK SCOPE  ───────────────────────── -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Seek Scope <!--<span class="badge badge-secondary">Beta</span>-->
+                    </div>
+                    <!-- CHOOSE YOUR OLIER STYLE HEADER -->
+                    <h2 class="olier-style-header">Select the Scope of Seeking</h2>
+                    <!--<h2 class="section-title">Seek Scope</h2>-->
 
+                    <div class="style-cards-row">
 
-                    <!--<div class="text-center">
+                        <!-- ▸  All Works  -->
+                        <label class="style-card style-cards" id="scope-all-card">
+                            <input type="radio" name="searchScope" value="all" hidden checked>
+
+                            <div class="card-body">
+                                <!-- reuse your existing avatar-circle utility -->
+                                <div class="style-avatar"
+                                    style="background-image:url('static/Maa - Sri Aurobindo.png');"></div>
+                                <h4>All Works</h4>
+                                <hr />
+                                <p>The Mother<br /> &amp;<br /> Sri Aurobindo </p>
+                            </div>
+                        </label>
+
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+
+                                /* grab elements AFTER they exist */
+                                const scopeAllCard = document.getElementById('scope-all-card');
+                                const scopeAurobindoCard = document.getElementById('scope-aurobindo-card');
+                                const scopeMotherCard = document.getElementById('scope-mother-card');
+                                const selectedScope = document.getElementById('selectedScope');   // now never null
+
+                                /* tiny helper */
+                                function highlightScope(chosenCard, value) {
+                                    [scopeAllCard, scopeAurobindoCard, scopeMotherCard]
+                                        .forEach(c => c.classList.remove('selected-card'));
+                                    chosenCard.classList.add('selected-card');
+                                    selectedScope.value = value;                 // ← no more TypeError
+                                }
+
+                                /* click wiring */
+                                scopeAllCard.addEventListener('click', () => highlightScope(scopeAllCard, 'all'));
+                                scopeAurobindoCard.addEventListener('click', () => highlightScope(scopeAurobindoCard, 'aurobindo'));
+                                scopeMotherCard.addEventListener('click', () => highlightScope(scopeMotherCard, 'mother'));
+
+                                /* first-load highlight */
+                                const start = selectedScope.value || 'all';
+                                if (start === 'aurobindo') scopeAurobindoCard.click();
+                                else if (start === 'mother') scopeMotherCard.click();
+                                else scopeAllCard.click();
+
+                            });
+
+                        </script>
+
+                        <!-- ▸  The Mother only  -->
+                        <label class="style-card style-cards" id="scope-mother-card">
+                            <input type="radio" name="searchScope" value="mother" hidden>
+
+                            <div class="card-body">
+                                <div class="style-avatar" style="background-image:url('static/the_mother.png');"></div>
+                                <h4>The Mother</h4>
+                                <hr />
+                                <p>Collected Works<br /> of The Mother (CWM)<br /> &amp;<br /> The Mother’s Agenda</p>
+                            </div>
+                        </label>
+
+                        <!-- ▸  Sri Aurobindo only  -->
+                        <label class="style-card style-cards" id="scope-aurobindo-card">
+                            <input type="radio" name="searchScope" value="aurobindo" hidden>
+
+                            <div class="card-body">
+                                <div class="style-avatar" style="background-image:url('static/sri_aurobindo 1.png');">
+                                </div>
+                                <h4>Sri Aurobindo</h4>
+                                <hr />
+                                <p>Complete Works of Sri Aurobindo (CWSA)<br /> &amp;<br /> <span
+                                        class="badge badge-secondary">Beta</span> Sri Aurobindo Birth Centenary Library
+                                    (SABCL)</p>
+                            </div>
+                        </label>
+                    </div><!-- /.style-cards-row -->
+                    <input type="hidden" id="selectedScope" name="selectedScope" value="all">
+
+                </div><!-- /.settings-section -->
+
+                <!--<div class="text-center">
                         <label class="mb-0 align-items-center">
                             <input type="checkbox" name="reflective-mode" value="reflective" />
                             Reflective Mode <span class="badge badge-secondary">Beta</span>
@@ -196,11 +284,11 @@
                             It will automatically disable itself for Oli button commentary.
                         </small>
                         <br />-->
-                        <!-- Hidden input if needed -->
-                   <!-- <input type="hidden" id="selectedStyle" value="poetic" />-->
-                   <!-- </div>-->
+                <!-- Hidden input if needed -->
+                <!-- <input type="hidden" id="selectedStyle" value="poetic" />-->
+                <!-- </div>
                     <br />
-                </div>
+                </div>-->
 
 
                 <!-- AI Style (Card) -->
@@ -242,7 +330,7 @@
                 </div>-->
 
 
-                <div class="card mb-3">
+                <!--<div class="card mb-3">
                     <div class="card-header">
                         Customise Experience <span class="badge badge-secondary">Beta</span>
                     </div>
@@ -293,22 +381,22 @@
                             /* soft golden */
                             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
                         }
-                    </style>
-                    <!-- Aesthetic Style (Card) -->
-                    <!-- Row 1: Original & Indian -->
-                    <div class="style-cards-row">
-                        <!-- Original -->
-                        <label class="style-card style-cards">
+                    </style>-->
+                <!-- Aesthetic Style (Card) -->
+                <!-- Row 1: Original & Indian -->
+                <!--<div class="style-cards-row">-->
+                <!-- Original -->
+                <!-- <label class="style-card style-cards">
                             <input type="radio" name="aesthetic-style" value="original" hidden checked>
                             <div class="card-body">
                                 <div class="theme-avatar" style="background-image: url('static/Original.png');"></div>
                                 <h4>Original</h4>
                                 <p>Classic and straightforward design.</p>
                             </div>
-                        </label>
+                        </label>-->
 
-                        <!-- Indian -->
-                        <label class="style-card style-cards">
+                <!-- Indian -->
+                <!--<label class="style-card style-cards">
                             <input type="radio" name="aesthetic-style" value="indian" hidden>
                             <div class="card-body">
                                 <div class="theme-avatar" style="background-image: url('static/Indian.png');"></div>
@@ -316,12 +404,12 @@
                                 <p>Warm, culturally rich aesthetics.</p>
                             </div>
                         </label>
-                    </div>
+                    </div>-->
 
-                    <!-- Row 2: Far Eastern & Modern -->
-                    <div class="style-cards-row">
-                        <!-- Far Eastern -->
-                        <label class="style-card style-cards">
+                <!-- Row 2: Far Eastern & Modern -->
+                <!-- <div class="style-cards-row">-->
+                <!-- Far Eastern -->
+                <!--<label class="style-card style-cards">
                             <input type="radio" name="aesthetic-style" value="far-eastern" hidden>
                             <div class="card-body">
                                 <div class="theme-avatar" style="background-image: url('static/Far-Eastern.png');">
@@ -329,10 +417,10 @@
                                 <h4>Far Eastern</h4>
                                 <p>Minimalistic and balanced design.</p>
                             </div>
-                        </label>
+                        </label>-->
 
-                        <!-- Modern -->
-                        <label class="style-card style-cards">
+                <!-- Modern -->
+                <!--  <label class="style-card style-cards">
                             <input type="radio" name="aesthetic-style" value="modern" hidden>
                             <div class="card-body">
                                 <div class="theme-avatar" style="background-image: url('static/Modern.png');"></div>
@@ -341,7 +429,7 @@
                             </div>
                         </label>
                     </div>
-                </div>
+                </div>-->
 
 
 
@@ -473,12 +561,6 @@
                 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-                <script>
-                    // Initialize tooltips
-                    $(function () {
-                        $('[data-toggle="tooltip"]').tooltip();
-                    });
-                </script>
 
                 <!-- Example "Save" or "Apply" Button (Optional) 
                      If your settings are automatically applied, you can remove this entire block. -->
@@ -492,26 +574,26 @@
                 //  INSTANT-SETTINGS SECTION
                 //  This replaces the now-removed “Apply Settings” button logic.
                 // ─────────────────────────────────────────────────────────────
-// ─────────────────────────────────────────────
-//  TEMPORARY STUBS – prevent ReferenceErrors
-//  Replace the inside of each function later
-//  with your real behaviour.
-// ─────────────────────────────────────────────
-function setOlierStyle(style)          { /* TODO: switch GPT prompt style */ }
-function setThemePalette(theme)        { /* TODO: swap CSS variables */ }
-function toggleReflectiveMode(enabled) { /* TODO: flip a flag for your app */ }
-function setChatFontSize(px)           { /* TODO: adjust root font-size */ }
+                // ─────────────────────────────────────────────
+                //  TEMPORARY STUBS – prevent ReferenceErrors
+                //  Replace the inside of each function later
+                //  with your real behaviour.
+                // ─────────────────────────────────────────────
+                function setOlierStyle(style) { /* TODO: switch GPT prompt style */ }
+                function setThemePalette(theme) { /* TODO: swap CSS variables */ }
+                function toggleReflectiveMode(enabled) { /* TODO: flip a flag for your app */ }
+                function setChatFontSize(px) { /* TODO: adjust root font-size */ }
 
-function updateStyleCardHighlight() {
-  document.querySelectorAll('.style-card').forEach(card => {
-    const radio = card.querySelector('input[type="radio"]');
-    if (radio && radio.checked) {
-      card.classList.add('selected');
-    } else {
-      card.classList.remove('selected');
-    }
-  });
-}
+                function updateStyleCardHighlight() {
+                    document.querySelectorAll('.style-card').forEach(card => {
+                        const radio = card.querySelector('input[type="radio"]');
+                        if (radio && radio.checked) {
+                            card.classList.add('selected');
+                        } else {
+                            card.classList.remove('selected');
+                        }
+                    });
+                }
 
                 // 1. Central routine – gather what the user just picked and apply it.
                 function applyCurrentSettings() {
@@ -40692,6 +40774,77 @@ https://cdn.jsdelivr.net/npm/bowser@2.11.0/es5.min.js
         }
         window.addEventListener('resize', setDynamicVH);
         setDynamicVH();
+    </script>
+
+
+    <script>
+        // References to both style cards & hidden input
+        const plainOlierCard = document.getElementById('plain-olier-card');
+        const poeticOlierCard = document.getElementById('poetic-olier-card');
+        const selectedStyle = document.getElementById('selectedStyle');
+
+        // By default, Poetic Olier is “selected” 
+        // (because we gave it .selected-card in HTML and set value to "poetic")
+
+        // When user clicks Plain Olier card...
+        plainOlierCard.addEventListener('click', function () {
+            // Remove golden highlight from Poetic
+            poeticOlierCard.classList.remove('selected-card');
+            // Add golden highlight to Plain
+            plainOlierCard.classList.add('selected-card');
+            // Update hidden input or state
+            selectedStyle.value = 'plain';
+        });
+
+        // When user clicks Poetic Olier card...
+        poeticOlierCard.addEventListener('click', function () {
+            // Remove golden highlight from Plain
+            plainOlierCard.classList.remove('selected-card');
+            // Add golden highlight to Poetic
+            poeticOlierCard.classList.add('selected-card');
+            // Update hidden input or state
+            selectedStyle.value = 'poetic';
+        });
+    </script>
+
+    <script>
+        /* ────────────────────────────────────────────────
+           SEEK-SCOPE CARD TOGGLER
+           Mirrors your Plain/Poetic logic 1-for-1
+        ───────────────────────────────────────────────── */
+
+        // 1.  Grab the three cards & the hidden field
+        const scopeAllCard = document.getElementById('scope-all-card');
+        const scopeAurobindoCard = document.getElementById('scope-aurobindo-card');
+        const scopeMotherCard = document.getElementById('scope-mother-card');
+        const selectedScope = document.getElementById('selectedScope');   // hidden <input>
+
+        // 2.  Utility – clear highlight from all, then mark the chosen one
+        function highlightScope(chosenCard, chosenValue) {
+            // remove gold outline from every card in the group
+            [scopeAllCard, scopeAurobindoCard, scopeMotherCard]
+                .forEach(card => card.classList.remove('selected-card'));
+
+            // add it to the clicked card
+            chosenCard.classList.add('selected-card');
+
+            // update the hidden input
+            selectedScope.value = chosenValue;
+        }
+
+        /* 3.  Wire each card */
+        scopeAllCard.addEventListener('click', () => highlightScope(scopeAllCard, 'all'));
+        scopeAurobindoCard.addEventListener('click', () => highlightScope(scopeAurobindoCard, 'aurobindo'));
+        scopeMotherCard.addEventListener('click', () => highlightScope(scopeMotherCard, 'mother'));
+
+        /* 4.  Optional – call once on page-load so the correct
+               card is outlined if you restored a saved value.  */
+        document.addEventListener('DOMContentLoaded', () => {
+            const current = selectedScope.value || 'all';
+            if (current === 'aurobindo') scopeAurobindoCard.click();
+            else if (current === 'mother') scopeMotherCard.click();
+            else scopeAllCard.click();
+        });
     </script>
 
 </body>
