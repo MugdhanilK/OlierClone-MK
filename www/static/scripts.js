@@ -150,7 +150,33 @@ let readingModeActivated = false; // Global flag to track if reading mode is act
 // ===============================================
 // SEARCH FUNCTIONS AND UI
 // ===============================================
+    // --- Load and Apply Saved Preferences ---
+    try {
+        const savedScope = localStorage.getItem('searchScopePreference');
+        if (savedScope && ['all', 'aurobindo', 'mother'].includes(savedScope)) {
+            $('input[name="searchScope"][value="' + savedScope + '"]').prop('checked', true);
+            console.log("Applied saved search scope:", savedScope);
+        } else {
+            $('input[name="searchScope"][value="all"]').prop('checked', true);
+            if (savedScope) console.warn("Invalid saved scope found ('"+ savedScope +"'), defaulting to 'all'.");
+            else console.log("No saved scope found, defaulting to 'all'.");
+        }
+    } catch (e) {
+        console.error("Error retrieving or applying saved scope preference:", e);
+        $('input[name="searchScope"][value="all"]').prop('checked', true);
+    }
+    // *** End Load Scope ***
 
+       // *** Save Scope Preference on Change (Reverted to this method) ***
+       $('input[name="searchScope"]').on('change', function() {
+        const selectedValue = $(this).val();
+        try {
+            localStorage.setItem('searchScopePreference', selectedValue);
+            console.log("Saved search scope preference:", selectedValue);
+        } catch (e) {
+            console.error("Error saving scope preference to localStorage:", e);
+        }
+    });
 // Initially hide the loader and the full-text section
 $("#loader-container").hide();
 $('#full-text').hide();
@@ -210,11 +236,14 @@ function startLoaderAnimation() {
 
   // Start a fade animation: toggles between 1 and 0.6 opacity
   let opacity = 1;
-  fadeInterval = setInterval(function() {
-    // Toggle opacity between 1 and 0.6
-    opacity = opacity > 0.6 ? 0.6 : 1;
-    $(".book-loader").animate({ 'opacity': opacity }, 600, 'linear'); // Faster transition
-  }, 700); // Shorter interval for faster fade timing
+    // Clear any existing interval to prevent multiple animations
+    clearInterval(fadeInterval);
+    fadeInterval = setInterval(function() {
+        // Toggle opacity between 1 and 0.6
+        opacity = opacity > 0.6 ? 0.6 : 1;
+        // Animate the opacity change smoothly
+        $(".book-loader").animate({ 'opacity': opacity }, 600, 'linear'); // Faster transition
+    }, 700); // Shorter interval for faster fade timing
 }
 
 /**
