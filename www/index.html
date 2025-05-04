@@ -210,40 +210,7 @@
                             </div>
                         </label>
 
-                        <script>
-                            document.addEventListener('DOMContentLoaded', () => {
-
-                                /* grab elements AFTER they exist */
-                                const scopeAllCard = document.getElementById('scope-all-card');
-                                const scopeAurobindoCard = document.getElementById('scope-aurobindo-card');
-                                const scopeMotherCard = document.getElementById('scope-mother-card');
-                                const selectedScope = document.getElementById('selectedScope');   // now never null
-
-                                /* tiny helper */
-                                function highlightScope(chosenCard, value) {
-                                    [scopeAllCard, scopeAurobindoCard, scopeMotherCard]
-                                        .forEach(c => c.classList.remove('selected-card'));
-                                    chosenCard.classList.add('selected-card');
-                                    selectedScope.value = value;  
-
-                                           // persist the choice for next visit
-                                            localStorage.setItem('seekScope', value);  // ← no more TypeError
-                                }
-
-                                /* click wiring */
-                                scopeAllCard.addEventListener('click', () => highlightScope(scopeAllCard, 'all'));
-                                scopeAurobindoCard.addEventListener('click', () => highlightScope(scopeAurobindoCard, 'aurobindo'));
-                                scopeMotherCard.addEventListener('click', () => highlightScope(scopeMotherCard, 'mother'));
-
-                                /* first-load highlight */
-                                const start = selectedScope.value || 'all';
-                                if (start === 'aurobindo') scopeAurobindoCard.click();
-                                else if (start === 'mother') scopeMotherCard.click();
-                                else scopeAllCard.click();
-
-                            });
-
-                        </script>
+                       
 
                         <!-- ▸  The Mother only  -->
                         <label class="style-card style-cards" id="scope-mother-card">
@@ -276,62 +243,13 @@
 
                 </div><!-- /.settings-section -->
 
-                <!--<div class="text-center">
-                        <label class="mb-0 align-items-center">
-                            <input type="checkbox" name="reflective-mode" value="reflective" />
-                            Reflective Mode <span class="badge badge-secondary">Beta</span>
-                        </label>
-                        <br />
-                        <small class="text-muted">
-                            In this mode, Olier reflects on your queries at length before answering.
-                            It will automatically disable itself for Oli button commentary.
-                        </small>
-                        <br />-->
                 <!-- Hidden input if needed -->
-                <!-- <input type="hidden" id="selectedStyle" value="poetic" />-->
-                <!-- </div>
-                    <br />
-                </div>-->
+                 <!--==================================-->
+                <!--<span class="badge badge-secondary">Beta</span>-->
 
 
-                <!-- AI Style (Card) -->
-                <!--         <div class="card mb-3 ">
-                    <div class="card-header">
-                        AI Style
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-unstyled mb-0">
-                            <li class="mb-2">
-                                <label>
-                                    <input type="radio" name="style" value="plain" checked />
-                                    Plain Olier
-                                </label>
-                            </li>
-                            <li class="mb-3">
-                                <label>
-                                    <input type="radio" name="style" value="poetic" />
-                                    Poetic Olier
-                                </label>
-                            </li>                                         -->
-                <!-- Reflective Mode Toggle -->
-                <!--                 <li>
-                                <div class="d-flex align-items-center">             -->
-                <!-- You can reuse or adapt the .switch class from your code if you prefer a toggle style. 
-                                         Otherwise, keep it as a checkbox with clarifying text: -->
-                <!--                    <label class="mr-2 mb-0">
-                                        <input type="checkbox" name="reflective-mode" value="reflective" />
-                                        Reflective Mode <span class="badge badge-secondary">Beta</span>
-                                    </label>
-                                </div>
-                                <small class="text-muted">
-                                    In this mode, Olier reflects on your queries at length before answering.
-                                    It will automatically disable itself for Oli button commentary.
-                                </small>
-                            </li>
-                        </ul>
-                    </div>
-                </div>-->
-
+            
+<!--THEME SECTION (BETA)-->
 
                 <!--<div class="card mb-3">
                     <div class="card-header">
@@ -40810,45 +40728,7 @@ https://cdn.jsdelivr.net/npm/bowser@2.11.0/es5.min.js
         });
     </script>
 
-    <script>
-        /* ────────────────────────────────────────────────
-           SEEK-SCOPE CARD TOGGLER
-           Mirrors your Plain/Poetic logic 1-for-1
-        ───────────────────────────────────────────────── */
-
-        // 1.  Grab the three cards & the hidden field
-        const scopeAllCard = document.getElementById('scope-all-card');
-        const scopeAurobindoCard = document.getElementById('scope-aurobindo-card');
-        const scopeMotherCard = document.getElementById('scope-mother-card');
-        const selectedScope = document.getElementById('selectedScope');   // hidden <input>
-
-        // 2.  Utility – clear highlight from all, then mark the chosen one
-        function highlightScope(chosenCard, chosenValue) {
-            // remove gold outline from every card in the group
-            [scopeAllCard, scopeAurobindoCard, scopeMotherCard]
-                .forEach(card => card.classList.remove('selected-card'));
-
-            // add it to the clicked card
-            chosenCard.classList.add('selected-card');
-
-            // update the hidden input
-            selectedScope.value = chosenValue;
-        }
-
-        /* 3.  Wire each card */
-        scopeAllCard.addEventListener('click', () => highlightScope(scopeAllCard, 'all'));
-        scopeAurobindoCard.addEventListener('click', () => highlightScope(scopeAurobindoCard, 'aurobindo'));
-        scopeMotherCard.addEventListener('click', () => highlightScope(scopeMotherCard, 'mother'));
-
-        /* 4.  Optional – call once on page-load so the correct
-               card is outlined if you restored a saved value.  */
-        document.addEventListener('DOMContentLoaded', () => {
-            const current = selectedScope.value || 'all';
-            if (current === 'aurobindo') scopeAurobindoCard.click();
-            else if (current === 'mother') scopeMotherCard.click();
-            else scopeAllCard.click();
-        });
-    </script>
+   
 
 </body>
 
