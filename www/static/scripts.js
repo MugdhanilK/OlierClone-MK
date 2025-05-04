@@ -2041,14 +2041,16 @@ async function sendMessage() {
     messageBox.appendChild(message);
     document.querySelector("#messages .messages-box").appendChild(messageBox);
 
-    // --- UI Adjustments & Scroll (AI Placeholder) ---
-      let autoScrollEnabled = true; // Ensure scroll enabled for placeholder (you might manage this globally)
-      requestAnimationFrame(() => { // Ensure DOM update before scrolling
-          scrollToBottom();
-          if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
-          if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
-      });
-    // --- END UI Adjustments (AI Placeholder) ---
+    // --- UI Adjustments & Scroll (User Message) ---
+        requestAnimationFrame(() => { // Ensure DOM update before scrolling
+            // ***** ADD THIS LINE *****
+        autoScrollEnabled = true; // FORCE scroll down for this user message
+        // *************************
+        scrollToBottom();
+        if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+        if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+    });
+    // --- END UI Adjustments (User Message) ---
 
     // --- Input clearing and focus ---
     $('#chat-input').val('');
