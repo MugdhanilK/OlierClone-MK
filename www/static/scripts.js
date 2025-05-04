@@ -2126,8 +2126,11 @@ async function sendMessage() {
         'Meditating 🙏', // Include emoji directly
         'Seeking light',
         'Connecting thoughts',
+        'Concentrating',
+        'Unraveling the mystery',
         'Working hard',
         'Working real hard',
+        'Finding the right words'
     ];
     let currentMessageIndex = 0;
     let dotCount = 0;
