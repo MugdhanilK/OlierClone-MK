@@ -2765,3 +2765,37 @@ body.keyboard-open #chat-input-container {
 #send-btn:hover {
     background-color: #f06c26;
 } */
+/* ─── Chat-input info line ──────────────────────────────────── */
+/* ─── Glue a one-line info note just above the input bar ───────────── */
+#chat-input-container{                       /* already fixed & full-width  */
+    position: fixed;                         /* (keeps existing props)      */
+}
+
+/* the note itself comes from a pseudo-element → no extra markup */
+#chat-input-container::before{
+    content: "💡  I may need 10-30 seconds for tougher questions that require a quick trip online... Thanks for your Patience!! 😊";
+    position: absolute;
+    bottom: 100%;            /* stick to the TOP edge of the green bar  */
+    margin-bottom: 4px;            /* tiny gap*/    
+    max-width: 92%;
+    font-size: .85rem;
+    line-height: 1.25;
+    color: #333;
+    text-align: center;
+    white-space: normal;     /* wrap naturally on small screens         */
+    background: #ffffffee;   /* subtle white card                       */
+    padding: 4px 8px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.12);
+    pointer-events: none;    /* clicks go straight to the textarea      */
+    z-index: 1100;           /* sits above the bar but below pop-ups    */
+}
+
+/* phones → squeeze the font a hair so it never overflows */
+@media (max-width: 480px){
+    #chat-input-container::before{
+        font-size: .78rem;
+    }
+}
+
+
