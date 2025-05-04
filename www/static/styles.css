@@ -1305,6 +1305,18 @@ tbody {
     border-radius: 0 10px 10px 0;
 }
 
+/* ─── keep last chat line clear of the info-banner ──────────── */
+#messages .messages-box{
+    padding-bottom: 4.5rem;   /* ≈ banner-height + small gap */
+}
+
+/* phones: banner wraps higher, so add a bit more room */
+@media (max-width: 480px){
+    #messages .messages-box{
+        padding-bottom: 6rem;
+    }
+}
+
 /* Messages Box */
 .messages-box {
     display: flex;
@@ -1500,7 +1512,7 @@ tbody {
     color: #555;            /* Softer grey text (was #333) */
     background: rgba(230, 240, 230, 0.6); 
     text-align: center;
-    white-space: normal;     /* wrap naturally on small screens         */                    */
+    white-space: normal;     /* wrap naturally on small screens         */                    
     padding: 4px 8px;
     border-radius: 6px;
     /* box-shadow: 0 1px 3px rgba(0,0,0,.12); */
