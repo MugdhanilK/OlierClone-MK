@@ -13,6 +13,85 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&amp;display=swap" rel="stylesheet" />
     <link href="static/styles.css" rel="stylesheet" />
+    <style>
+        /* Simple style to display two cards side by side */
+        /* Container row for the two style cards */
+        .style-cards-row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            /* stack on smaller screens */
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* Each card’s general style */
+        .style-card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            width: 280px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: box-shadow 0.3s ease;
+            cursor: pointer;
+            /* so user sees it's clickable */
+        }
+
+        .style-card:hover {
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.20);
+        }
+
+        /* Simple avatar placeholder */
+        .style-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            margin: 0 auto 1rem;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Header styling for the “Choose Your Olier Style” text */
+        .olier-style-header {
+            text-align: center;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* This is the “golden glow” for the selected card */
+        .selected-card {
+            background-color: #fffae5;
+            /* pale gold background */
+            border-color: #e8c800;
+            /* more golden border, optional */
+            box-shadow: 0 4px 8px rgba(232, 200, 0, 0.4);
+            /* subtle golden shadow */
+        }
+
+        /* Define the spin animation */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Apply the animation to the image */
+        .rotate {
+            animation: spin 2s linear infinite;
+            /* Adjust the duration as needed */
+            transform-origin: center;
+            width: 24px;
+            /* Adjust size as needed */
+            height: 24px;
+        }
+    </style>
 </head>
 
 <body>
@@ -49,9 +128,14 @@
                 </button>
             </div>
 
-            <!-- Settings Dropdown Menu -->
-            <div aria-labelledby="settings-menu-btn" class="settings-menu-dropdown" id="settings-menu-dropdown"
+
+
+            <!-- Settings Menu Content -->
+
+            <!-- SETTINGS DROPDOWN MENU -->
+            <div class="settings-menu-dropdown" id="settings-menu-dropdown" aria-labelledby="settings-menu-btn"
                 role="menu">
+                <!-- Dropdown Header -->
                 <div class="main-menu-header">
                     <div class="header-text">Settings Menu</div>
                     <div class="header-actions">
@@ -61,7 +145,421 @@
                     </div>
                 </div>
 
+                <div class="card mb-3">
+                    <div class="card-header">
+                        AI Style
+                    </div>
+                    <!-- CHOOSE YOUR OLIER STYLE HEADER -->
+                    <h2 class="olier-style-header">Choose Your Olier Style</h2>
 
+                    <!-- TWO SIDE-BY-SIDE CARDS -->
+                    <div class="style-cards-row">
+                        <!-- PLAIN OLIER CARD -->
+                        <div class="style-card" id="plain-olier-card">
+                            <div class="style-avatar" style="background-image: url('static/olier.png');">
+                            </div>
+                            <h4>Plain Olier</h4>
+                            <p>Clear, straightforward AI responses without extra flourish.</p>
+                        </div>
+
+                        <!-- POETIC OLIER CARD (SELECTED BY DEFAULT) -->
+                        <div class="style-card selected-card" id="poetic-olier-card">
+                            <div class="style-avatar" style="background-image: url('static/olier.png');">
+                            </div>
+                            <h4>Poetic Olier</h4>
+                            <p>A more flowery, imaginative tone for your AI responses.</p>
+                        </div>
+                    </div>
+                    <br />
+                    <!-- Reflective Mode Toggle -->
+                    <div class="text-center">
+                        <label class="mb-0 align-items-center">
+                            <input type="checkbox" name="reflective-mode" value="reflective" />
+                            Speedy Mode <span class="badge badge-secondary">Beta</span>
+                        </label>
+                        <br />
+                        <small class="text-muted">
+                            In speedy mode, Olier answers faster but less comprehensively and accurately. Olier is unable to search online in this mode.
+                        </small>
+                        <br />
+                        <!-- Hidden input if needed -->
+                        <input type="hidden" id="selectedStyle" value="poetic" />
+                    </div>
+
+
+                    <!--<div class="text-center">
+                        <label class="mb-0 align-items-center">
+                            <input type="checkbox" name="reflective-mode" value="reflective" />
+                            Reflective Mode <span class="badge badge-secondary">Beta</span>
+                        </label>
+                        <br />
+                        <small class="text-muted">
+                            In this mode, Olier reflects on your queries at length before answering.
+                            It will automatically disable itself for Oli button commentary.
+                        </small>
+                        <br />-->
+                        <!-- Hidden input if needed -->
+                   <!-- <input type="hidden" id="selectedStyle" value="poetic" />-->
+                   <!-- </div>-->
+                    <br />
+                </div>
+
+
+                <!-- AI Style (Card) -->
+                <!--         <div class="card mb-3 ">
+                    <div class="card-header">
+                        AI Style
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <label>
+                                    <input type="radio" name="style" value="plain" checked />
+                                    Plain Olier
+                                </label>
+                            </li>
+                            <li class="mb-3">
+                                <label>
+                                    <input type="radio" name="style" value="poetic" />
+                                    Poetic Olier
+                                </label>
+                            </li>                                         -->
+                <!-- Reflective Mode Toggle -->
+                <!--                 <li>
+                                <div class="d-flex align-items-center">             -->
+                <!-- You can reuse or adapt the .switch class from your code if you prefer a toggle style. 
+                                         Otherwise, keep it as a checkbox with clarifying text: -->
+                <!--                    <label class="mr-2 mb-0">
+                                        <input type="checkbox" name="reflective-mode" value="reflective" />
+                                        Reflective Mode <span class="badge badge-secondary">Beta</span>
+                                    </label>
+                                </div>
+                                <small class="text-muted">
+                                    In this mode, Olier reflects on your queries at length before answering.
+                                    It will automatically disable itself for Oli button commentary.
+                                </small>
+                            </li>
+                        </ul>
+                    </div>
+                </div>-->
+
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Customise Experience <span class="badge badge-secondary">Beta</span>
+                    </div>
+
+                    <style>
+                        /* Each row of cards (two per row) */
+                        .style-cards-row {
+                            display: flex;
+                            justify-content: center;
+                            gap: 20px;
+                            /* space between cards */
+                            margin-bottom: 20px;
+                        }
+
+                        /* The label wraps everything but has no visible styling */
+
+
+                        /* The actual “card” look is in .card-body */
+                        .style-cards {
+                            background-color: #fff;
+                            border-radius: 8px;
+                            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                            width: 250px;
+                            /* adjust to desired width */
+                            padding: 20px;
+                            text-align: center;
+                            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+                        }
+
+                        /* Circular avatar image */
+                        .theme-avatar {
+                            width: 80px;
+                            height: 80px;
+                            margin: 0 auto 15px;
+                            border-radius: 50%;
+                            background-size: cover;
+                            background-position: center;
+                        }
+
+                        /* Hide the radio input but keep it clickable via the label */
+                        .style-cards input[type="radio"] {
+                            display: none;
+                        }
+
+                        /* When the radio is checked, change the card’s background to golden */
+                        .style-cards input[type="radio"]:checked~.card-body {
+                            background-color: #fff3bf;
+                            /* soft golden */
+                            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+                        }
+                    </style>
+                    <!-- Aesthetic Style (Card) -->
+                    <!-- Row 1: Original & Indian -->
+                    <div class="style-cards-row">
+                        <!-- Original -->
+                        <label class="style-card style-cards">
+                            <input type="radio" name="aesthetic-style" value="original" hidden checked>
+                            <div class="card-body">
+                                <div class="theme-avatar" style="background-image: url('static/Original.png');"></div>
+                                <h4>Original</h4>
+                                <p>Classic and straightforward design.</p>
+                            </div>
+                        </label>
+
+                        <!-- Indian -->
+                        <label class="style-card style-cards">
+                            <input type="radio" name="aesthetic-style" value="indian" hidden>
+                            <div class="card-body">
+                                <div class="theme-avatar" style="background-image: url('static/Indian.png');"></div>
+                                <h4>Indian</h4>
+                                <p>Warm, culturally rich aesthetics.</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Row 2: Far Eastern & Modern -->
+                    <div class="style-cards-row">
+                        <!-- Far Eastern -->
+                        <label class="style-card style-cards">
+                            <input type="radio" name="aesthetic-style" value="far-eastern" hidden>
+                            <div class="card-body">
+                                <div class="theme-avatar" style="background-image: url('static/Far-Eastern.png');">
+                                </div>
+                                <h4>Far Eastern</h4>
+                                <p>Minimalistic and balanced design.</p>
+                            </div>
+                        </label>
+
+                        <!-- Modern -->
+                        <label class="style-card style-cards">
+                            <input type="radio" name="aesthetic-style" value="modern" hidden>
+                            <div class="card-body">
+                                <div class="theme-avatar" style="background-image: url('static/Modern.png');"></div>
+                                <h4>Modern</h4>
+                                <p>Contemporary and clean aesthetics.</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+
+
+                <!-- Font Size (Card) -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Font Size
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="d-flex flex-column align-items-center">
+
+                            <!-- Preview Text -->
+                            <div id="font-preview" class="mb-3"
+                                style="font-size: 16px; transition: font-size 0.3s ease;">
+                                Aa
+                            </div>
+
+                            <!-- Font Buttons -->
+                            <div class="font-buttons-wrapper d-flex justify-content-center align-items-center">
+                                <button aria-label="Decrease Font Size"
+                                    class="btn btn-outline-primary btn-sm rounded-circle mr-3" id="decrease-font-btn"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+
+                                <button aria-label="Increase Font Size"
+                                    class="btn btn-outline-primary btn-sm rounded-circle" id="increase-font-btn"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    const increaseBtn = document.getElementById('increase-font-btn');
+                    const decreaseBtn = document.getElementById('decrease-font-btn');
+                    const fontPreview = document.getElementById('font-preview');
+
+                    // Initial font size (in px)
+                    let currentSize = 16;
+
+                    // Increase font size
+                    increaseBtn.addEventListener('click', () => {
+                        currentSize = Math.min(currentSize + 1, 36); // example upper limit
+                        fontPreview.style.fontSize = currentSize + 'px';
+                    });
+
+                    // Decrease font size
+                    decreaseBtn.addEventListener('click', () => {
+                        currentSize = Math.max(currentSize - 1, 10); // example lower limit
+                        fontPreview.style.fontSize = currentSize + 'px';
+                    });
+                </script>
+
+                <style>
+                    /* Nudge Animation */
+                    @keyframes nudge {
+                        0% {
+                            transform: translateX(0);
+                        }
+
+                        25% {
+                            transform: translateX(-3px);
+                        }
+
+                        50% {
+                            transform: translateX(3px);
+                        }
+
+                        75% {
+                            transform: translateX(-3px);
+                        }
+
+                        100% {
+                            transform: translateX(0);
+                        }
+                    }
+
+                    .nudge {
+                        animation: nudge 1s ease-in-out infinite;
+                    }
+
+                    .feedback-image {
+                        width: 60px;
+                        transition: transform 0.2s ease;
+                    }
+
+                    .feedback-image:hover {
+                        transform: scale(1.1);
+                    }
+
+                    /* Floating Feedback Button (Optional) */
+                    .floating-feedback-btn {
+                        position: fixed;
+                        bottom: 20px;
+                        right: 20px;
+                        z-index: 9999;
+                        border-radius: 50%;
+                        padding: 15px;
+                    }
+                </style>
+                <!-- Feedback (Card) -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Feedback
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <!-- Interactive Feedback Image -->
+                            <img src="static/form.png" alt="Feedback illustration" class="feedback-image mr-3 nudge" />
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfNGBBtCf87Y60o6q9kHG04-eYeKGaXEImdGNGjoqeRPMpmJQ/viewform"
+                                target="_blank" class="feedback-link">
+                                <button id="feedback-btn" class="btn btn-primary">Share Feedback</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- jQuery, Popper.js, and Bootstrap JS -->
+                <!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>-->
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+                <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                <script src="https://unpkg.com/bowser@2/dist/bundled.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/markdown-it@13/dist/markdown-it.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                <script>
+                    // Initialize tooltips
+                    $(function () {
+                        $('[data-toggle="tooltip"]').tooltip();
+                    });
+                </script>
+
+                <!-- Example "Save" or "Apply" Button (Optional) 
+                     If your settings are automatically applied, you can remove this entire block. -->
+                <!--<div class="text-right pr-3 pb-3">
+                    <button class="btn btn-success">Apply Settings</button>
+                </div>-->
+
+            </div>
+            <script>
+                // ─────────────────────────────────────────────────────────────
+                //  INSTANT-SETTINGS SECTION
+                //  This replaces the now-removed “Apply Settings” button logic.
+                // ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+//  TEMPORARY STUBS – prevent ReferenceErrors
+//  Replace the inside of each function later
+//  with your real behaviour.
+// ─────────────────────────────────────────────
+function setOlierStyle(style)          { /* TODO: switch GPT prompt style */ }
+function setThemePalette(theme)        { /* TODO: swap CSS variables */ }
+function toggleReflectiveMode(enabled) { /* TODO: flip a flag for your app */ }
+function setChatFontSize(px)           { /* TODO: adjust root font-size */ }
+
+function updateStyleCardHighlight() {
+  document.querySelectorAll('.style-card').forEach(card => {
+    const radio = card.querySelector('input[type="radio"]');
+    if (radio && radio.checked) {
+      card.classList.add('selected');
+    } else {
+      card.classList.remove('selected');
+    }
+  });
+}
+
+                // 1. Central routine – gather what the user just picked and apply it.
+                function applyCurrentSettings() {
+                    updateStyleCardHighlight();          // <<< new
+
+                    // a) AI response flavour
+                    const chosenStyle = document.getElementById('selectedStyle').value;            // 'plain' | 'poetic'
+                    // b) UI theme / colour palette
+                    const chosenAesthetic = document.querySelector('input[name="aesthetic-style"]:checked')?.value; // 'original' | …
+                    // c) Reflective-mode flag
+                    const reflectiveOn = document.querySelector('input[name="reflective-mode"]').checked;
+                    // d) Font scale that the preview buttons keep in `currentSize`
+                    //    (currentSize is already declared earlier in your file)
+
+                    // ★ Call (or write) helper functions that actually change your app. ★
+                    setOlierStyle(chosenStyle);           // already present in most builds
+                    setThemePalette(chosenAesthetic);     // implement if you haven't yet
+                    toggleReflectiveMode(reflectiveOn);   // implement or reuse existing one
+                    setChatFontSize(currentSize);         // if you want font scaling globally
+                }
+
+                // 2.  Attach the routine to every interactive control.
+                //    – AI-style cards (already clickable)
+                document.querySelectorAll('.style-card')
+                    .forEach(card => card.addEventListener('click', applyCurrentSettings));
+
+                //    – Radio buttons for “Aesthetic style”
+                document.querySelectorAll('input[name="aesthetic-style"]')
+                    .forEach(radio => radio.addEventListener('change', applyCurrentSettings));
+
+                //    – Reflective-mode toggle
+                document.querySelector('input[name="reflective-mode"]')
+                    .addEventListener('change', applyCurrentSettings);
+
+                //    – Font-size ± buttons
+                document.getElementById('increase-font-btn')
+                    .addEventListener('click', applyCurrentSettings);
+                document.getElementById('decrease-font-btn')
+                    .addEventListener('click', applyCurrentSettings);
+
+            </script>
+
+
+            <!-- END SETTINGS DROPDOWN MENU -->
+
+            <!--
                 <div class="settings-section">
                     <h2 class="section-title">AI Style</h2>
                     <ul>
@@ -183,7 +681,7 @@
                     </div>
                 </div>
 
-            </div>
+            </div>-->
 
             <div class="search-container mt-3">
                 <div class="d-flex justify-content-center mb-3">
@@ -192,7 +690,7 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-                <input autocomplete="off" class="form-control; selected-card;" id="query"
+                <input autocomplete="off" class="form-control selected-card" id="query"
                     onfocus="this.style.textAlign='left'; this.placeholder='';"
                     onblur="if(this.value===''){ this.style.textAlign='center'; this.placeholder='Find quotes from Sri Aurobindo &amp; the Mother!'; }"
                     placeholder="Find quotes from Sri Aurobindo &amp; the Mother!" type="text" />
@@ -265,10 +763,10 @@
             <div class="flex-container">
                 <!-- Toggle Search Button (Inside Flex Box) -->
                 <button aria-label="Toggle Search" class="toggle_search in-flex-box" type="button">
-                     <!-- MODIFIED: Use img tag -->
-                <img class="toggle-search-logo" src="static/Original/oliersearchactual.png" alt="Toggle Search">
+                    <!-- MODIFIED: Use img tag -->
+                    <img class="toggle-search-logo" src="static/Original/oliersearchactual.png" alt="Toggle Search">
 
-                <!-- <div class="toggle-search-logo" role="img" aria-label="Toggle Search"></div>-->
+                    <!-- <div class="toggle-search-logo" role="img" aria-label="Toggle Search"></div>-->
                 </button>
 
 
@@ -280,8 +778,8 @@
 
                 <!-- Open Chatbot Button (Inside Flex Box) -->
                 <button aria-label="Open Chatbot" class="open_chatbot in-flex-box" type="button">
-                     <!-- MODIFIED: Use img tag -->
-                     <img class="chatbot-logo" src="static/Original/Olierbutton.png" alt="Olier">
+                    <!-- MODIFIED: Use img tag -->
+                    <img class="chatbot-logo" src="static/Original/Olierbutton.png" alt="Olier">
                 </button>
             </div>
         </div>
@@ -374,7 +872,7 @@
         <img alt="Olier" class="chatbot-logo" src="static/Original/Olierbutton.png" />
         <span class="chatbot-text">Chat</span>
     </button>
-    
+
     <!-- Zoom to Top Button (Outside Flex Box) -->
     <button aria-label="Zoom to Top" class="zoom_to_top" id="zoom-to-top-btn" type="button">
         <img alt="Zoom to Top" class="zoom-logo" src="static/zoom2.png" />
