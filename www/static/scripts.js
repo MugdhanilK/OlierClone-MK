@@ -263,7 +263,10 @@ var isVectorSearch = !$searchToggle.is(':checked');
 var searchUrl = isVectorSearch ? serverUrl + '/api/search' : serverUrl + '/api/keyword-search';
 console.log("Search URL:", searchUrl);
 
-$.post(searchUrl, { query: query }, function(data) {
+$.post(searchUrl, {
+    query:  query,
+    scope:  $('#selectedScope').val() || 'all'   // <-- NEW LINE
+}, function (data) {
     console.log("Search results received", data);
     stopLoaderAnimation();
 
