@@ -2125,9 +2125,12 @@ async function sendMessage() {
     console.log("Prepared Chat History:", JSON.stringify(chatHistory, null, 2)); // Add logging to verify
 // ---
     // --- Style and Mode setup ---
-    const selectedStyle = document.querySelector("input[name='style']:checked").value;
+    //const selectedStyle = document.querySelector("input[name='style']:checked").value;
     const speedyCheckbox = document.querySelector("input[name='speedy-mode']"); // <-- Find the NEW checkbox
     const isSpeedyMode = speedyCheckbox ? speedyCheckbox.checked : false; // <-- Get its state, default false if not found
+    
+    const selectedStyle   = document.getElementById('selectedStyle')?.value || 'poetic';
+    //const isSpeedyMode    = document.querySelector("input[name='reflective-mode']")?.checked || false;
     console.log(`Style: ${selectedStyle}, Speedy Mode Active: ${isSpeedyMode}`); // Log the values being sent
 
     // --- AI Response Container Setup ---
