@@ -1909,6 +1909,33 @@ function saveCurrentChat(showAlert = true) {
         }
     }
 }
+/* ───────────────────────────────────────────
+   AI-STYLE  (Plain | Poetic)  – no radios
+───────────────────────────────────────────*/
+
+const plainCard  = document.getElementById('plain-olier-card');
+const poeticCard = document.getElementById('poetic-olier-card');
+const hiddenStyleInput = document.getElementById('selectedStyle');
+
+// ① Restore the saved style or default to ‘poetic’
+let savedStyle = localStorage.getItem('olierStyle') || 'poetic';
+hiddenStyleInput.value = savedStyle;
+updateCardHighlight(savedStyle);
+
+// ② Click handlers – toggle highlight + save to localStorage
+plainCard .addEventListener('click', () => setStyle('plain'));
+poeticCard.addEventListener('click', () => setStyle('poetic'));
+
+function setStyle(style) {
+    hiddenStyleInput.value = style;
+    localStorage.setItem('olierStyle', style);
+    updateCardHighlight(style);
+}
+
+function updateCardHighlight(style) {
+    plainCard .classList.toggle('selected-card', style === 'plain');
+    poeticCard.classList.toggle('selected-card', style === 'poetic');
+}
 
 // Attach event listener to the "Save" button
 document.getElementById('save-chat-btn').addEventListener('click', function(event) {
@@ -1931,7 +1958,7 @@ document.getElementById('chat-history-dropdown').addEventListener('click', funct
     event.stopPropagation();
 });
 /* Retrieve saved style from localStorage */
-let savedStyle = localStorage.getItem('olierStyle');
+/*let savedStyle = localStorage.getItem('olierStyle');
 console.log("Retrieved savedStyle:", savedStyle);
 
 if (savedStyle && savedStyle !== 'poetic') {
@@ -1970,7 +1997,7 @@ if (savedStyle && savedStyle !== 'poetic') {
     } else {
         console.error("No poetic radio found, check HTML.");
     }
-}
+}*/
 
 /* Retrieve saved reflectiveMode from localStorage */
 let savedReflectiveMode = localStorage.getItem('reflectiveMode');
@@ -1991,7 +2018,7 @@ if (reflectiveCheckbox) {
 }
 
 /* Set up event listeners to update localStorage on style change */
-const styleRadios = document.querySelectorAll("input[name='style']");
+/*const styleRadios = document.querySelectorAll("input[name='style']");
 console.log("Found style radios:", styleRadios);
 styleRadios.forEach(radio => {
     radio.addEventListener('change', (e) => {
@@ -1999,7 +2026,7 @@ styleRadios.forEach(radio => {
         localStorage.setItem('olierStyle', e.target.value);
         console.log("LocalStorage now (olierStyle):", localStorage.getItem('olierStyle'));
     });
-});
+});*/
 
 
 
