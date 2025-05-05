@@ -638,22 +638,25 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
 
 // --- Helper function to replace new-style reference markers with clickable links ---
 function replaceReferenceMarkers(text) {
+    let refCounter = 0;           // ← add this
     // Matches:
     //  [CWSA – 'Book Title', 'Chapter Title']
     //  [CWM - 'Book Title', 'Chapter Title']
     //  [Mother’s Agenda - 'Book Title', 'Chapter Title']
     return text.replace(
-    /\[(CWSA|CWM|Mother['’]s Agenda)\s*[-–]\s*'(.+?)'\s*,\s*'(.+?)'\]/g,
-    (match, series, book, chapter) => {
-        return `<sup>
-                  <a href="#" class="reference-link"
-                     data-book-title="${book}"
-                     data-chapter-title="${chapter}">
-                     <span class="badge badge-secondary">REF</span>
-                  </a>
-                </sup>`;
-    }
-  );
+        /\[(CWSA|CWM|Mother['’]s Agenda)\s*[-–]\s*'(.+?)'\s*,\s*'(.+?)'\]/g,
+        (match, series, book, chapter) => {
+            refCounter++;  // 1, 2, 3, ...
+    
+            return `
+              <a href="#" class="reference-link"
+                 data-book-title="${book}"
+                 data-chapter-title="${chapter}">
+                 <span class="badge badge-secondary">REF${refCounter}</span>
+              </a>`;
+        }
+    );
+    
 }
   
 
