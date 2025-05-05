@@ -305,6 +305,9 @@ $.post(searchUrl, {
         $('.sample-questions').show();
         $('#summarize-results-btn').hide();
         $('#results').removeData('fullResultsData'); // Clear stored data
+         // **** ADD THIS LINE ****
+         $('#info-message').removeClass('hidden');
+         // **********************
         return;
     }
  // Store the full results data for potential summarization
@@ -385,6 +388,8 @@ $.post(searchUrl, {
     $('#summarize-results-btn').hide(); // Hide button on failure
     // Clear any previously stored results data
     $('#results').removeData('fullResultsData');
+     // Optionally show the message on failure too
+     $('#info-message').removeClass('hidden');
 });
 });
 
@@ -398,6 +403,9 @@ $('#query').on('input', function() {
         $('#ai-summary-container').hide().find('#ai-summary-content').empty(); // Hide and clear summary
         // Clear any previously stored results data
         $('#results').removeData('fullResultsData');
+         // **** ADD THIS LINE ****
+         $('#info-message').removeClass('hidden');
+         // **********************
     }
 });
 
@@ -655,21 +663,7 @@ function replaceReferenceMarkers(text) {
     
 }
   
-// ─────────────────────────────────────────────────────────────
-// Shift+Enter → newline; Enter alone → send the message
-$('#chat-input').on('keydown', function(e) {
-    if (e.key === 'Enter') {
-      if (e.shiftKey) {
-        // allow the newline
-        return;
-      }
-      // otherwise, prevent the newline & send
-      e.preventDefault();
-      $('#send-btn').click();
-    }
-  });
-  // ─────────────────────────────────────────────────────────────
-  
+
 
 // Helper function to set chat input value and trigger the send button
 // (Keep this if your overall code uses it; otherwise, you may remove or adjust it as needed.)
@@ -1841,6 +1835,9 @@ function loadChatHistory(index) {
     if (selectedChat) {
         const messagesBox = document.querySelector("#messages .messages-box");
         messagesBox.innerHTML = ''; // Clear existing messages
+// **** ADD THIS LINE ****
+$('#info-message').addClass('hidden');
+// **********************
 
         selectedChat.messages.forEach(msg => {
             const messageBox = document.createElement("div");
@@ -1929,10 +1926,16 @@ function saveCurrentChat(showAlert = true) {
             // **Clear the chat messages from the DOM**
             const messagesBox = document.querySelector("#messages .messages-box");
             messagesBox.innerHTML = ''; // Clear existing messages
+// **** ADD THIS LINE ****
+$('#info-message').removeClass('hidden');
+// **********************
 
             // **Show the empty chat indicator**
             const emptyDiv = document.querySelector("#messages .empty-div");
             emptyDiv.style.display = "flex";
+ // **** ADD THIS LINE AGAIN (for certainty) ****
+ $('#info-message').removeClass('hidden');
+ // *********************************************
 
             // **Optionally, clear the chat input field**
             document.getElementById('chat-input').value = '';
@@ -2145,6 +2148,11 @@ async function sendMessage() {
         return;
     }
 
+ // **** ADD THIS LINE ****
+ $('#info-message').addClass('hidden');
+ // **********************
+
+
     document.querySelector("#messages .empty-div").style.display = "none";
 
     // --- User message display ---
@@ -2242,15 +2250,33 @@ async function sendMessage() {
     // --- Rotating Meditating Animation --- START ---
     const meditatingMessages = [
         'Meditating 🙏🏻', // Include emoji directly
-        'Seeking light',
-        'Connecting thoughts',
-        'Searching for insights',
-        'Finding the right path',
-        'Concentrating',
-        'Unraveling the mystery',
-        'Working hard',
-        'Almost there',
-        'Weaving the words',
+        'Seeking light 🕯️',
+        'Exploring the depths 🌊',
+        'Meditating on the essence 🌱',
+        'Connecting thoughts 💭',
+        'Contemplating the question 🤔',
+        'Finding the right path 🛤️',
+        'Synchronizing the thoughts 🔗',
+        'Balancing the concepts ⚖️',
+        'Visualizing the response 🖼️',
+        'Translating thoughts into words 📝',
+        'Concentrating 🧘‍♂️',
+        'Reflecting on the question 🪞',
+        'Finding the right words 🗣️',
+        'Unraveling the mystery 🔍',
+        'Juggling the ideas 🤹‍♂️',
+        'Searching for insights 🔎',
+        'Weaving the words 🧵',
+        'Questioning the question ❓',
+        'Adding the finishing touches 🎨',
+        'Harmonizing the elements 🎶',
+        'Aligning the stars 🌌',
+        'Tuning the frequencies 🎚️',
+        'Listening to the silence 🤫',
+        'Synthesizing the information 🧬',
+        'Piecing together the puzzle 🧩',
+        'Mapping the terrain 🗺️',
+        'Zeroing in on the answer 🎯'
     ];
     let currentMessageIndex = 0;
     let dotCount = 0;
@@ -2270,7 +2296,7 @@ async function sendMessage() {
 
     // Interval for animating the dots (every 500ms)
     dotInterval = setInterval(() => {
-        dotCount = (dotCount + 1) % 6;
+        dotCount = (dotCount + 1) % 4;
         updateMeditatingText(); // Update text with new dot count
         // Check if element still exists (redundant check, good practice)
         if (!meditatingElement || !meditatingElement.parentNode) {
@@ -2292,7 +2318,7 @@ async function sendMessage() {
              clearInterval(messageRotationInterval);
              if (dotInterval) clearInterval(dotInterval); // Clear other interval too
         }
-    }, 6000); // 6 seconds
+    }, 3000); // 3 seconds
 
     // Helper function to clear both intervals
     const clearMeditatingIntervals = () => {
@@ -3251,22 +3277,31 @@ $(document).on('click', '#settings-menu-dropdown .close-menu-btn', function(even
 
 
 
-// Handle click forzoom_to_top 
+// Handle click for .zoom_to_top (Books button)
 $(document).on('click', '.zoom_to_top', function(event) {
-  event.preventDefault();
-  event.stopPropagation();
+    console.log('Clicked:', $(this).attr('id') || $(this).attr('class'));
 
-  // 1) If we’re not at the top yet, scroll up first
-  if ($(window).scrollTop() > 60) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+    // Prevent default anchor behavior and stop event bubbling
+    event.preventDefault();
+    event.stopPropagation();
 
-  // 2) Now toggle the book-index menu no matter what
-  $('#main-menu-dropdown').toggleClass('active');
-  const expanded = $(this).attr('aria-expanded') === 'true';
-  $(this).attr('aria-expanded', !expanded);
+    // Always toggle the main menu dropdown regardless of scroll position
+    $('#main-menu-dropdown').toggleClass('active');
+
+    // Toggle ARIA expanded state for accessibility
+    let isExpanded = $(this).attr('aria-expanded') === 'true';
+    $(this).attr('aria-expanded', !isExpanded);
+
+    // --- REMOVED the else block that caused scrolling to top ---
+
+    // If the menu is being opened and reading mode is active, expand the current book
+    if ($('#main-menu-dropdown').hasClass('active') && readingModeActivated) {
+        // Ensure the function exists before calling
+        if (typeof expandCurrentBookInMenu === 'function') {
+            expandCurrentBookInMenu();
+        }
+    }
 });
-
 
 
 // Font Size Adjuster
