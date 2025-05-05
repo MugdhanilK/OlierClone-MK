@@ -1559,7 +1559,7 @@ tbody {
 
 /* the note itself comes from a pseudo-element → no extra markup */
 #chat-input-container::before{
-    content: "💡 For tricky questions, I need 10-30 secs to think hard and look online. Thanks for waiting! 😊";
+    content: "💡 For tricky questions, I need 20-40 secs to think hard and look online. Thanks for waiting! 😊";
     position: absolute;
     bottom: 100%;            /* stick to the TOP edge of the green bar  */
     margin-bottom: 10px;            /* tiny gap*/    
