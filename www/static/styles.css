@@ -1348,39 +1348,6 @@ tbody {
     border-left: none;
 }
 
-/* ─── Letter fade-in while Streaming ───────────────────────────── */
-.fade-letter{
-    display:inline-block;
-    opacity:0;
-    transition:opacity .5s ease-in;   /* speed of fade */
-}
-.fade-letter.visible{
-    opacity:1;
-}
-
-/* ─── centred layout for Streaming-style block ─────────────── */
-/* ─── centre header *and* each switch-row ───────────────────── */
-.streaming-style-row{
-    display:flex;
-    flex-direction:column;
-    align-items:center;        /* <<< centre whole block        */
-    gap:10px;
-}
-
-.streaming-style-header{
-    width:100%;
-    text-align:center;         /* centre the orange title       */
-    font-weight:600;
-}
-
-.streaming-style-item{
-    display:flex;
-    align-items:center;
-    justify-content:center;    /* <<< centre switch + label     */
-    gap:8px;
-}
-
-
 /* Existing Resizer Handle Styles */
 #chatbox-resizer {
     position: absolute;

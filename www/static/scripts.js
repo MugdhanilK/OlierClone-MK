@@ -101,12 +101,6 @@ $(document).ready(function() {
 // ===============================================
     // VARIABLE DECLARATIONS
 // ===============================================
-// ─── Streaming style flags ───────────────────────────────────
-const STREAM_KEY = 'olier_streaming_style';           // localStorage
-let   streamingStyle = localStorage.getItem(STREAM_KEY) || 'instant'; 
-// possible values: 'instant' | 'typing' | 'fade'
-
-
 
     let isFirstMessageAfterOliClick = false;
     let hasImageButtonBeenClicked = false;
@@ -529,10 +523,7 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
 
                 accumulatedText += chunk;
 
-
-                if (streamingStyle === 'instant') {
-                    // keep full HTML live when user chose “instant”
-                   // ***** CORRECTED RENDERING ORDER *****
+                // ***** CORRECTED RENDERING ORDER *****
                 // 1. Render Markdown from the accumulated text FIRST.
                 //    This will process any markdown syntax but leave the [Marker] tags untouched.
                 let renderedMarkdown = md.render(accumulatedText);
@@ -544,17 +535,8 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
                 let cleanHtml = DOMPurify.sanitize(htmlWithLinks);
 
                 // 4. Update the DOM.
-                if (streamingStyle === 'instant') {
-                    placeholderMessage.innerHTML = cleanHtml;
-                }
-                                //messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                } else {
-                    // show only plain text during the stream
-                    streamChunk(placeholderMessage, htmlEscape(chunk));
-                }
-
-
-                
+                placeholderMessage.innerHTML = cleanHtml;
+                //messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
                 // ***** END OF CORRECTED RENDERING ORDER *****
 
@@ -563,11 +545,7 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
                  if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
                  if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
                  
-                 // once the stream is done, replace bubble with fully rendered HTML
-                 if (streamingStyle === 'instant') {
-                    placeholderMessage.innerHTML = cleanHtml;
-                }
-                
+                 
                  //scrollToBottom(); // Keep scrolling as content arrives
                  // ---
             }
@@ -619,6 +597,7 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
                 let textWithLinks = replaceReferenceMarkers(accumulatedText);
                 let dirtyHtml = md.render(textWithLinks); // Use markdown-it
                 let cleanHtml = DOMPurify.sanitize(dirtyHtml); // Sanitize
+                placeholderMessage.innerHTML = cleanHtml; // Update content
 
 
                 // --- Optional: Adjust height during streaming (can be intensive) ---
@@ -1576,132 +1555,11 @@ messagesDiv.addEventListener('scroll', function() {
     requestAnimationFrame(updateScrollButtonVisibility);
 });
 
-/* ─── Fade-in letter helper  ─────────────────────────────────────
-     Appends each character inside its own <span> and triggers
-     a CSS opacity transition (.fade-letter → .visible)          */
-     function appendLettersWithFade(targetEl, newText){
-        for(const ch of newText){
-            if(ch === '\n'){
-                targetEl.appendChild(document.createElement('br'));
-                continue;
-            }
-            const span = document.createElement('span');
-            span.textContent = ch;
-            span.classList.add('fade-letter');  // start invisible
-            targetEl.appendChild(span);
-    
-            /* force reflow, then add the class that makes it visible */
-            void span.offsetWidth;
-            requestAnimationFrame(()=>span.classList.add('visible'));
-        }
-    }
 
-// ─── Classic typing helper (50 ms / char) ─────────────────────
-function appendTyping(targetEl, text, delay = 50) {
-    let i = 0;
-    function tick() {
-        if (i < text.length) {
-            targetEl.append(text.charAt(i));
-            i++;
-            setTimeout(tick, delay);
-        }
-    }
-    tick();
-}
-
-// ─── Single dispatcher used by all streams ───────────────────
-function streamChunk(targetEl, chunk) {
-    switch (streamingStyle) {
-        case 'typing':
-            appendTyping(targetEl, chunk);             // type it
-            break;
-        case 'fade':
-            appendLettersWithFade(targetEl, chunk);    // fade it
-            break;
-        default:                                       // 'instant'
-            targetEl.innerHTML += chunk;               // old dump
-    }
-}
-
-function htmlEscape(str){
-    return str.replace(/&/g,'&amp;')
-              .replace(/</g,'&lt;')
-              .replace(/>/g,'&gt;');
-}
-
-/* ─── createStreamingStyleRow()  ----------------------------------
-   Returns a <div> containing the two toggle switches and text
-------------------------------------------------------------------*/
-function createStreamingStyleRow(){
-    const row = document.createElement('div');
-    row.className = 'streaming-style-row';
-    row.innerHTML = `
-       <div class="dropdown-header">
-        <span class="streaming-style-icon">🎬</span>
-        Streaming Style
-        <small class="streaming-style-sub">
-            (choose one)
-        </small>
-    </div>
-
-    <div class="streaming-style-item">
-        <label class="switch">
-            <input type="checkbox" id="typing-stream-toggle">
-            <span class="slider round"></span>
-        </label>
-        <span class="streaming-style-name">⌨️ Typing...</span>
-    <br/>
-        <label class="switch">
-            <input type="checkbox" id="fade-stream-toggle">
-            <span class="slider round"></span>
-        </label>
-        <span class="streaming-style-name">✨ Fade-in...</span>
-    </div>
-    <hr class="dropdown-divider"></hr>
-    `;
-    return row;
-}
-
-
-// Update visibility on load
 function populateChatHistory() {
     const savedChats = JSON.parse(localStorage.getItem('savedChats')) || [];
     const chatHistoryDropdown = document.getElementById('chat-history-dropdown');
     chatHistoryDropdown.innerHTML = ''; // Clear previous items
-
-
-    // ── Add streaming-style row at the very top ──────────────
-    const streamRow = createStreamingStyleRow();
-    chatHistoryDropdown.appendChild(streamRow);
-
-    // Restore saved state
-    $('#typing-stream-toggle').prop('checked', streamingStyle === 'typing');
-    $('#fade-stream-toggle')  .prop('checked', streamingStyle === 'fade');
-
-    // Attach (or re-attach) mutual-exclusion listeners
-    $('#typing-stream-toggle')
-        .off('change').on('change', function(){
-            if(this.checked){
-                $('#fade-stream-toggle').prop('checked', false);
-                streamingStyle = 'typing';
-            }else{
-                streamingStyle = 'instant';
-            }
-            localStorage.setItem(STREAM_KEY, streamingStyle);
-        });
-
-    $('#fade-stream-toggle')
-        .off('change').on('change', function(){
-            if(this.checked){
-                $('#typing-stream-toggle').prop('checked', false);
-                streamingStyle = 'fade';
-            }else{
-                streamingStyle = 'instant';
-            }
-            localStorage.setItem(STREAM_KEY, streamingStyle);
-        });
-
-
 
     // Add "Saved Conversations" header
     const header = document.createElement('div');
@@ -2231,37 +2089,6 @@ if (reflectiveCheckbox) {
     console.warn("No 'reflective-mode' checkbox found in the HTML. Check the markup.");
 }
 
-
-//============================================================
-// ── Streaming-style toggles (Typing / Fade) ──────────────────
-//$('#typing-stream-toggle').prop('checked', streamingStyle === 'typing');
-//$('#fade-stream-toggle')  .prop('checked', streamingStyle === 'fade');
-
-$('#typing-stream-toggle').on('change', function () {
-    if (this.checked) {
-        $('#fade-stream-toggle').prop('checked', false);
-        streamingStyle = 'typing';
-    } else {
-        streamingStyle = 'instant';
-    }
-    localStorage.setItem(STREAM_KEY, streamingStyle);
-});
-
-$('#fade-stream-toggle').on('change', function () {
-    if (this.checked) {
-        $('#typing-stream-toggle').prop('checked', false);
-        streamingStyle = 'fade';
-    } else {
-        streamingStyle = 'instant';
-    }
-    localStorage.setItem(STREAM_KEY, streamingStyle);
-});
-
-
-
-
-
-
 /* Set up event listeners to update localStorage on style change */
 /*const styleRadios = document.querySelectorAll("input[name='style']");
 console.log("Found style radios:", styleRadios);
@@ -2398,37 +2225,14 @@ async function sendMessage() {
 
     // --- Rotating Meditating Animation --- START ---
     const meditatingMessages = [
-        'Meditating 🙏🏻', // Include emoji directly
-        'Seeking light 🕯️',
-        'Connecting thoughts 💭',
-        'Concentrating 🧘‍♂️',
-        'Unraveling the mystery 🔍',
-        'Working hard 💪',
-        'Exploring the depths 🌊',
-        'Reflecting on the question 🪞',
-        'Searching for insights 🔎',
-        'Crafting the response ✍️',
-        'Weaving the words 🧵',
-        'Questioning the question ❓',
-        'Adding the finishing touches 🎨',
-        'Harmonizing the elements 🎶',
-        'Sifting through the data 📊',
-        'Synchronizing the thoughts 🔗',
-        'Aligning the stars 🌌',
-        'Tuning the frequencies 🎚️',
-        'Juggling the ideas 🤹‍♂️',
-        'Balancing the concepts ⚖️',
-        'Listening to the silence 🤫',
-        'Finding the right angle 🔄',
-        'Visualizing the response 🖼️',
-        'Synthesizing the information 🧬',
-        'Piecing together the puzzle 🧩',
-        'Finding the right words 🗣️',
-        'Breathing in the moment 🌬️',
-        'Aligning the energies ⚡',
-        'Navigating the labyrinth 🗺️',
-        'Mapping the terrain 🗺️',
-        'Zeroing in on the answer 🎯'
+        'Meditating 🙏', // Include emoji directly
+        'Seeking light',
+        'Connecting thoughts',
+        'Concentrating',
+        'Unraveling the mystery',
+        'Working hard',
+        'Working real hard',
+        'Finding the right words'
     ];
     let currentMessageIndex = 0;
     let dotCount = 0;
@@ -2842,11 +2646,8 @@ titleToggleArea.addEventListener('click', () => {
 // --- END UPDATED ---
 
 
-/*=======================================================
-// INAGE GENERATION EVENT
-=========================================================*/
 
-// Function to handle image generation button click
+// INAGE GENERATION EVENT
 $('#img-btn').on('click', async function() {
     let input_message = $('#chat-input').val();
 
@@ -2929,13 +2730,10 @@ while (true) {
 
     let chunk = decoder.decode(value);
 
-    //accumulatedText += chunk;
+    accumulatedText += chunk;
 
     // Update the displayed text
-    //responseMessage.innerHTML = accumulatedText;
-
-    streamChunk(responseMessage, chunk);
-
+    responseMessage.innerHTML = accumulatedText;
 }
 
 function addSaveImageButton(container, imageUrl) {
@@ -3269,30 +3067,12 @@ function toggleOlierButton() {
 
  // --- Mobile + Chatbox Open Handling (Priority 2) ---
     // <<< START FIX >>>
-// --- Chatbox Open Handling (all devices) --------------------
-if (isChatboxOpen) {
-
-    // ① Always hide the Chat launcher
-    olierButton.classList.add('hidden');
-
-    // ② Hide the Books button only on mobile / tablet
-    if (isMobile || isTablet) {
-        zoomToTopButton.classList.add('hidden');
-    }
-
-    lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
-    return;                        // early-exit once we’ve hidden things
-}
-
-
-
-
-    /*if (isChatboxOpen && isMobile) {
+    if (isChatboxOpen && isMobile) {
         olierButton.classList.add('hidden');     // Always hide chat button when chatbox open
         zoomToTopButton.classList.add('hidden'); // <<< THIS IS THE FIX: Always hide books button on mobile when chatbox open
         lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // Still update scroll pos
         return; // Exit early as mobile/open case is handled
-    }*/
+    }
     // <<< END FIX >>>
 
     // --- Scroll Direction Handling (uses .hidden) ---
