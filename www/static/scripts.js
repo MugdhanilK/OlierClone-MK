@@ -544,8 +544,10 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
                 let cleanHtml = DOMPurify.sanitize(htmlWithLinks);
 
                 // 4. Update the DOM.
-                placeholderMessage.innerHTML = cleanHtml;
-                //messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                if (streamingStyle === 'instant') {
+                    placeholderMessage.innerHTML = cleanHtml;
+                }
+                                //messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 } else {
                     // show only plain text during the stream
                     streamChunk(placeholderMessage, htmlEscape(chunk));
@@ -562,8 +564,10 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
                  if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
                  
                  // once the stream is done, replace bubble with fully rendered HTML
+                 if (streamingStyle === 'instant') {
                     placeholderMessage.innerHTML = cleanHtml;
-
+                }
+                
                  //scrollToBottom(); // Keep scrolling as content arrives
                  // ---
             }
@@ -615,7 +619,6 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
                 let textWithLinks = replaceReferenceMarkers(accumulatedText);
                 let dirtyHtml = md.render(textWithLinks); // Use markdown-it
                 let cleanHtml = DOMPurify.sanitize(dirtyHtml); // Sanitize
-                placeholderMessage.innerHTML = cleanHtml; // Update content
 
 
                 // --- Optional: Adjust height during streaming (can be intensive) ---
@@ -3266,12 +3269,30 @@ function toggleOlierButton() {
 
  // --- Mobile + Chatbox Open Handling (Priority 2) ---
     // <<< START FIX >>>
+// --- Chatbox Open Handling (all devices) --------------------
 if (isChatboxOpen) {
+
+    // ① Always hide the Chat launcher
+    olierButton.classList.add('hidden');
+
+    // ② Hide the Books button only on mobile / tablet
+    if (isMobile || isTablet) {
+        zoomToTopButton.classList.add('hidden');
+    }
+
+    lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+    return;                        // early-exit once we’ve hidden things
+}
+
+
+
+
+    /*if (isChatboxOpen && isMobile) {
         olierButton.classList.add('hidden');     // Always hide chat button when chatbox open
         zoomToTopButton.classList.add('hidden'); // <<< THIS IS THE FIX: Always hide books button on mobile when chatbox open
         lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // Still update scroll pos
         return; // Exit early as mobile/open case is handled
-    }
+    }*/
     // <<< END FIX >>>
 
     // --- Scroll Direction Handling (uses .hidden) ---
