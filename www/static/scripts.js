@@ -2246,9 +2246,9 @@ async function sendMessage() {
         'Connecting thoughts',
         'Concentrating',
         'Unraveling the mystery',
-        'Finding the right words',
         'Working hard',
         'Working real hard',
+        'Finding the right words',
     ];
     let currentMessageIndex = 0;
     let dotCount = 0;
