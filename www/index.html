@@ -16,6 +16,11 @@
     <style>
         /* Simple style to display two cards side by side */
         /* Container row for the two style cards */
+        sup .badge.badge-secondary {
+    font-size: .65em;
+    vertical-align: super;   /* keeps it tight above the line */
+}
+
         .style-cards-row {
             display: flex;
             justify-content: center;
@@ -96,7 +101,15 @@
 
 <body>
     <!-- Container start : only for search-->
-
+    <p>
+        Humility is essential
+        <a href="#" class="reference-link" data-book-title="Letters on Yoga" data-chapter-title="Humility">
+           <span class="badge badge-secondary">REF1</span>
+        </a>
+        for the seeker.
+      </p>
+      
+      
     <div class="container" id="search-view-container">
 
         <!-- Modified Header Section with Main Menu Button -->
@@ -843,6 +856,8 @@
         </button>
         <!-- Chat Input Container -->
         <div id="chat-input-container">
+            <p id="info-message">💡 For tricky questions, I need 10-30 secs to think hard and look online. Thanks for waiting! 😊</p>
+
             <textarea autocomplete="off" id="chat-input" placeholder="Type a message" rows="1"></textarea>
             <button id="send-btn">
                 <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
