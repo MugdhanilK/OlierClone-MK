@@ -655,7 +655,21 @@ function replaceReferenceMarkers(text) {
     
 }
   
-
+// ─────────────────────────────────────────────────────────────
+// Shift+Enter → newline; Enter alone → send the message
+$('#chat-input').on('keydown', function(e) {
+    if (e.key === 'Enter') {
+      if (e.shiftKey) {
+        // allow the newline
+        return;
+      }
+      // otherwise, prevent the newline & send
+      e.preventDefault();
+      $('#send-btn').click();
+    }
+  });
+  // ─────────────────────────────────────────────────────────────
+  
 
 // Helper function to set chat input value and trigger the send button
 // (Keep this if your overall code uses it; otherwise, you may remove or adjust it as needed.)
@@ -3257,24 +3271,18 @@ $(document).on('click', '#settings-menu-dropdown .close-menu-btn', function(even
 
 // Handle click forzoom_to_top 
 $(document).on('click', '.zoom_to_top', function(event) {
-    console.log('Clicked:', $(this).attr('id') || $(this).attr('class'));
-    let scrollPosition = $(window).scrollTop();
+  event.preventDefault();
+  event.stopPropagation();
 
-    if (scrollPosition <= 60) {
-        // Page is at the top, activate the main menu dropdown
-        event.preventDefault();
-        event.stopPropagation();  // Prevent default action if any
+  // 1) If we’re not at the top yet, scroll up first
+  if ($(window).scrollTop() > 60) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
-        // Toggle the main menu dropdown
-        $('#main-menu-dropdown').toggleClass('active');
-
-        // Toggle ARIA expanded state
-        let isExpanded = $(this).attr('aria-expanded') === 'true';
-        $(this).attr('aria-expanded', !isExpanded);
-    } else {
-        // Page is not at the top, scroll to the top
-        window.scrollTo(0, 0);
-    }
+  // 2) Now toggle the book-index menu no matter what
+  $('#main-menu-dropdown').toggleClass('active');
+  const expanded = $(this).attr('aria-expanded') === 'true';
+  $(this).attr('aria-expanded', !expanded);
 });
 
 
