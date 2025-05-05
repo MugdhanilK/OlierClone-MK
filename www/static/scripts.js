@@ -2268,7 +2268,7 @@ async function sendMessage() {
 
     // Interval for animating the dots (every 500ms)
     dotInterval = setInterval(() => {
-        dotCount = (dotCount + 1) % 4;
+        dotCount = (dotCount + 1) % 6;
         updateMeditatingText(); // Update text with new dot count
         // Check if element still exists (redundant check, good practice)
         if (!meditatingElement || !meditatingElement.parentNode) {
