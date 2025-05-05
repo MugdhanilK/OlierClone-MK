@@ -497,7 +497,7 @@ sup .reference-link {            /* only links inside <sup> */
 }
 
 /* --- Adjust the badge span itself --- */
-sup .reference-link .badge .badge-secondary {
+sup .reference-link .badge {
     /* vertical-align: super; */ /* Inherits from sup, or set explicitly */
     font-size: .8em;          /* Making it big. If you want small size: .65em */
     background-color: green;   /* Your existing styles */
@@ -509,6 +509,21 @@ sup .reference-link .badge .badge-secondary {
     border-radius: 3px; /* Slightly rounded corners */
     line-height: 1; /* Ensure badge text fits */
     margin-left: 1px; /* Small gap if needed */
+}
+
+/* final override – tiny REF badge */
+sup .badge.badge-secondary{
+    font-size:0.8em !important;
+    background-color: green !important;        /* gold */
+    color:white !important;
+    border:1px solid #C5A02E !important;
+    box-shadow:0 0 6px 2px rgba(212,175,55,.6) !important;
+    animation:goldenGlow 2s ease-in-out infinite alternate !important;
+    padding: 1px 3px; /* Adjust padding for visual fit */
+    border-radius: 3px; /* Slightly rounded corners */
+    line-height: 1; /* Ensure badge text fits */
+    margin-left: 1px; /* Small gap if needed */
+
 }
 
 sup .reference-link::after {     /* turn off any custom line pseudo-element */
