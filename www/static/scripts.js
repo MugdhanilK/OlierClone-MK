@@ -2251,32 +2251,16 @@ async function sendMessage() {
     const meditatingMessages = [
         'Meditating 🙏🏻', // Include emoji directly
         'Seeking light 🕯️',
-        'Exploring the depths 🌊',
         'Meditating on the essence 🌱',
-        'Connecting thoughts 💭',
-        'Contemplating the question 🤔',
-        'Finding the right path 🛤️',
-        'Synchronizing the thoughts 🔗',
-        'Balancing the concepts ⚖️',
-        'Visualizing the response 🖼️',
-        'Translating thoughts into words 📝',
-        'Concentrating 🧘‍♂️',
-        'Reflecting on the question 🪞',
-        'Finding the right words 🗣️',
         'Unraveling the mystery 🔍',
-        'Juggling the ideas 🤹‍♂️',
+        'Connecting thoughts 💭',
+        'Concentrating 🧘‍♂️',
+        'Finding the right words 🗣️',
+        'Balancing the concepts ⚖️',
         'Searching for insights 🔎',
-        'Weaving the words 🧵',
-        'Questioning the question ❓',
-        'Adding the finishing touches 🎨',
-        'Harmonizing the elements 🎶',
-        'Aligning the stars 🌌',
-        'Tuning the frequencies 🎚️',
-        'Listening to the silence 🤫',
-        'Synthesizing the information 🧬',
-        'Piecing together the puzzle 🧩',
-        'Mapping the terrain 🗺️',
-        'Zeroing in on the answer 🎯'
+        'Reflecting on the question 🪞',
+        'Almost there ⏳'
+
     ];
     let currentMessageIndex = 0;
     let dotCount = 0;
@@ -2296,7 +2280,7 @@ async function sendMessage() {
 
     // Interval for animating the dots (every 500ms)
     dotInterval = setInterval(() => {
-        dotCount = (dotCount + 1) % 4;
+        dotCount = (dotCount + 1) % 6;
         updateMeditatingText(); // Update text with new dot count
         // Check if element still exists (redundant check, good practice)
         if (!meditatingElement || !meditatingElement.parentNode) {
@@ -2318,7 +2302,7 @@ async function sendMessage() {
              clearInterval(messageRotationInterval);
              if (dotInterval) clearInterval(dotInterval); // Clear other interval too
         }
-    }, 3000); // 3 seconds
+    }, 6000); // 6 seconds
 
     // Helper function to clear both intervals
     const clearMeditatingIntervals = () => {
