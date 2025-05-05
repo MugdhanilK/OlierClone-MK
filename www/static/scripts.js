@@ -644,16 +644,12 @@ function replaceReferenceMarkers(text) {
     //  [CWM - 'Book Title', 'Chapter Title']
     //  [Mother’s Agenda - 'Book Title', 'Chapter Title']
     return text.replace(
-        /\[(CWSA|CWM|Mother['’]s Agenda)\s*[-–]\s*'(.+?)'\s*,\s*'(.+?)'\]/g,
+        /\s*\[(CWSA|CWM|Mother['’]s Agenda)\s*[-–]\s*'(.+?)'\s*,\s*'(.+?)'\]\s*/g, 
         (match, series, book, chapter) => {
             refCounter++;  // 1, 2, 3, ...
-    
-            return `
-              <a href="#" class="reference-link"
-                 data-book-title="${book}"
-                 data-chapter-title="${chapter}">
-                 <span class="badge badge-secondary">REF${refCounter}</span>
-              </a>`;
+       // *** CRITICAL FIX: Return string on ONE LINE, prefixed with &nbsp; ***
+            return `&nbsp;<a href="#" class="reference-link" data-book-title="${book}" data-chapter-title="${chapter}"><span class="badge badge-secondary">REF${refCounter}</span></a>`; 
+
         }
     );
     
