@@ -2225,14 +2225,34 @@ async function sendMessage() {
 
     // --- Rotating Meditating Animation --- START ---
     const meditatingMessages = [
-        'Meditating 🙏', // Include emoji directly
-        'Seeking light',
-        'Connecting thoughts',
-        'Concentrating',
-        'Unraveling the mystery',
-        'Working hard',
-        'Working real hard',
-        'Finding the right words'
+        'Meditating 🙏🏻', // Include emoji directly
+        'Seeking light 🕯️',
+        'Exploring the depths 🌊',
+        'Meditating on the essence 🌱',
+        'Connecting thoughts 💭',
+        'Contemplating the question 🤔',
+        'Finding the right path 🛤️',
+        'Synchronizing the thoughts 🔗',
+        'Balancing the concepts ⚖️',
+        'Visualizing the response 🖼️',
+        'Translating thoughts into words 📝',
+        'Concentrating 🧘‍♂️',
+        'Reflecting on the question 🪞',
+        'Finding the right words 🗣️',
+        'Unraveling the mystery 🔍',
+        'Juggling the ideas 🤹‍♂️',
+        'Searching for insights 🔎',
+        'Weaving the words 🧵',
+        'Questioning the question ❓',
+        'Adding the finishing touches 🎨',
+        'Harmonizing the elements 🎶',
+        'Aligning the stars 🌌',
+        'Tuning the frequencies 🎚️',
+        'Listening to the silence 🤫',
+        'Synthesizing the information 🧬',
+        'Piecing together the puzzle 🧩',
+        'Mapping the terrain 🗺️',
+        'Zeroing in on the answer 🎯'
     ];
     let currentMessageIndex = 0;
     let dotCount = 0;
