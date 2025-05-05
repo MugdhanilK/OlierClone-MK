@@ -478,44 +478,52 @@ transform: translateX(26px);
 
 /* ─── Inline “REF” badge style ───────────────────────────────────────── */
 .reference-link{
-    display:inline-block;
-    text-decoration:none;        /* no underline */
-    border-radius: 3px;          /* matches the badge */
-    padding: 1px 4px 2px;   /*  ↑top   ←→sides   ↓bottom  */    border-radius:3px;
-    margin-left:2px;             /* small gap after the word */
+    display: inline !important;         /* Force inline behavior */
+    text-decoration: none !important;    /* No underline */
+    color: inherit;                   /* Match text color */
+    vertical-align: baseline !important;/* Align link itself with text baseline */
+    margin: 0 1px 0 3px;             /* Fine-tune spacing */
+    padding: 0;                       /* NO padding/border/bg on link */
+    border: none;
+    background: none;
+    border-radius: 0;
+    white-space: nowrap;              /* Prevent internal wrapping */
 }
 
 /* default (transparent) state */
 .reference-link .badge-secondary{
-    background:#d5d5d5;          /* default silver pill */
-    color:#000;                  /* black “REF” text         */
-    border:1px solid transparent;/* keeps size consistent    */
-    border-radius: 5px;        /* rounded corners          */
-    font-size:.75em;             /* a little smaller than text */
-    padding: 3px 4px 1px;   /*  ↑top   ←→sides   ↓bottom  */    border-radius:3px;
-    transition:background .15s ease;
-    vertical-align: middle; /* align with text */
+    display: inline-block;            /* Use inline-block for padding/border */
+    vertical-align: baseline !important; /* Align badge itself with text baseline */
+    
+    /* --- Keep User's Preferred Style --- */
+    background: #d5d5d5;              /* User's grey pill */
+    color: #000;                      /* User's black text */
+    border: 1px solid #b0b0b0;       /* Slightly darker grey border for visibility */
+    border-radius: 5px;               /* User's rounded corners */
+    font-size: .75em;                 /* User's size */
+    font-weight: bold;                /* Added bold to match example image better */
+    padding: 2px 5px;               /* Slightly adjusted padding for vertical fit */
+    line-height: 1;                 /* Keep text tight in badge */
+    text-align: center;
+    white-space: nowrap;              /* Prevent REF1 text wrapping */
+    transition: background .15s ease;
+
 }
 
 /* hover / focus → light-grey pill */
 .reference-link:hover .badge-secondary,
 .reference-link:focus .badge-secondary{
-    background:#d5d5d5;          /* light grey               */
-    color:#000;                  /* stay black */ 
-    box-shadow: 0 0 0 2px #007BFF;           /* Bootstrap-blue halo */
-    animation: goldenGlow 2s ease-in-out infinite alternate;
+    background: #c0c0c0;              /* Slightly darker grey on hover */
+    color: #000;                      /* Keep black text */
+    border-color: #006eff;           /* Darker border */
+    /* Optional: Blue halo if desired (from user code) */
+    box-shadow: 0 0 0 2px #007BFF;
+    /* Remove the goldenGlow animation unless specifically wanted with grey */
+     animation: goldenGlow 2s ease-in-out infinite alternate; 
       
 }
 /* optional: keyboard users see focus outline */
-.reference-link:focus{
-    outline:2px solid #666;
-    outline-offset:2px;
-}
 
-
-sup .reference-link::after {     /* turn off any custom line pseudo-element */
-    content: none;
-}
 
 /* Keyframes for a gentle pulsing glow */
 @keyframes goldenGlow {
