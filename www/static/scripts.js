@@ -3266,7 +3266,7 @@ function toggleOlierButton() {
 
  // --- Mobile + Chatbox Open Handling (Priority 2) ---
     // <<< START FIX >>>
-    if (isChatboxOpen && isMobile) {
+if (isChatboxOpen) {
         olierButton.classList.add('hidden');     // Always hide chat button when chatbox open
         zoomToTopButton.classList.add('hidden'); // <<< THIS IS THE FIX: Always hide books button on mobile when chatbox open
         lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // Still update scroll pos
