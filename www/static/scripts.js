@@ -2244,11 +2244,13 @@ async function sendMessage() {
         'Meditating 🙏🏻', // Include emoji directly
         'Seeking light',
         'Connecting thoughts',
+        'Searching for insights',
+        'Finding the right path',
         'Concentrating',
         'Unraveling the mystery',
         'Working hard',
-        'Working real hard',
-        'Finding the right words',
+        'Almost there',
+        'Weaving the words',
     ];
     let currentMessageIndex = 0;
     let dotCount = 0;
@@ -2290,7 +2292,7 @@ async function sendMessage() {
              clearInterval(messageRotationInterval);
              if (dotInterval) clearInterval(dotInterval); // Clear other interval too
         }
-    }, 3000); // 3 seconds
+    }, 6000); // 6 seconds
 
     // Helper function to clear both intervals
     const clearMeditatingIntervals = () => {
