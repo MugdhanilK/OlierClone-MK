@@ -2697,9 +2697,14 @@ $('#img-btn').on('click', async function() {
     messageBox.appendChild(message);
     document.querySelector("#messages .messages-box").appendChild(messageBox);
 
+//––► re-enable auto-scroll right after user prompt
+autoScrollEnabled = true;
+requestAnimationFrame(() => {
+  scrollToBottom();
+  adjustChatboxHeight();
+  updateScrollButtonVisibility();
+});
 
-        adjustChatboxHeight();
-        updateScrollButtonVisibility();
 
     // Clear the input field after the message is added to the chat
     $('#chat-input').val('');
@@ -2744,6 +2749,7 @@ let accumulatedText = '';  // To store the accumulated text
 
 while (true) {
     const { done, value } = await reader.read();
+
     if (done) {
         // Add copy button after streaming is complete
         addCopyButton(messageWrapper);
@@ -2756,6 +2762,10 @@ while (true) {
 
     // Update the displayed text
     responseMessage.innerHTML = accumulatedText;
+
+    //––► keep the chat glued while each text chunk arrives
+if (autoScrollEnabled) scrollToBottom();
+
 }
 
 function addSaveImageButton(container, imageUrl) {
@@ -2939,7 +2949,7 @@ function addSaveImageButton(container, imageUrl) {
 
 // Create a new box for the image(s)
 let imageBox = document.createElement("div");
-imageBox.classList.add("box");
+imageBox.classList.add("box", "ai-message");
 let imageMessage = document.createElement("div");
 imageMessage.classList.add("messages");
 imageBox.appendChild(imageMessage);
@@ -2978,6 +2988,15 @@ imageResponse.images.forEach(image => {
 });
 
 document.querySelector("#messages .messages-box").appendChild(imageBox);
+
+//––► final nudge once all images are in place
+autoScrollEnabled = true;
+requestAnimationFrame(() => {
+  scrollToBottom();
+  adjustChatboxHeight();
+  updateScrollButtonVisibility();
+});
+
 
 // Focus on the input box after image generation
 
