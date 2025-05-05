@@ -476,32 +476,43 @@ transform: translateX(26px);
     cursor: pointer;
 }*/
 
+
+/* --- Adjust superscript container behavior --- */
+.messages sup { /* Target any sup within the messages */
+    /* Prevent line breaks immediately before the sup */
+    white-space: nowrap;
+    /* Fine-tune vertical alignment if needed */
+    vertical-align: super; /* Already default, but explicit */
+    /* Ensure it doesn't add extra space that could cause wrapping */
+    line-height: 0;
+    margin-left: 2px; /* Small space before the badge */
+}
 /* --- reference badge overrides --- */
 sup .reference-link {            /* only links inside <sup> */
     display:inline-block !important;   /* collapses to badge width   */
     text-decoration:none !important;   /* kills the stray underline  */     
-    margin:0 2px !important;               /* tidy spacing           */
-    border: 0;                   /* in case a border was used */
+    vertical-align: baseline; /* Align link text normally within the line */
+    margin: 0; /* Remove extra margins */
+    padding: 0; /* Remove extra padding */
+}
+
+/* --- Adjust the badge span itself --- */
+sup .reference-link .badge .badge-secondary {
+    /* vertical-align: super; */ /* Inherits from sup, or set explicitly */
+    font-size: .8em;          /* Making it big. If you want small size: .65em */
+    background-color: green;   /* Your existing styles */
+    color: white;
+    border: 1px solid #C5A02E;
+    box-shadow: 0 0 4px 1px rgba(212, 175, 55, 0.6);
+    animation: goldenGlow 2s ease-in-out infinite alternate;
+    padding: 1px 3px; /* Adjust padding for visual fit */
+    border-radius: 3px; /* Slightly rounded corners */
+    line-height: 1; /* Ensure badge text fits */
+    margin-left: 1px; /* Small gap if needed */
 }
 
 sup .reference-link::after {     /* turn off any custom line pseudo-element */
     content: none;
-}
-/* --- reference badge hover --- */
-/* Basic styles for Reference Links for Olier Overview*/
-/* Superscript REF badge – golden glow */
-sup .badge.badge-secondary {
-    font-size:0.8em;        /* bigger than the default <sup> shrink */
-    vertical-align: super;     /* lift above baseline */
-
-    /* --- golden look --- */
-    background-color: green;       /* solid gold */
-    color: white;               /* dark text for contrast */
-    border: 1px solid #C5A02E; /* slightly darker edge */
-
-    /* --- glow effect --- */
-    box-shadow: 0 0 4px 1px rgba(212, 175, 55, 0.6);
-    animation: goldenGlow 2s ease-in-out infinite alternate;
 }
 
 /* Keyframes for a gentle pulsing glow */
