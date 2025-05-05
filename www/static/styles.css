@@ -476,6 +476,30 @@ transform: translateX(26px);
     cursor: pointer;
 }
 
+/* Basic styles for Reference Links for Olier Overview*/
+/* Superscript REF badge – golden glow */
+sup .badge.badge-secondary {
+    font-size: .65em;          /* keep it small */
+    vertical-align: super;     /* lift above baseline */
+
+    /* --- golden look --- */
+    background-color: green;       /* solid gold */
+    color: white;               /* dark text for contrast */
+    border: 1px solid #C5A02E; /* slightly darker edge */
+
+    /* --- glow effect --- */
+    box-shadow: 0 0 4px 1px rgba(212, 175, 55, 0.6);
+    animation: goldenGlow 2s ease-in-out infinite alternate;
+}
+
+/* Keyframes for a gentle pulsing glow */
+@keyframes goldenGlow {
+    from { box-shadow: 0 0 4px 1px rgba(212, 175, 55, 0.4); }
+    to   { box-shadow: 0 0 10px 4px rgba(255, 215, 0, 0.9); }
+}
+
+
+
 /* (Optional) Add a hover effect for the Olier Overview button */
 #summarize-results-btn {
        /* Note: Ensure 'Pacifico' font is loaded in your HTML for this to work */

@@ -645,10 +645,13 @@ function replaceReferenceMarkers(text) {
     return text.replace(
     /\[(CWSA|CWM|Mother['’]s Agenda)\s*[-–]\s*'(.+?)'\s*,\s*'(.+?)'\]/g,
     (match, series, book, chapter) => {
-      return `<a href="#" class="reference-link"
-                  data-book-title="${book}"
-                  data-chapter-title="${chapter}"
-              >${match}</a>`;
+        return `<sup>
+                  <a href="#" class="reference-link"
+                     data-book-title="${book}"
+                     data-chapter-title="${chapter}">
+                     <span class="badge badge-secondary">REF</span>
+                  </a>
+                </sup>`;
     }
   );
 }
