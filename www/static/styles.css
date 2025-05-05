@@ -468,18 +468,30 @@ transform: translateX(26px);
     /* You can add !important if necessary to override other styles */
   }
 
-
-/* Style for reference links */
+/*======OLD STYLE=====
+/* Style for reference links 
 .reference-link {
     color: #007BFF;
     text-decoration: underline;
     cursor: pointer;
+}*/
+
+/* --- reference badge overrides --- */
+sup .reference-link {            /* only links inside <sup> */
+    display:inline-block !important;   /* collapses to badge width   */
+    text-decoration:none !important;   /* kills the stray underline  */     
+    margin:0 2px !important;               /* tidy spacing           */
+    border: 0;                   /* in case a border was used */
 }
 
+sup .reference-link::after {     /* turn off any custom line pseudo-element */
+    content: none;
+}
+/* --- reference badge hover --- */
 /* Basic styles for Reference Links for Olier Overview*/
 /* Superscript REF badge – golden glow */
 sup .badge.badge-secondary {
-    font-size: .65em;          /* keep it small */
+    font-size:0.8em;        /* bigger than the default <sup> shrink */
     vertical-align: super;     /* lift above baseline */
 
     /* --- golden look --- */
