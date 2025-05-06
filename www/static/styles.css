@@ -1405,6 +1405,8 @@ tbody {
 .messages-box .box .messages {
     background-color: #fff; /* KEEP original AI background */
     padding: 10px 15px;
+    /* Example: Reduce bottom padding */
+    padding-bottom: 5px; /* Top, Right, Bottom, Left */
     display: inline-block;      /* CHANGE BACK to inline-block */
     /* border-radius: 0 10px 10px 0; */ /* Remove previous radius */
     border-radius: 18px 18px 18px 4px; /* Rounded, less round bottom-left */
