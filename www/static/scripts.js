@@ -2280,7 +2280,6 @@ async function sendMessage() {
         'Finding the right words 🗣️',
         'Balancing the concepts ⚖️',
         'Searching for insights 🔎',
-        'Reflecting on the question 🪞',
         'Almost there ⏳'
 
     ];
