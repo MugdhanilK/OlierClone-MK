@@ -1132,27 +1132,25 @@ tbody {
 
 /* Chatbox Styles */
 
+/* Around line 1005 */
 #chatbox {
-    display: flex;
-    flex-direction: column;
-    /* height: 100vh; */            /* fill the viewport */
-
+    display: flex;            /* ADD */
+    flex-direction: column; /* ADD */
+    overflow: hidden;         /* ADD */ /* Prevents chatbox itself from scrolling */
     position: fixed;
     z-index: 1000;
     background-color: white;
     border-left: 1px solid #ccc;
     box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1);
-    padding-top: 0px;
+    /* padding-top: 0px; /* Optional: Review if needed */
     background: url('/static/chatbotbackgroundA.png') no-repeat center center / cover;
     right: 0;
     top: 0;
-    /* remove overflow:hidden */
-  /* overflow: hidden; */
-    transition: transform 0.3s ease-in-out; /* Only transition transform */
+    transition: transform 0.3s ease-in-out;
     transform: translateX(100%);
     touch-action: pan-y;
+    /* height is set dynamically by JS */
 }
-
  
 /* Top Chatbox Styles */
 .top-chatbox {
@@ -1349,11 +1347,12 @@ tbody {
 
 
 
-/* Messages container adapts to available space */
+/* Around line 1049 */
 #messages {
-    flex: 1 1 auto;             /* fill all available space */
-    overflow-y: auto;           /* now this area will scroll */
-    -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+    flex-grow: 1;             /* ADD */ /* Takes available vertical space */
+    overflow-y: auto;           /* Keep */
+    -webkit-overflow-scrolling: touch; /* Keep */
+    /* height is now controlled by flex-grow, remove explicit height setting if any */
 }
 
 #messages .empty-div {
@@ -1620,23 +1619,25 @@ tbody {
 /* *************************** */
 
 
-/*Rest of the style about the*/
+/* Around line 1124 */
 #chat-input-container {
     flex-shrink: 0;
-    margin-top: auto;
+    /* margin-top: auto; /* Optional: Can likely be removed */
     display: flex;
     gap: 5px;
     align-items: center;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding-bottom: env(keyboard-inset-height); /* Add this line */
-    z-index: 1000;
-    background-color: #f0fff0; /* Very subtle green */
-    border: 1px solid #b3ffb3; /* Light green border for a gentle look */
-    border-radius: 4px;         /* Rounded corners for a smoother appearance */
-    padding: 8px 12px;          /* Adjusted padding for better text spacing */
+    /* REMOVE position: fixed; */
+    /* REMOVE bottom: 0; */
+    /* REMOVE left: 0; */
+    /* REMOVE right: 0; */
+    width: 100%; /* ADD */
+    box-sizing: border-box; /* ADD */
+    padding-bottom: env(keyboard-inset-height); /* Keep */
+    z-index: 10; /* Can be lower now */
+    background-color: #f0fff0;
+    border: 1px solid #b3ffb3;
+    border-radius: 4px;
+    padding: 8px 12px; /* This is padding *inside* the container */
 }
 
 
