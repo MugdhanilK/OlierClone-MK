@@ -1404,13 +1404,13 @@ tbody {
 
 .messages-box .box .messages {
     background-color: #fff; /* Keep original AI background */
-    padding: 10px 15px 2px 15px; /* Keep padding (bottom adjusted earlier) */
+    padding: 10px 15px 0px 15px; /* Keep padding (bottom adjusted earlier) */
     display: inline-block;      /* CHANGE BACK to inline-block */
     border-radius: 18px 18px 18px 4px; /* Keep desired shape */
     border: 1px solid transparent;
     line-height: 1.4;
     font-size: 1rem !important;
-    max-width: 85%;             /* Keep max-width constraint */
+    max-width: 95%;             /* Keep max-width constraint */
     text-align: left;           /* Keep text left-aligned */
     word-wrap: break-word;      /* Still needed for long words */
     overflow-wrap: break-word;  /* Still needed for long words */
