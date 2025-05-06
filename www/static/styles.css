@@ -1432,6 +1432,17 @@ tbody {
     border: 1px solid transparent;     /* Optional: Adjust if needed */
     text-align: left;            /* ADD: Ensure text inside aligns left */
 }
+
+/* Remove bottom margin from the last paragraph inside AI messages */
+.messages-box .box.ai-message .messages p:last-child {
+    margin-bottom: 0;
+}
+
+/* Optional: Do the same for user messages if they might contain paragraphs */
+.messages-box .box.right .messages p:last-child {
+     margin-bottom: 0;
+}
+
 /* Existing Resizer Handle Styles */
 #chatbox-resizer {
     position: absolute;
