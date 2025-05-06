@@ -986,6 +986,27 @@ if (isAndroid || isTablet) {
   }
   setupViewportResizeListener();
 }
+
+// **** INSERT THE NEW ANDROID FOCUS LISTENER BLOCK HERE ****
+// Add this block for Android focus handling
+if (isAndroid) {
+    const chatInput = document.getElementById('chat-input'); // Make sure chatInput is accessible here
+    if (chatInput) {
+        chatInput.addEventListener('focus', () => {
+            // Delay slightly to allow keyboard animation and resize event to settle
+            setTimeout(() => {
+                console.log("Re-adjusting height on Android focus after delay");
+                adjustChatboxHeight(); 
+                // Optionally, ensure the input is scrolled into view if needed,
+                // though adjustChatboxHeight should handle the container positioning.
+                // chatInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); 
+            }, 250); // Adjust delay (e.g., 200-300ms) if needed
+        });
+    }
+}
+// End of new block
+// ***************
+
 /*
 if (isIOS) {
     // On focus: change CSS directly

@@ -1403,21 +1403,19 @@ tbody {
 }
 
 .messages-box .box .messages {
-    background-color: #fff; /* KEEP original AI background */
-    padding: 10px 15px;
-    /* Example: Reduce bottom padding */
-    padding-bottom: 5px; /* Top, Right, Bottom, Left */
+    background-color: #fff; /* Keep original AI background */
+    padding: 10px 15px 2px 15px; /* Keep padding (bottom adjusted earlier) */
     display: inline-block;      /* CHANGE BACK to inline-block */
-    /* border-radius: 0 10px 10px 0; */ /* Remove previous radius */
-    border-radius: 18px 18px 18px 4px; /* Rounded, less round bottom-left */
-    /* border-left: 1px solid #1febb1; */ /* Remove previous border */
-    border: 1px solid transparent;    /* Optional: Adjust if needed */
+    border-radius: 18px 18px 18px 4px; /* Keep desired shape */
+    border: 1px solid transparent;
     line-height: 1.4;
     font-size: 1rem !important;
-    max-width: 80%;             /* ADD: Prevent bubbles becoming too wide */
-    text-align: left;           /* ADD: Ensure text inside aligns left */
-    word-wrap: break-word;      /* Ensure long words wrap */
-    overflow-wrap: break-word;  /* Ensure long words wrap */
+    max-width: 85%;             /* Keep max-width constraint */
+    text-align: left;           /* Keep text left-aligned */
+    word-wrap: break-word;      /* Still needed for long words */
+    overflow-wrap: break-word;  /* Still needed for long words */
+    /* margin-right: auto; */   /* REMOVE */
+    /* margin-left: 0; */       /* REMOVE */
 }
 
 .messages-box .box.right {
@@ -1425,14 +1423,13 @@ tbody {
 }
 
 .messages-box .box.right .messages {
-    background-color: #f0fff0; /* KEEP original user background */
-    /* color: white; */         /* REMOVE text color change */
-    /* border-radius: 10px 0 0 10px; */ /* Remove previous radius */
-    border-radius: 18px 18px 4px 18px; /* Rounded, less round bottom-right */
-    /* border-right: 1px solid #1febb1; */ /* Remove previous border */
-    /* border-left: none; */              /* Remove previous border override */
-    border: 1px solid transparent;     /* Optional: Adjust if needed */
-    text-align: left;            /* ADD: Ensure text inside aligns left */
+    background-color: #f0fff0; /* Keep original user background */
+    border-radius: 18px 18px 4px 18px; /* Keep desired shape */
+    border: 1px solid transparent;
+    text-align: left;
+    /* --- Remove Margins --- */
+    /* margin-left: auto; */    /* REMOVE */
+    /* margin-right: 0; */      /* REMOVE */
 }
 
 /* Remove bottom margin from the last paragraph inside AI messages */
