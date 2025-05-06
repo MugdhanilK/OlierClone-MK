@@ -1364,7 +1364,7 @@ tbody {
 
 /* ─── keep last chat line clear of the info-banner ──────────── */
 #messages .messages-box{
-    padding-bottom: 4.5rem;   /* ≈ banner-height + small gap */
+    padding-bottom: 1rem;   /* ≈ banner-height + small gap */
 }
 
 /* phones: banner wraps higher, so add a bit more room */
@@ -2564,6 +2564,7 @@ body.keyboard-open #chat-input-container {
     margin: 0; /* Remove margin to align it to the edge */
     flex-shrink: 0; /* Ensure it doesn't shrink */
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 50%; /* <-- ADD THIS LINE */
 }
 
 .open_chatbot.in-flex-box:hover {
@@ -2665,27 +2666,37 @@ body.keyboard-open #chat-input-container {
 /* Toggle Reading Mode Button (Only Inside Flex Box) */
 
 .toggle_search.in-flex-box {
-    all: unset;
+    /* Remove 'all: unset;' if present, ensure basic button styling */
     background: none;
     border: none;
-    padding: 0;
+    padding: 0; /* Ensure no default padding interferes */
     cursor: pointer;
-    display: flex;
+    display: flex; /* Keep these for alignment */
     flex-direction: column;
     align-items: center;
+    justify-content: center; /* Center content (logo) */
     z-index: 1000;
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-    transform: translateY(0);
     opacity: 1;
-    margin: 0; /* Remove margin to align it to the edge */
+    margin: 0;
     width: 40px;
     height: 40px;
     flex-shrink: 0;
+    border-radius: 50%; /* Keep this for rounded shadow */
+    /* Add/Modify the transition */
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease-in-out;
+    /* Removed transform: translateY(0); as it's default */
 }
 
 
+/* Add this new rule set */
+.toggle_search.in-flex-box:hover {
+    transform: scale(1.2); /* Slightly enlarge the button on hover */
+
+}
+
+/* :active rule (should shrink - MUST override hover scale) */
 .toggle_search.in-flex-box:active {
-    transform: scale(0.95); /* Slightly shrink the button on press */
+    transform: scale(0.95); /* This shrink should take precedence on click */
 }
 
 .toggle_search.in-flex-box.hidden {
@@ -2699,7 +2710,7 @@ body.keyboard-open #chat-input-container {
 .toggle-search-logo {
     width: 60px; /* Adjust size as needed inside flex box */
     height: auto;
-    transition: transform 0.2s ease;
+    transition: transform 0.3s ease;
 }
 
 

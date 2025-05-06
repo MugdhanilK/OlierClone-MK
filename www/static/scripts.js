@@ -420,6 +420,9 @@ const md = window.markdownit(); // Initialize markdown-it
 // --- Summarize Button Click Handler (Modified for Streaming) ---
 $(document).on('click', '#summarize-results-btn', async function() { // Add async here
     // 0. Ensure chatbox is open
+    $('#info-message').addClass('hidden'); // <-- ADD THIS LINE
+
+    // 0. Ensure chatbox is open
     if (!$("#chatbox").hasClass("open")) {
         $(".open_chatbot").first().trigger("click");
     }
@@ -2677,6 +2680,8 @@ titleToggleArea.addEventListener('click', () => {
 
 // INAGE GENERATION EVENT
 $('#img-btn').on('click', async function() {
+    $('#info-message').addClass('hidden'); // <-- ADD THIS LINE
+
     let input_message = $('#chat-input').val();
 
     if (input_message.trim() === '') {
