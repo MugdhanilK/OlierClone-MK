@@ -1383,11 +1383,11 @@ tbody {
     gap: 5px;
 }
 
-/* Common styles for all messages */
 .messages-box .box .messages {
     background-color: #fff;
     padding: 10px 15px;
-    display: inline-block;
+    /* display: inline-block; */ /* <-- REMOVE OR COMMENT OUT */
+    display: block;           /* <-- ADD THIS LINE */
     border-radius: 0 10px 10px 0;
     border-left: 1px solid #1febb1;
     line-height: 1.4;

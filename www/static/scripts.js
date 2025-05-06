@@ -2112,21 +2112,23 @@ if (savedStyle && savedStyle !== 'poetic') {
 }*/
 
 /* Retrieve saved reflectiveMode from localStorage */
-let savedReflectiveMode = localStorage.getItem('reflectiveMode');
-console.log("Retrieved savedReflectiveMode:", savedReflectiveMode);
+/* Retrieve saved speedyMode from localStorage */
+let savedSpeedyMode = localStorage.getItem('speedyMode'); // <-- Changed key
+console.log("Retrieved savedSpeedyMode:", savedSpeedyMode);
 
-const reflectiveCheckbox = document.querySelector("input[name='reflective-mode']");
-if (reflectiveCheckbox) {
-    // If savedReflectiveMode === 'true', check the box
-    reflectiveCheckbox.checked = (savedReflectiveMode === 'true');
+const speedyCheckbox = document.querySelector("input[name='speedy-mode']"); // <-- Changed selector
+if (speedyCheckbox) { // <-- Changed variable name
+    // If savedSpeedyMode === 'true', check the box
+    speedyCheckbox.checked = (savedSpeedyMode === 'true'); // <-- Changed variables
 
-    // Set up event listener to update localStorage when Reflective Mode is changed
-    reflectiveCheckbox.addEventListener('change', (e) => {
-        localStorage.setItem('reflectiveMode', e.target.checked);
-        console.log("Reflective Mode changed to:", e.target.checked);
+    // Set up event listener to update localStorage when Speedy Mode is changed
+    speedyCheckbox.addEventListener('change', (e) => { // <-- Changed variable name
+        localStorage.setItem('speedyMode', e.target.checked); // <-- Changed key
+        console.log("Speedy Mode changed to:", e.target.checked); // <-- Changed log message
     });
 } else {
-    console.warn("No 'reflective-mode' checkbox found in the HTML. Check the markup.");
+    // Updated warning message for clarity
+    console.warn("No 'speedy-mode' checkbox found in the HTML. Check the markup.");
 }
 
 /* Set up event listeners to update localStorage on style change */
@@ -2247,7 +2249,6 @@ async function sendMessage() {
     const isSpeedyMode = speedyCheckbox ? speedyCheckbox.checked : false; // <-- Get its state, default false if not found
     
     const selectedStyle   = document.getElementById('selectedStyle')?.value || 'poetic';
-    //const isSpeedyMode    = document.querySelector("input[name='reflective-mode']")?.checked || false;
     console.log(`Style: ${selectedStyle}, Speedy Mode Active: ${isSpeedyMode}`); // Log the values being sent
 
     // --- AI Response Container Setup ---
