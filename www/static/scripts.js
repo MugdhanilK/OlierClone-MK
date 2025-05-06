@@ -1179,10 +1179,10 @@ function resizerDown(e) {
       // Add a visual indicator (active state) to the resizer
       resizer.classList.add('resizer-active');
   
-      // Disconnect the ResizeObserver (if present) to avoid conflicting size adjustments
+      /* Disconnect the ResizeObserver (if present) to avoid conflicting size adjustments
       if (chatboxResizeObserver) {
         chatboxResizeObserver.disconnect();
-      }
+      }*/
   
       // Capture the initial horizontal coordinate, based on whether it's a mouse or touch event
       if (e.type === 'mousedown') {
@@ -1249,13 +1249,13 @@ function resizerDown(e) {
       // Save this width to localStorage so it can be applied in future sessions
       localStorage.setItem('chatboxWidth', chatboxWidth);
   
-      // Reconnect the ResizeObserver so it continues to observe changes automatically
+      /* Reconnect the ResizeObserver so it continues to observe changes automatically
       if (chatboxResizeObserver) {
         const chatboxElement = document.getElementById('chatbox');
         if (chatboxElement) {
           chatboxResizeObserver.observe(chatboxElement);
         }
-      }
+      }*/
     }
   }
   
@@ -2581,8 +2581,17 @@ function addCopyButton(wrapper) {
             console.log("No messages found to copy.");
         }
     });
-
-    wrapper.appendChild(copyButton);
+ // --- CHANGE THIS PART ---
+    // Find the actual message bubble div INSIDE the wrapper
+    const messageDiv = wrapper.querySelector('.messages'); 
+    if (messageDiv) {
+        messageDiv.appendChild(copyButton); // Append to the inner message bubble
+    } else {
+        // Fallback or error handling if needed, though unlikely
+        wrapper.appendChild(copyButton); 
+        console.warn("Could not find .messages div in wrapper, appending copy button to wrapper.");
+    }
+    // --- END CHANGE ---
 }
 
 
@@ -2970,7 +2979,17 @@ function addSaveImageButton(container, imageUrl) {
                 }
             });
 
-            wrapper.appendChild(copyButton);
+             // --- CHANGE THIS PART ---
+    // Find the actual message bubble div INSIDE the wrapper
+    const messageDiv = wrapper.querySelector('.messages'); 
+    if (messageDiv) {
+        messageDiv.appendChild(copyButton); // Append to the inner message bubble
+    } else {
+        // Fallback or error handling if needed, though unlikely
+        wrapper.appendChild(copyButton); 
+        console.warn("Could not find .messages div in wrapper, appending copy button to wrapper.");
+    }
+    // --- END CHANGE ---
         }
 
         // After description is generated, add the "Image Generating..." message

@@ -1408,6 +1408,7 @@ tbody {
     display: inline-block;      /* CHANGE BACK to inline-block */
     border-radius: 18px 18px 18px 4px; /* Keep desired shape */
     border: 1px solid transparent;
+    position: relative;
     line-height: 1.4;
     font-size: 1rem !important;
     max-width: 95%;             /* Keep max-width constraint */
@@ -1447,18 +1448,18 @@ tbody {
     position: absolute;
     top: 0;
     bottom: 0;
-    left: -2px; /* Slight overlap to make it easier to grab */
-    width: 5px;
-    background-color: transparent;
-    cursor: ew-resize;
-
-    /* Prevent it from intercepting wheel/touch events */
-  pointer-events: none;
+    left: 0px; /* Position it exactly at the edge */
+    width: 8px; /* Make it slightly wider */
+    background-color: rgba(0, 0, 0, 0.1); /* Make slightly visible always */
+    border-left: 1px solid #bbb; /* Add a subtle visual edge */
+    cursor: ew-resize; /* Cursor indicates it's draggable */
+    pointer-events: auto; /* Ensure it can always receive clicks/drags */
+    z-index: 1001; /* Ensure it's visually on top */
 }
 
-/* Only when the user is actively dragging do we want it to capture events */
+/* Optional: Style for when it's being actively dragged */
 #chatbox-resizer.resizer-active {
-  pointer-events: auto;
+  background-color: rgba(0, 0, 0, 0.3); /* Darker when dragging */
 }
 
 #chatbox-resizer:hover {
@@ -1732,6 +1733,13 @@ body.keyboard-open #chat-input-container {
 .copy-button {
     opacity: 0.6;
     transition: opacity 0.3s;
+    position: absolute; /* Stays absolute */
+    bottom: 5px;        /* Relative to .messages padding edge */
+    right: 5px;         /* Relative to .messages padding edge */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
 }
 
 .copy-button:hover {
