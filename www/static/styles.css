@@ -439,12 +439,31 @@ transform: translateX(26px);
 }
 .meditating-message {
     font-size: 1rem;
-    font-style: italic;
+     font-style: italic;  /* REMOVE this */
     color: #666;
     background-size: contain;
     padding: 20px;
     min-height: 50px;
+    text-align: left;    /* ADD this */
 }
+
+/* ADD these new rules */
+.messages-box .box .messages.is-loading {
+    background-color: transparent !important; /* Override default white/honeydew */
+    border: none !important;                  /* Override default border */
+    padding: 0;                               /* Remove padding from the wrapper */
+    box-shadow: none;                         /* Remove any inherited shadow */
+}
+
+/* Apply padding directly to the loading text elements when background is transparent */
+.messages-box .box .messages.is-loading .loading-message,
+.messages-box .box .messages.is-loading .meditating-message {
+     margin: 0; /* Reset margin */
+     padding: 10px 15px; /* Add padding directly here */
+     /* Ensure text color is visible against chat background */
+     color: #555; /* Adjust color if needed */
+}
+
 .result-item {
     position: relative; /* Ensure it’s positioned so box-shadow shows correctly */
 }
@@ -1521,9 +1540,10 @@ tbody {
     }
 
     .loading-message {
-        font-style: italic;
+         font-style: italic; /* REMOVE this */
         color: #888;
-        text-align: center;
+        /* text-align: center; */ /* REMOVE this */
+        text-align: left;     /* ADD this */
         margin: 10px 0;
     }
 

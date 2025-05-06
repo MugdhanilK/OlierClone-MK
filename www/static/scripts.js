@@ -446,6 +446,8 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
     let meditatingElement = document.createElement("div"); // Separate element for "Meditating..."
     meditatingElement.classList.add("meditating-message"); // Use existing class
     meditatingElement.textContent = 'Creating the Olier Overview...';
+    placeholderMessage.classList.add('is-loading'); // <-- ADD
+
     placeholderMessage.appendChild(meditatingElement); // Add meditating text initially
     messageWrapper.appendChild(placeholderMessage);
     placeholderBubble.appendChild(messageWrapper);
@@ -517,6 +519,7 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
                 if (!firstChunkReceived) {
                     clearInterval(meditatingInterval);
                     if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+                    placeholderMessage.classList.remove('is-loading'); // <-- ADD
                     placeholderMessage.innerHTML = ''; // Clear "Meditating..."
                     firstChunkReceived = true;
                 }
@@ -640,6 +643,7 @@ $(document).on('click', '#summarize-results-btn', async function() { // Add asyn
     } catch (error) {
         clearInterval(meditatingInterval); // Clear interval on fetch error
         if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+        placeholderMessage.classList.remove('is-loading'); // <-- ADD
         placeholderMessage.textContent = "Sorry, an error occurred while creating the Olier Overview. Please try again later.";
         console.error("Summarization request failed:", error);
     }
@@ -2260,6 +2264,10 @@ async function sendMessage() {
     let meditatingElement = document.createElement("div");
     meditatingElement.classList.add("loading-message");
     // meditatingElement.textContent = 'Meditating...'; // REMOVED - Set by new logic
+    // --- ADD THE LINE HERE ---
+    responseMessage.classList.add('is-loading'); // <-- ADD THIS LINE
+    // --- BEFORE THIS LINE ---
+    
     responseMessage.appendChild(meditatingElement);
     let messageWrapper = document.createElement("div"); // Used for copy button positioning
     messageWrapper.style.position = "relative";
@@ -2374,6 +2382,7 @@ async function sendMessage() {
                         clearMeditatingIntervals(); // Clear intervals
                         meditatingElement.remove();
                         meditatingElement = null; // Nullify to prevent further checks
+                        responseMessage.classList.remove('is-loading'); // <-- ADD (Remove class here)
                         if (!markerFound) {
                             responseMessage.innerHTML = ''; // Clear placeholder space
                         }
@@ -2460,6 +2469,7 @@ async function sendMessage() {
         console.error('Error in sendMessage:', error);
         clearMeditatingIntervals(); // Clear intervals on catch
         if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+        responseMessage.classList.remove('is-loading'); // <-- ADD
         if (responseMessage) {
             responseMessage.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
         }
