@@ -1403,14 +1403,19 @@ tbody {
 }
 
 .messages-box .box .messages {
-    background-color: #fff;
+    background-color: #fff; /* KEEP original AI background */
     padding: 10px 15px;
-    /* display: inline-block; */ /* <-- REMOVE OR COMMENT OUT */
-    display: block;           /* <-- ADD THIS LINE */
-    border-radius: 0 10px 10px 0;
-    border-left: 1px solid #1febb1;
+    display: inline-block;      /* CHANGE BACK to inline-block */
+    /* border-radius: 0 10px 10px 0; */ /* Remove previous radius */
+    border-radius: 18px 18px 18px 4px; /* Rounded, less round bottom-left */
+    /* border-left: 1px solid #1febb1; */ /* Remove previous border */
+    border: 1px solid transparent;    /* Optional: Adjust if needed */
     line-height: 1.4;
-    font-size: 1rem !important; 
+    font-size: 1rem !important;
+    max-width: 80%;             /* ADD: Prevent bubbles becoming too wide */
+    text-align: left;           /* ADD: Ensure text inside aligns left */
+    word-wrap: break-word;      /* Ensure long words wrap */
+    overflow-wrap: break-word;  /* Ensure long words wrap */
 }
 
 .messages-box .box.right {
@@ -1418,12 +1423,15 @@ tbody {
 }
 
 .messages-box .box.right .messages {
-    background-color: #f0fff0;
-    border-radius: 10px 0 0 10px;
-    border-right: 1px solid #1febb1;
-    border-left: none;
+    background-color: #f0fff0; /* KEEP original user background */
+    /* color: white; */         /* REMOVE text color change */
+    /* border-radius: 10px 0 0 10px; */ /* Remove previous radius */
+    border-radius: 18px 18px 4px 18px; /* Rounded, less round bottom-right */
+    /* border-right: 1px solid #1febb1; */ /* Remove previous border */
+    /* border-left: none; */              /* Remove previous border override */
+    border: 1px solid transparent;     /* Optional: Adjust if needed */
+    text-align: left;            /* ADD: Ensure text inside aligns left */
 }
-
 /* Existing Resizer Handle Styles */
 #chatbox-resizer {
     position: absolute;
