@@ -213,25 +213,33 @@ async def keyword_search():
             # Create the marker string in the desired inline format
             marker = f"[{prefix} - '{book_title}', '{chapter_title}']"
             
-            # Option: Append the marker at the end of the text.
             hit_text = hit.get('text', '')
-            # Here we append a space and marker at the end.
+            # Append marker to the plain text
             hit['text'] = f"{hit_text} {marker}"
             
-            # Also update highlighted_text if it exists; otherwise, use the full text.
-            hit_highlight = hit.get('highlighted_text', '')
-            if hit_highlight:
-                hit['highlighted_text'] = f"{hit_highlight} {marker}"
+            # Get highlighted text (assuming Meilisearch might provide it in 'highlighted_text' or you fall back to _formatted)
+            # Based on your old app.py's active code:
+            # If MeiliSearch is configured to highlight 'text', the result is typically in hit['_formatted']['text'].
+            # The old code used hit.get('highlighted_text', '') but also had 'attributesToHighlight': ['text']
+            # For robustness and standard MeiliSearch practice, using '_formatted' is preferred.
+            # However, to match your old "working" app.py as closely as possible:
+            
+            meili_highlighted_content = hit.get('_formatted', {}).get('text', '') # Standard Meili way
+
+            if meili_highlighted_content:
+                final_highlighted_text_for_client = f"{meili_highlighted_content} {marker}"
             else:
-                hit['highlighted_text'] = hit['text']
+                # If no specific highlights from Meili, use the original text (which now has the marker)
+                # This ensures the marker is still present even if no specific keyword was highlighted by Meili.
+                final_highlighted_text_for_client = hit['text'] # hit['text'] already has the marker
 
             processed_hits.append({
                 'author': author,
                 'book_title': book_title,
                 'chapter_title': chapter_title,
                 'search_id': hit.get('search_id', ''),
-                'text': hit['text'],
-                'highlighted_text': hit['highlighted_text'],
+                'text': hit['text'], # This is original_text + marker
+                'highlighted_text': final_highlighted_text_for_client, # (Meili_highlighted_text + marker) OR (original_text + marker)
                 'file_path': f"/home/olier/Olierclone/www/static/HTML/{book_title}_modified.html"
             })
 
@@ -240,8 +248,6 @@ async def keyword_search():
     except Exception as e:
         logger.error(f"Error during Meilisearch query: {e}")
         return jsonify({'error': 'An error occurred during the search.'}), 500
-
-
 
 
 #Old Keyword Search (Replace it if new doesn't work out)*/
