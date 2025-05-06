@@ -1116,7 +1116,7 @@ tbody {
 #chatbox {
     display: flex;
     flex-direction: column;
-    height: 100vh;            /* fill the viewport */
+    /* height: 100vh; */            /* fill the viewport */
 
     position: fixed;
     z-index: 1000;

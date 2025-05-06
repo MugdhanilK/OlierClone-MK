@@ -982,7 +982,7 @@ if (isAndroid || isTablet) {
   }
   setupViewportResizeListener();
 }
-
+/*
 if (isIOS) {
     // On focus: change CSS directly
     chatInput.addEventListener('focus', () => {
@@ -1001,8 +1001,26 @@ if (isIOS) {
       
     });
   }
-  
+  */
 
+  if (isIOS) {
+    chatInput.addEventListener('focus', () => {
+        // Use setTimeout to ensure layout adjustments have likely occurred
+        setTimeout(() => {
+           chatInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); 
+           // 'nearest' tries to scroll the minimum amount needed
+        }, 300); // Adjust delay as needed (e.g., 100-500ms)
+    });
+}
+
+// 2) iOS: Use visualViewport resize directly
+if (isIOS && window.visualViewport) {
+    window.visualViewport.addEventListener('resize', adjustChatboxHeight);
+}
+// Note: You might add a fallback 'resize' listener for older iOS versions
+// else if (isIOS) {
+//    window.addEventListener('resize', adjustChatboxHeight);
+// }
     function adjustChatboxHeight() {
   
         // This function adjusts the chatbox height dynamically based on the viewport
