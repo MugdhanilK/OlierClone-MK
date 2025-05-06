@@ -1027,17 +1027,25 @@ if (isIOS) {
     });
   }
   */
-
+/*
   if (isIOS) {
+    const chatInput = document.getElementById('chat-input'); // Ensure chatInput is defined
+
     chatInput.addEventListener('focus', () => {
+        document.body.classList.add('keyboard-open');
         // Use setTimeout to ensure layout adjustments have likely occurred
         setTimeout(() => {
-           chatInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); 
-           // 'nearest' tries to scroll the minimum amount needed
-        }, 300); // Adjust delay as needed (e.g., 100-500ms)
+           chatInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 300);
+    });
+
+    chatInput.addEventListener('blur', () => {
+        document.body.classList.remove('keyboard-open');
+        // Optionally, trigger adjustChatboxHeight again if needed when keyboard hides
+        // setTimeout(adjustChatboxHeight, 0);
     });
 }
-
+*/
 // 2) iOS: Use visualViewport resize directly
 if (isIOS && window.visualViewport) {
     window.visualViewport.addEventListener('resize', adjustChatboxHeight);

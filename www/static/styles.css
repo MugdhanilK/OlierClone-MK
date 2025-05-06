@@ -1631,6 +1631,7 @@ tbody {
     bottom: 0;
     left: 0;
     right: 0;
+    padding-bottom: env(keyboard-inset-height); /* Add this line */
     z-index: 1000;
     background-color: #f0fff0; /* Very subtle green */
     border: 1px solid #b3ffb3; /* Light green border for a gentle look */
@@ -1640,14 +1641,6 @@ tbody {
 
 
 
-
-
-/* 
-Adjust chat input container when keyboard is open */
-body.keyboard-open #chat-input-container {
-    position: absolute;
-    bottom: auto;
-}
 
 /* Optional: Hide resizer on mobile devices */
 @media (max-width: 767px) {
