@@ -319,6 +319,14 @@ $.post(searchUrl, {
     data.forEach(function(result, index) {
         // Use highlighted_text for preview, fallback to text if not available
         var preview = result.highlighted_text || result.text;
+        
+        // --- START OF ADDED CODE ---
+    // Remove specific bracketed strings (like [CWSA - ...]) from the preview
+    if (preview) { // Ensure preview is not null or undefined
+        preview = preview.replace(/\s*\[(CWSA|CWM|Mother['’]s Agenda)\s*[-–]\s*'([^']+)'\s*,\s*'([^']+)'\]\s*/g, '');
+    }
+    // --- END OF ADDED CODE ---
+        
         preview = preview.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
 
         // Truncate the preview to approximately 100 words, preserving HTML tags
