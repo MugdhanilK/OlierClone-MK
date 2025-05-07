@@ -1027,17 +1027,6 @@ if (isIOS) {
     });
   }
   */
-// Around line 403
-if (isIOS) {
-    chatInput.addEventListener('focus', () => {
-        // --- REMOVE/COMMENT OUT THE BLOCK BELOW ---
-        // setTimeout(() => {
-        //    chatInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        // }, 300);
-        // --- END REMOVAL/COMMENT ---
-    });
-}
-
 /*
   if (isIOS) {
     const chatInput = document.getElementById('chat-input'); // Ensure chatInput is defined
