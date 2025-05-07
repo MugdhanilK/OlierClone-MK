@@ -354,7 +354,7 @@ async def full_pdf():
 
 # --- Model Names ---
 # Gemini model (Only used for non-speedy mode now)
-GEMINI_CHAT_MODEL_PRO = 'models/gemini-2.5-pro-preview-03-25' # Default Pro model
+GEMINI_CHAT_MODEL_PRO = 'models/gemini-2.5-pro-preview-05-06' # Default Pro model
 
 # Fireworks model (Used for speedy mode)
 FIREWORKS_FINAL_MODEL = "accounts/jaredquek-1b3158/models/oliernov0p5" # Your Olier model for Speedy Mode
