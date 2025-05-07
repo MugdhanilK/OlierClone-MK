@@ -29,20 +29,37 @@
             /* stack on smaller screens */
             gap: 2rem;
             margin-top: 2rem;
+            transition: background 0.2s ease;
         }
 
-        /* Each card’s general style */
-        .style-card {
+        /* Olier card’s general style */
+        .style-card-olier{
             background: #fff;
-            border: 1px solid #ddd;
+            border: 1px solid #f1ecec;
             border-radius: 6px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            width: 280px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            width: 250px;
             padding: 1.5rem;
             text-align: center;
-            transition: box-shadow 0.3s ease;
+            transition: box-shadow 0.6s ease;
             cursor: pointer;
             /* so user sees it's clickable */
+            
+        }
+
+        /* Seeking card’s general style */
+        .style-card {
+            background: #fff;
+            border: 1px solid #f1ecec;
+            border-radius: 6px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            width: 350px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: box-shadow 0.6s ease;
+            cursor: pointer;
+            /* so user sees it's clickable */
+            
         }
 
         .style-card:hover {
@@ -157,22 +174,22 @@
                         AI Style
                     </div>
                     <!-- CHOOSE YOUR OLIER STYLE HEADER -->
-                    <h2 class="olier-style-header">Choose Your Olier Style</h2>
+                    <h4 class="olier-style-header">Choose Your Olier Style</h4>
 
                     <!-- TWO SIDE-BY-SIDE CARDS -->
                     <div class="style-cards-row">
                         <!-- PLAIN OLIER CARD -->
-                        <div class="style-card" id="plain-olier-card">
+                        <div class="style-card-olier" id="plain-olier-card">
                             <div class="style-avatar" style="background-image: url('static/olier.png');">
                             </div>
-                            <h4>Plain Olier</h4>
+                            <h5>Plain Olier</h5>
                         </div>
 
                         <!-- POETIC OLIER CARD (SELECTED BY DEFAULT) -->
-                        <div class="style-card selected-card" id="poetic-olier-card">
+                        <div class="style-card-olier" id="poetic-olier-card">
                             <div class="style-avatar" style="background-image: url('static/olier.png');">
                             </div>
-                            <h4>Poetic Olier</h4>
+                            <h5>Poetic Olier</h5>
                         </div>
                     </div>
                     <br />
@@ -198,7 +215,7 @@
                         Search Options <!--<span class="badge badge-secondary">Beta</span>-->
                     </div>
                     <!-- CHOOSE YOUR OLIER STYLE HEADER -->
-                    <h2 class="olier-style-header">Select Texts to "Seek"</h2>
+                    <h4 class="olier-style-header">Select Texts to "Seek"</h4>
                     <!--<h2 class="section-title">Seek Scope</h2>-->
 
                     <div class="style-cards-row">
@@ -211,9 +228,9 @@
                                 <!-- reuse your existing avatar-circle utility -->
                                 <div class="style-avatar"
                                     style="background-image:url('static/Maa - Sri Aurobindo.png');"></div>
-                                <h4>All Works</h4>
+                                <h5>All Works</h5>
                                 <hr />
-                                <p>The Mother<br /> &amp;<br /> Sri Aurobindo </p>
+                                <p>The Mother<br /> &amp;<br /> Sri Aurobindo <br /><br />🪷 </p>
                             </div>
                         </label>
 
@@ -225,9 +242,9 @@
 
                             <div class="card-body">
                                 <div class="style-avatar" style="background-image:url('static/the_mother.png');"></div>
-                                <h4>The Mother</h4>
+                                <h5>The Mother</h5>
                                 <hr />
-                                <p>Collected Works<br /> of The Mother (CWM)<br /> &amp;<br /> The Mother’s Agenda</p>
+                                <p>Collected Works<br /> of The Mother (CWM)<br /> &amp;<br /> The Mother’s Agenda<br /><br />🪷</p>
                             </div>
                         </label>
 
@@ -238,11 +255,11 @@
                             <div class="card-body">
                                 <div class="style-avatar" style="background-image:url('static/sri_aurobindo 1.png');">
                                 </div>
-                                <h4>Sri Aurobindo</h4>
+                                <h5>Sri Aurobindo</h5>
                                 <hr />
                                 <p>Complete Works of Sri Aurobindo (CWSA)<br /> &amp;<br /> <span
                                         class="badge badge-secondary">Beta</span> Sri Aurobindo Birth Centenary Library
-                                    (SABCL)</p>
+                                    (SABCL) <br />🪷</p>
                             </div>
                         </label>
                     </div><!-- /.style-cards-row -->
