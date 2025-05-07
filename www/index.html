@@ -17,9 +17,10 @@
         /* Simple style to display two cards side by side */
         /* Container row for the two style cards */
         sup .badge.badge-secondary {
-    font-size: .65em;
-    vertical-align: super;   /* keeps it tight above the line */
-}
+            font-size: .65em;
+            vertical-align: super;
+            /* keeps it tight above the line */
+        }
 
         .style-cards-row {
             display: flex;
@@ -101,7 +102,7 @@
 
 <body>
     <!-- Container start : only for search-->
-      
+
     <div class="container" id="search-view-container">
 
         <!-- Modified Header Section with Main Menu Button -->
@@ -120,8 +121,9 @@
                     const mainMenuBtn = document.getElementById("main-menu-btn");
                     if (mainMenuBtn) {
                         mainMenuBtn.addEventListener("click", function () {
-                            // Replace with your actual video link or functionality
-                            // window.open("YOUR_VIDEO_LINK_HERE", "_blank");
+                            document.getElementById("main-menu-btn").addEventListener("click", function () {
+                                window.open("https://youtu.be/otECbl2kOuc&autoplay=1", "_blank");
+                            });
                             console.log("Main menu button clicked - video link placeholder");
                         });
                     }
@@ -174,7 +176,7 @@
                         </div>
                     </div>
                     <br />
-                    <!-- Reflective Mode Toggle -->
+                    <!-- Speedy Mode Toggle -->
                     <div class="text-center">
                         <label class="mb-0 align-items-center">
                             <input type="checkbox" name="speedy-mode" value="speedy" />
@@ -215,7 +217,7 @@
                             </div>
                         </label>
 
-                       
+
 
                         <!-- ▸  The Mother only  -->
                         <label class="style-card style-cards" id="scope-mother-card">
@@ -249,12 +251,12 @@
                 </div><!-- /.settings-section -->
 
                 <!-- Hidden input if needed -->
-                 <!--==================================-->
+                <!--==================================-->
                 <!--<span class="badge badge-secondary">Beta</span>-->
 
 
-            
-<!--THEME SECTION (BETA)-->
+
+                <!--THEME SECTION (BETA)-->
 
                 <!--<div class="card mb-3">
                     <div class="card-header">
@@ -507,7 +509,7 @@
                 // ─────────────────────────────────────────────
                 function setOlierStyle(style) { /* TODO: switch GPT prompt style */ }
                 function setThemePalette(theme) { /* TODO: swap CSS variables */ }
-                function toggleReflectiveMode(enabled) { /* TODO: flip a flag for your app */ }
+                function toggleSpeedyMode(enabled) { /* TODO: flip a flag for your app */ }
                 function setChatFontSize(px) { /* TODO: adjust root font-size */ }
 
                 function updateStyleCardHighlight() {
@@ -529,15 +531,15 @@
                     const chosenStyle = document.getElementById('selectedStyle').value;            // 'plain' | 'poetic'
                     // b) UI theme / colour palette
                     const chosenAesthetic = document.querySelector('input[name="aesthetic-style"]:checked')?.value; // 'original' | …
-                    // c) Reflective-mode flag
-                    const reflectiveOn = document.querySelector('input[name="reflective-mode"]').checked;
+                    // c) Speedy-mode flag
+                    const speedyOn = document.querySelector('input[name="speedy-mode"]').checked;
                     // d) Font scale that the preview buttons keep in `currentSize`
                     //    (currentSize is already declared earlier in your file)
 
                     // ★ Call (or write) helper functions that actually change your app. ★
                     setOlierStyle(chosenStyle);           // already present in most builds
                     setThemePalette(chosenAesthetic);     // implement if you haven't yet
-                    toggleReflectiveMode(reflectiveOn);   // implement or reuse existing one
+                    toggleSpeedyMode(speedyOn);   // implement or reuse existing one
                     setChatFontSize(currentSize);         // if you want font scaling globally
                 }
 
@@ -550,8 +552,8 @@
                 document.querySelectorAll('input[name="aesthetic-style"]')
                     .forEach(radio => radio.addEventListener('change', applyCurrentSettings));
 
-                //    – Reflective-mode toggle
-                document.querySelector('input[name="reflective-mode"]')
+                //    – Speedy-mode toggle
+                document.querySelector('input[name="speedy-mode"]')
                     .addEventListener('change', applyCurrentSettings);
 
                 //    – Font-size ± buttons
@@ -848,7 +850,8 @@
         </button>
         <!-- Chat Input Container -->
         <div id="chat-input-container">
-            <p id="info-message">💡 For tricky questions, I need up to a minute to think hard and look online. Thanks for waiting! 😊</p>
+            <p id="info-message">💡 For tricky questions, I need up to a minute to think hard and look online. Thanks
+                for waiting! 😊</p>
 
             <textarea autocomplete="off" id="chat-input" placeholder="Type a message" rows="1"></textarea>
             <button id="send-btn">
@@ -40735,7 +40738,7 @@ https://cdn.jsdelivr.net/npm/bowser@2.11.0/es5.min.js
         });
     </script>
 
-   
+
 
 </body>
 
