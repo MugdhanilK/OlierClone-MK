@@ -1389,7 +1389,7 @@ tbody {
 /* phones: banner wraps higher, so add a bit more room */
 @media (max-width: 480px){
     #messages .messages-box{
-        padding-bottom: 6rem;
+        padding-bottom: 1rem;
     }
 }
 
