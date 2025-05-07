@@ -2318,7 +2318,7 @@ async function sendMessage() {
     const meditatingMessages = [
         'Meditating 🙏🏻', // Include emoji directly
         'Seeking light 🕯️',
-        'Meditating on the essence 🌱',
+        'Pondering the essence 🌱',
         'Unraveling the mystery 🔍',
         'Connecting thoughts 💭',
         'Concentrating 🧘‍♂️',
