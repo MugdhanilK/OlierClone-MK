@@ -2702,6 +2702,11 @@ tbody {
     /* Adjust the width to your desired size */
 }
 
+/* Style to permanently hide floating buttons when reading mode is active */
+.permanently-hidden {
+    display: none !important;
+}
+
 /* Toggle Reading Mode Button (Only Inside Flex Box) */
 
 .toggle_search.in-flex-box {
