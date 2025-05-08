@@ -140,6 +140,10 @@ const $keywordSamples = $('.keyword-sample-questions');
 const sampleQuestions = document.querySelector('.sample-questions');
 const fullText = document.getElementById('full-text');
 
+const $bottomFlexBox = $('#bottom-flex-box');
+const $openChatbotButton = $('.open_chatbot:not(.in-flex-box)');
+const $zoomToTopButton = $('.zoom_to_top');
+
 let readingModeActivated = false; // Global flag to track if reading mode is active
 
 
@@ -998,17 +1002,41 @@ if (isAndroid || isTablet) {
 // **** INSERT THE NEW ANDROID FOCUS LISTENER BLOCK HERE ****
 // Add this block for Android focus handling
 if (isAndroid) {
-    const chatInput = document.getElementById('chat-input'); // Make sure chatInput is accessible here
-    if (chatInput) {
+    const chatInput = document.getElementById('chat-input');
+    let keyboardIsVisible = false;
+
+    function handleKeyboardVisibilityChange() {
+        const viewportHeight = window.visualViewport.height;
+        const documentHeight = document.documentElement.clientHeight;
+
+        if (viewportHeight < documentHeight) {
+            // Keyboard is likely visible
+            if (!keyboardIsVisible) {
+                keyboardIsVisible = true;
+                console.log("Keyboard is visible");
+                adjustChatboxHeight(); // Adjust UI
+                // chatInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        } else {
+            // Keyboard is likely hidden
+            if (keyboardIsVisible) {
+                keyboardIsVisible = false;
+                console.log("Keyboard is hidden");
+                adjustChatboxHeight(); // Revert UI
+            }
+        }
+    }
+
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', handleKeyboardVisibilityChange);
+        window.visualViewport.addEventListener('focusin', handleKeyboardVisibilityChange);
+        window.visualViewport.addEventListener('focusout', handleKeyboardVisibilityChange);
+    } else {
+        // Fallback for older Android (less reliable)
         chatInput.addEventListener('focus', () => {
-            // Delay slightly to allow keyboard animation and resize event to settle
             setTimeout(() => {
-                console.log("Re-adjusting height on Android focus after delay");
-                adjustChatboxHeight(); 
-                // Optionally, ensure the input is scrolled into view if needed,
-                // though adjustChatboxHeight should handle the container positioning.
-                // chatInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); 
-            }, 250); // Adjust delay (e.g., 200-300ms) if needed
+                adjustChatboxHeight();
+            }, 200);
         });
     }
 }
@@ -3174,6 +3202,9 @@ $("#send-btn").show();
             toggleButtonVisibility(false);
         }
     });
+
+
+
 /*______________________New toggleOlierButton Function__________________________*/
 let lastScrollTop = 0; // Keep track of the last scroll position globally
 
@@ -3318,7 +3349,8 @@ function toggleOlierButton() {
     document.addEventListener('DOMContentLoaded', function() {
         adjustChatboxStyle();
         toggleOlierButton();
-    
+        updateReadingModeUI();
+        
         // Initially hide the image and send buttons
         $("#img-btn").hide();
         $("#send-btn").hide();
@@ -3376,6 +3408,20 @@ $(document).on('click', '.zoom_to_top', function(event) {
         }
     }
 });
+
+// Function to handle reading mode styles
+function updateReadingModeUI() {
+    if (readingModeActivated) {
+        $bottomFlexBox.show(); // Show the bottom flex box
+        $openChatbotButton.hide(); // Hide the main buttons
+        $zoomToTopButton.hide();
+    } else {
+        $bottomFlexBox.hide(); // Hide the bottom flex box
+        $openChatbotButton.show(); // Show the main buttons
+        $zoomToTopButton.show();
+    }
+}
+
 
 
 // Font Size Adjuster
@@ -3450,8 +3496,12 @@ function applyReadingMode() {
 
     // Set the reading mode flag to true
     readingModeActivated = true;
+    updateReadingModeUI(); // Call the function
+
     // Synchronize isSearchVisible with UI state
     isSearchVisible = false;
+
+   
 }
 
 // Ensure isSearchVisible is accessible
@@ -3497,7 +3547,8 @@ $(document).on('click', '.toggle_search', function(event) {
     
         isSearchVisible = true;
         readingModeActivated = false;
-    
+        updateReadingModeUI(); // Call the function
+
         // --- ADD THIS BLOCK: Allow floating buttons to reappear ---
         if (olierButton) olierButton.classList.remove('permanently-hidden');
         if (zoomToTopButton) zoomToTopButton.classList.remove('permanently-hidden');
@@ -3506,6 +3557,7 @@ $(document).on('click', '.toggle_search', function(event) {
         // Call toggleOlierButton to apply normal search view logic (scroll, chatbox)
         toggleOlierButton();
     }
+   
 });
 
 // ... (Your other functions - toggleOlierButton, etc.)
