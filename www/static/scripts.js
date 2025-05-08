@@ -3180,68 +3180,73 @@ let lastScrollTop = 0; // Keep track of the last scroll position globally
 function toggleOlierButton() {
     const olierButton = document.querySelector('.open_chatbot:not(.in-flex-box)');
     const zoomToTopButton = document.querySelector('.zoom_to_top');
-    const chatbox = document.getElementById('chatbox'); // Keep chatbox check
+    const chatbox = document.getElementById('chatbox');
 
-    if (!olierButton || !zoomToTopButton || !chatbox) return; // Exit if elements not found
+    // --- ADD THIS CHECK AT THE TOP ---
+    // If either floating button has the permanent hide class, exit immediately.
+    if ((olierButton && olierButton.classList.contains('permanently-hidden')) ||
+        (zoomToTopButton && zoomToTopButton.classList.contains('permanently-hidden'))) {
+        return;
+    }
+    // --- END ADDED CHECK ---
+
+    // Exit if elements essential for the remaining logic are not found
+    if (!olierButton || !zoomToTopButton || !chatbox) return;
 
     let currentScrollTop = window.scrollY || window.pageYOffset;
     const isChatboxOpen = chatbox.classList.contains('open');
 
-    // --- Reading Mode Handling (uses .vanish) ---
-    if (readingModeActivated) {
-        olierButton.classList.add('vanish');
-        zoomToTopButton.classList.add('vanish');
-        // Ensure .hidden is removed if reading mode takes precedence
-        olierButton.classList.remove('hidden');
-        zoomToTopButton.classList.remove('hidden');
-        lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // Update scroll pos even when vanished
-        return; // Exit early
-    } else {
-        // Ensure .vanish is removed if not in reading mode
-        olierButton.classList.remove('vanish');
-        zoomToTopButton.classList.remove('vanish');
-    }
-
- // --- Mobile + Chatbox Open Handling (Priority 2) ---
-    // <<< START FIX >>>
-    if (isChatboxOpen && isMobile) {
-        olierButton.classList.add('hidden');     // Always hide chat button when chatbox open
-        zoomToTopButton.classList.add('hidden'); // <<< THIS IS THE FIX: Always hide books button on mobile when chatbox open
-        lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // Still update scroll pos
-        return; // Exit early as mobile/open case is handled
-    }
-    // <<< END FIX >>>
-
-    // --- Scroll Direction Handling (uses .hidden) ---
-
-    // Always show buttons if chatbox is open AND user is near the top (or scrolls up to near top)
-     if (isChatboxOpen && currentScrollTop <= 10) {
-         olierButton.classList.add('hidden'); // Chat button stays hidden when chatbox open
-         zoomToTopButton.classList.remove('hidden'); // Show Books button
-     }
-     // Always show buttons if chatbox is closed AND user is near the top (or scrolls up to near top)
-     else if (!isChatboxOpen && currentScrollTop <= 10) {
-        olierButton.classList.remove('hidden');
-        zoomToTopButton.classList.remove('hidden');
-     }
-     // Handle scrolling down (hide buttons)
-     else if (currentScrollTop > lastScrollTop) {
+    // Chatbox Open Handling (all devices)
+    if (isChatboxOpen) {
         olierButton.classList.add('hidden');
-        zoomToTopButton.classList.add('hidden');
-     }
-     // Handle scrolling up (show buttons, respecting chatbox state)
-     else if (currentScrollTop < lastScrollTop) {
-         if (!isChatboxOpen) { // Show both if chatbox closed
-             olierButton.classList.remove('hidden');
-             zoomToTopButton.classList.remove('hidden');
-         } else { // If chatbox open, only show Books button when scrolling up
-            olierButton.classList.add('hidden');
-            zoomToTopButton.classList.remove('hidden');
-         }
-     }
+        if (isMobile || isTablet) {
+            zoomToTopButton.classList.add('hidden');
+        } else {
+            zoomToTopButton.classList.remove('hidden'); // Desktop might show based on scroll
+        }
+        // Update scroll pos but don't exit early, let scroll logic handle zoom button if needed
+        lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+    } else {
+        // If chatbox closed, remove 'hidden' initially; scroll logic decides final state
+        olierButton.classList.remove('hidden');
+        zoomToTopButton.classList.remove('hidden');
+    }
 
-    // Update last scroll position for the next event
-    lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // For Mobile or negative scrolling
+    // Scroll Direction Handling
+    const scrollThreshold = 10;
+
+    if (currentScrollTop > lastScrollTop && currentScrollTop > scrollThreshold) { // Scrolling Down
+        olierButton.classList.add('hidden');
+        if (!(isChatboxOpen && isDesktop)) { // Keep zoom potentially visible if chat open on desktop
+            zoomToTopButton.classList.add('hidden');
+        }
+    }
+    else if (currentScrollTop < lastScrollTop || currentScrollTop <= scrollThreshold) { // Scrolling Up or Near Top
+        if (!isChatboxOpen) {
+            olierButton.classList.remove('hidden');
+        } else {
+            olierButton.classList.add('hidden'); // Keep Olier hidden if chat is open
+        }
+        // Show zoom button unless chat open on mobile/tablet
+        if (!(isChatboxOpen && (isMobile || isTablet))) {
+            zoomToTopButton.classList.remove('hidden');
+        } else {
+             zoomToTopButton.classList.add('hidden'); // Keep zoom hidden on mobile/tablet if chat open
+        }
+    }
+
+    // Ensure buttons are visible at the very top (unless chat open hides them)
+    if (currentScrollTop <= scrollThreshold) {
+        if (!isChatboxOpen) {
+            olierButton.classList.remove('hidden');
+        }
+         if (!(isChatboxOpen && (isMobile || isTablet))) {
+             zoomToTopButton.classList.remove('hidden');
+         }
+    }
+
+    // Update last scroll position
+    lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
 }
 
 
@@ -3481,24 +3486,25 @@ $(document).on('click', '.toggle_search', function(event) {
         // Update visibility state
         isSearchVisible = false;
     } else {
-
-        // Save the scroll position of the full-text view
+        /* --- show Search, hide Reading --- */
         fullTextScrollPosition = $(window).scrollTop();
-
-        // Hide full-text
+    
         $('#full-text').hide();
-
-        // Show the searchSpace by removing the 'closed' class
         $('.search-space').removeClass('closed');
-
-        // Restore the scroll position of the search view
+    
         $(window).scrollTop(searchScrollPosition);
-
-        // Optionally adjust bottom-flex-box
         $('#bottom-flex-box').css('display', 'flex');
-
-        // Update visibility state
+    
         isSearchVisible = true;
+        readingModeActivated = false;
+    
+        // --- ADD THIS BLOCK: Allow floating buttons to reappear ---
+        if (olierButton) olierButton.classList.remove('permanently-hidden');
+        if (zoomToTopButton) zoomToTopButton.classList.remove('permanently-hidden');
+        // --- END OF ADDED BLOCK ---
+    
+        // Call toggleOlierButton to apply normal search view logic (scroll, chatbox)
+        toggleOlierButton();
     }
 });
 
