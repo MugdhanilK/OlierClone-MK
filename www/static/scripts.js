@@ -3171,8 +3171,20 @@ $("#send-btn").show();
 
     $searchInput.on('blur', function() {
         if (isMobile) {
-            toggleButtonVisibility(false);
+            if (readingModeActivated) {
+                // If reading mode is active, the buttons should remain vanished.
+                // Explicitly ensure they are vanished.
+                toggleButtonVisibility(true);
+            } else {
+                // If reading mode is NOT active, then it's safe to allow them to un-vanish
+                // (e.g., user was typing a regular search, then blurred).
+                toggleButtonVisibility(false);
+            }
         }
+        // Optionally, you could call toggleOlierButton() after a tiny delay
+        // to ensure all visibility rules are re-evaluated, but the above should be sufficient
+        // for this specific issue. For example:
+        // setTimeout(toggleOlierButton, 0);
     });
 /*______________________New toggleOlierButton Function__________________________*/
 let lastScrollTop = 0; // Keep track of the last scroll position globally
