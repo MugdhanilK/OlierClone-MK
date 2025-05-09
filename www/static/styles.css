@@ -2386,18 +2386,6 @@ tbody {
     border-radius: 3px;
 }
 
-/* Hide the main buttons when reading mode is active */
-body.reading-mode .open_chatbot:not(.in-flex-box),
-body.reading-mode .zoom_to_top {
-    display: none !important;
-}
-
-/* Ensure the main buttons are visible when not in reading mode */
-body:not(.reading-mode) .open_chatbot:not(.in-flex-box),
-body:not(.reading-mode) .zoom_to_top {
-    display: flex !important; /* Or whatever display value you need */
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .main-menu-dropdown {
@@ -2717,35 +2705,6 @@ body:not(.reading-mode) .zoom_to_top {
 /* Style to permanently hide floating buttons when reading mode is active */
 .permanently-hidden {
     display: none !important;
-}
-
-/* Add to your existing CSS file (styles.css) */
-
-/* Class to hide the floating buttons */
-.floating-buttons-hidden {
-    opacity: 0;
-    pointer-events: none; /* Make sure they don't intercept clicks */
-    transform: translateY(100%); /* Slide out of view */
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-}
-
-/* Class to show the floating buttons */
-.floating-buttons-visible {
-    opacity: 1;
-    pointer-events: auto; /* Make them clickable */
-    transform: translateY(0); /* Slide back in */
-}
-
-/* Apply this class to the container of the floating buttons */
-#bottom-flex-box {
-    /* Your existing styles... */
-    transition: opacity 0.3s ease-in-out; /* Add transition for smooth effect */
-}
-
-/* Optional: Adjust the transition timing/easing if needed */
-/* Example: */
-#bottom-flex-box {
-    transition: opacity 0.2s ease-out; /* Faster transition */
 }
 
 /* Toggle Reading Mode Button (Only Inside Flex Box) */
