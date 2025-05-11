@@ -2530,7 +2530,11 @@ async function sendMessage() {
     }
 }
 
-
+   // ===============================================
+    // COPY BUTTON HELPER FUNCTIONS (SHARED)
+    // These stay where they are, defined globally or in a shared scope.
+    // DO NOT MOVE THESE INSIDE THE IMAGE BUTTON CLICK HANDLER.
+    // ===============================================
 
 // Function to add copy button (Adjusted to exclude card container)
 function removeAllCopyButtons() {
@@ -2752,371 +2756,359 @@ titleToggleArea.addEventListener('click', () => {
 
 
 
-// INAGE GENERATION EVENT
-$('#img-btn').on('click', async function() {
-    $('#info-message').addClass('hidden'); // <-- ADD THIS LINE
 
-    let input_message = $('#chat-input').val();
+    // ===============================================
+    // IMAGE GENERATION EVENT HANDLER
+    // REPLACE YOUR ENTIRE EXISTING $('#img-btn').on('click', ...) BLOCK WITH THIS NEW ONE:
+    // ===============================================
+    $('#img-btn').on('click', async function() {
+        $('#info-message').addClass('hidden');
 
-    if (input_message.trim() === '') {
-        alert('Please enter a message');
-        return;
-    }
+        let input_message = $('#chat-input').val();
 
-    // Use regex to extract the text inside the final quotes
-    const match = input_message.match(/"([^"]+)"$/);
-    let extractedText = input_message;
-    if (match && match[1]) {
-        extractedText = match[1];
-    }
+        if (input_message.trim() === '') {
+            alert('Please enter a message');
+            return;
+        }
 
-    document.querySelector("#messages .empty-div").style.display = "none";
+        const match = input_message.match(/"([^"]+)"$/);
+        let extractedText = input_message;
+        if (match && match[1]) {
+            extractedText = match[1];
+        }
 
-    const messageBox = document.createElement("div");
-    messageBox.classList.add("box", "right");
+        document.querySelector("#messages .empty-div").style.display = "none";
 
-    const message = document.createElement("div");
-    message.classList.add("messages");
-    message.textContent = input_message;
+        const messageBox = document.createElement("div");
+        messageBox.classList.add("box", "right");
+        const message = document.createElement("div");
+        message.classList.add("messages");
+        message.textContent = input_message;
+        messageBox.appendChild(message);
+        document.querySelector("#messages .messages-box").appendChild(messageBox);
 
-    messageBox.appendChild(message);
-    document.querySelector("#messages .messages-box").appendChild(messageBox);
-
-//––► re-enable auto-scroll right after user prompt
-autoScrollEnabled = true;
-requestAnimationFrame(() => {
-  scrollToBottom();
-  adjustChatboxHeight();
-  updateScrollButtonVisibility();
-});
-
-
-    // Clear the input field after the message is added to the chat
-    $('#chat-input').val('');
-    chatInput.dispatchEvent(new Event('input')); 
-
-    try {
-        // Step 1: Generate and stream the artistic description
-        // Here, instead of sending the entire prompt, send only the extracted text
-        const response = await fetch(serverUrl + '/api/generate-description', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ message: extractedText })
+        autoScrollEnabled = true;
+        requestAnimationFrame(() => {
+            scrollToBottom(); // Assumes global scrollToBottom is defined
+            adjustChatboxHeight(); // Assumes global adjustChatboxHeight is defined
+            updateScrollButtonVisibility(); // Assumes global updateScrollButtonVisibility is defined
         });
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-
-        let responseBox = document.createElement("div");
-        responseBox.classList.add("box", "ai-message");
-        let responseMessage = document.createElement("div");
-        responseMessage.classList.add("messages");
-        responseMessage.style.whiteSpace = "pre-wrap";
-
-        // Create a wrapper for the message content
-        let messageWrapper = document.createElement("div");
-        messageWrapper.style.position = "relative";
-
-        messageWrapper.appendChild(responseMessage);
-        responseBox.appendChild(messageWrapper);
-        document.querySelector("#messages .messages-box").appendChild(responseBox);
+        $('#chat-input').val('');
+        // chatInput is assumed to be a globally/higher-scoped cached DOM element
+        if (typeof chatInput !== 'undefined' && chatInput) {
+             chatInput.dispatchEvent(new Event('input'));
+        }
 
 
-            adjustChatboxHeight();
-            updateScrollButtonVisibility();
+        // --- AI Response Container Setup for Description ---
+        let descriptionResponseBox = document.createElement("div");
+        descriptionResponseBox.classList.add("box", "ai-message");
+        let descriptionResponseMessage = document.createElement("div");
+        descriptionResponseMessage.classList.add("messages");
+        descriptionResponseMessage.style.whiteSpace = "pre-wrap";
+        let meditatingElement = document.createElement("div");
+        meditatingElement.classList.add("loading-message");
+        descriptionResponseMessage.classList.add('is-loading');
 
+        descriptionResponseMessage.appendChild(meditatingElement);
+        let descriptionMessageWrapper = document.createElement("div");
+        descriptionMessageWrapper.style.position = "relative";
+        descriptionMessageWrapper.appendChild(descriptionResponseMessage);
+        descriptionResponseBox.appendChild(descriptionMessageWrapper);
+        document.querySelector("#messages .messages-box").appendChild(descriptionResponseBox);
 
+        requestAnimationFrame(() => {
+            autoScrollEnabled = true;
+            scrollToBottom();
+            if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+            if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+        });
 
- // Streaming function
-let accumulatedText = '';  // To store the accumulated text
+        // --- Rotating Meditating Animation --- START ---
+        const meditatingMessages = [
+            'Creating vision 🎨', 'Dreaming shapes ✨', 'Painting pixels 🖌️',
+            'Imagining worlds 🌍', 'Visualizing thoughts 💡', 'Focusing energy 🌟',
+            'Crafting art 🖼️', 'Almost ready... ⏳'
+        ];
+        let currentMessageIndex = 0;
+        let dotCount = 0;
+        let dotInterval = null;
+        let messageRotationInterval = null;
 
-while (true) {
-    const { done, value } = await reader.read();
-
-    if (done) {
-        // Add copy button after streaming is complete
-        addCopyButton(messageWrapper);
-        break;
-    }
-
-    let chunk = decoder.decode(value);
-
-    accumulatedText += chunk;
-
-    // Update the displayed text
-    responseMessage.innerHTML = accumulatedText;
-
-    //––► keep the chat glued while each text chunk arrives
-if (autoScrollEnabled) scrollToBottom();
-
-}
-
-function addSaveImageButton(container, imageUrl) {
-    // Create the save/download button
-    let saveButton = document.createElement("button");
-    saveButton.innerHTML = '<i class="fas fa-download"></i>'; // Use a download icon
-    saveButton.classList.add("save-image-button"); // Apply the CSS class
-
-    saveButton.addEventListener("click", function() {
-        saveImage(imageUrl);
-    });
-
-    // Append the save button to the container after the image
-    container.appendChild(saveButton);
-
-
-
-    async function saveImage(imageUrl) {
-        const capPlatform = (typeof Capacitor !== 'undefined') ? Capacitor.getPlatform() : 'web';
-    
-        // Get the current timestamp in local time
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-    
-        // Format the timestamp as 'YYYY-MM-DD_HH-MM-SS'
-        const timestamp = `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
-    
-        // Generate a unique filename
-        const fileName = `Olier_artwork_${timestamp}.png`;
-    
-        try {
-            // Fetch the image as a blob
-            const response = await fetch(imageUrl);
-            const blob = await response.blob();
-    
-            if (capPlatform === 'web') {
-                // **Web capPlatform Logic**
-                const url = URL.createObjectURL(blob);
-    
-                // Create a temporary link to trigger the download
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-    
-                // Clean up
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-    
-                alert(`Image saved successfully as ${fileName}.`);
-    
-            } else {
-                // **Mobile capPlatform Logic**
-                const { Filesystem } = Capacitor.Plugins;
-    
-                // Check and request permissions (only necessary on Android)
-                if (capPlatform === 'android') {
-                    let permission = await Filesystem.checkPermissions();
-                    if (permission.publicStorage !== 'granted') {
-                        permission = await Filesystem.requestPermissions();
-                        if (permission.publicStorage !== 'granted') {
-                            alert('Permission to access storage was denied.');
-                            return;
-                        }
-                    }
-                }
-    
-                // Convert blob to base64 data
-                const reader = new FileReader();
-                reader.onloadend = async function() {
-                    const base64data = reader.result.split(',')[1]; // Remove data URL prefix
-    
-                    // **Save the file using 'DOCUMENTS' directory**
-                    await Filesystem.writeFile({
-                        path: fileName,
-                        data: base64data,
-                        directory: 'DOCUMENTS', // Use string literal instead of FilesystemDirectory.Documents
-                        // Remove the 'encoding' option to write binary data
-                        recursive: true
-                    });
-    
-                    alert(`Image saved successfully as ${fileName} in Documents.`);
-                };
-    
-                reader.readAsDataURL(blob);
+        const updateMeditatingText = () => {
+            if (meditatingElement && meditatingElement.parentNode) {
+                const baseMessage = meditatingMessages[currentMessageIndex];
+                meditatingElement.textContent = baseMessage + '.'.repeat(dotCount);
             }
-        } catch (error) {
-            console.error('Error saving image:', error);
-            alert('Failed to save image.');
-        }
-    }
-}
+        };
+        updateMeditatingText();
+        dotInterval = setInterval(() => {
+            dotCount = (dotCount + 1) % 6;
+            updateMeditatingText();
+            if (!meditatingElement || !meditatingElement.parentNode) {
+                clearInterval(dotInterval);
+                if (messageRotationInterval) clearInterval(messageRotationInterval);
+            }
+        }, 500);
+        messageRotationInterval = setInterval(() => {
+            currentMessageIndex = (currentMessageIndex + 1) % meditatingMessages.length;
+            updateMeditatingText();
+            if (!meditatingElement || !meditatingElement.parentNode) {
+                clearInterval(messageRotationInterval);
+                if (dotInterval) clearInterval(dotInterval);
+            }
+        }, 4000);
+        const clearMeditatingIntervals = () => {
+            if (dotInterval) clearInterval(dotInterval);
+            if (messageRotationInterval) clearInterval(messageRotationInterval);
+            dotInterval = null; messageRotationInterval = null;
+        };
+        // --- Rotating Meditating Animation --- END ---
 
- 
-       // Function to remove all existing copy buttons
-        function removeAllCopyButtons() {
-            document.querySelectorAll('.copy-button').forEach(button => button.remove());
-        }
-
-        // Function to add copy button
-        function addCopyButton(wrapper) {
-            removeAllCopyButtons();
-            let copyButton = document.createElement("button");
-            copyButton.innerHTML = '<div class="copy-icon"></div>';
-            copyButton.classList.add("copy-button");
-            copyButton.style.position = "absolute";
-            copyButton.style.bottom = "5px";
-            copyButton.style.right = "5px";
-            copyButton.style.background = "none";
-            copyButton.style.border = "none";
-            copyButton.style.cursor = "pointer";
-            copyButton.style.padding = "5px";
-
-            copyButton.addEventListener("click", function() {
-                const allMessages = document.querySelectorAll("#messages .box");
-                const lastTwoMessages = Array.from(allMessages).slice(-2);
-                let textToCopy = "";
-
-                lastTwoMessages.forEach((messageBox, index) => {
-                    const messageElement = messageBox.querySelector('.messages');
-                    if (messageElement) {
-                        const role = messageBox.classList.contains("right") ? "User" : "Olier";
-                        const content = messageElement.textContent.trim();
-                        textToCopy += `${role}: ${content}\n\n`;
-                    }
-                });
-
-                if (textToCopy) {
-                    navigator.clipboard.writeText(textToCopy.trim()).then(() => {
-                        alert("Last two messages copied to clipboard!");
-                    }).catch(err => {
-                        console.error('Failed to copy text: ', err);
-                    });
-                } else {
-                    alert("No messages to copy.");
-                }
+        try {
+            const response = await fetch(serverUrl + '/api/generate-description', { // serverUrl is global
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: extractedText })
             });
 
-             // --- CHANGE THIS PART ---
-    // Find the actual message bubble div INSIDE the wrapper
-    const messageDiv = wrapper.querySelector('.messages'); 
-    if (messageDiv) {
-        messageDiv.appendChild(copyButton); // Append to the inner message bubble
-    } else {
-        // Fallback or error handling if needed, though unlikely
-        wrapper.appendChild(copyButton); 
-        console.warn("Could not find .messages div in wrapper, appending copy button to wrapper.");
-    }
-    // --- END CHANGE ---
+            if (!response.ok) {
+                clearMeditatingIntervals();
+                if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+                descriptionResponseMessage.classList.remove('is-loading');
+                descriptionResponseMessage.innerHTML = `<span style="color: red;">Error generating description: ${response.statusText}</span>`;
+                throw new Error(`HTTP error generating description! status: ${response.status}`);
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let firstChunkReceived = false;
+            let accumulatedText = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (value) {
+                    if (!firstChunkReceived) {
+                        clearMeditatingIntervals();
+                        if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+                        descriptionResponseMessage.classList.remove('is-loading');
+                        descriptionResponseMessage.innerHTML = '';
+                        firstChunkReceived = true;
+                    }
+                    let chunk = decoder.decode(value);
+                    accumulatedText += chunk;
+                    descriptionResponseMessage.innerHTML = accumulatedText;
+                    requestAnimationFrame(() => {
+                        autoScrollEnabled = true; scrollToBottom();
+                        if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                        if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+                    });
+                }
+                if (done) {
+                    addCopyButton(descriptionMessageWrapper); // <<<< CALLS GLOBAL addCopyButton
+                    break;
+                }
+            }
+
+            let loadingBox = document.createElement("div");
+            loadingBox.classList.add("box", "ai-message");
+            let loadingMessage = document.createElement("div");
+            loadingMessage.classList.add("messages", "loading-message");
+            loadingMessage.textContent = "Conjuring visuals";
+            loadingBox.appendChild(loadingMessage);
+            document.querySelector("#messages .messages-box").appendChild(loadingBox);
+
+            requestAnimationFrame(() => {
+                autoScrollEnabled = true; scrollToBottom();
+                if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+            });
+
+            let imgGenDots = 0;
+            const loadingInterval = setInterval(() => {
+                imgGenDots = (imgGenDots + 1) % 4;
+                loadingMessage.textContent = "Conjuring visuals" + ".".repeat(imgGenDots);
+            }, 500);
+
+            const imageResponse = await $.ajax({ // $ is global jQuery
+                url: serverUrl + '/api/generate-flux-image',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ prompt: accumulatedText }),
+                dataType: 'json'
+            });
+
+            clearInterval(loadingInterval);
+            loadingBox.remove();
+
+            requestAnimationFrame(() => {
+                if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+            });
+
+            let imageBox = document.createElement("div");
+            imageBox.classList.add("box", "ai-message");
+            let imageMessage = document.createElement("div");
+            imageMessage.classList.add("messages");
+            imageBox.appendChild(imageMessage);
+
+            imageResponse.images.forEach(image => {
+                let imageContainer = document.createElement("div");
+                imageContainer.style.display = "inline-block";
+                imageContainer.style.marginTop = "10px";
+                imageContainer.style.position = "relative";
+
+                const img = document.createElement("img");
+                img.src = image.url;
+                img.alt = "Generated Flux Artwork";
+                img.style.maxWidth = "100%";
+                img.style.display = "block";
+                img.style.borderRadius = "8px";
+                imageContainer.appendChild(img);
+
+                img.onload = function() {
+                    addSaveImageButton(imageContainer, image.url); // <<<< Calls the NESTED addSaveImageButton
+                    requestAnimationFrame(() => {
+                        autoScrollEnabled = true; scrollToBottom();
+                        if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                        if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+                    });
+                };
+                img.onerror = function() {
+                    console.error('Error loading image:', image.url);
+                    imageContainer.innerHTML = `<span style="color:red; font-size:0.8em;">Error loading image.</span>`;
+                };
+                imageMessage.appendChild(imageContainer);
+            });
+            document.querySelector("#messages .messages-box").appendChild(imageBox);
+
+            requestAnimationFrame(() => {
+                autoScrollEnabled = true; scrollToBottom();
+                if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+            });
+
+             // isDesktop is assumed to be a globally defined variable
+            if (typeof isDesktop !== 'undefined' && isDesktop) {
+                const chatInputElement = document.getElementById("chat-input"); // Re-fetch or use cached
+                if (chatInputElement) {
+                    chatInputElement.focus();
+                    chatInputElement.setSelectionRange(chatInputElement.value.length, chatInputElement.value.length);
+                }
+            }
+            $("#img-btn").hide(); // $ is global jQuery
+            $("#send-btn").show();
+
+        } catch (error) {
+            clearMeditatingIntervals();
+            if (meditatingElement && meditatingElement.parentNode) meditatingElement.remove();
+            if (descriptionResponseMessage && descriptionResponseMessage.classList.contains('is-loading')) {
+                descriptionResponseMessage.classList.remove('is-loading');
+                descriptionResponseMessage.innerHTML = `<span style="color: red;">An error occurred.</span>`;
+            }
+            const existingLoadingBox = document.querySelector(".messages-box .box .loading-message")?.closest('.box');
+            if (existingLoadingBox) existingLoadingBox.remove();
+
+            let errorMessageText = 'An error occurred while generating the image.';
+            if (error.responseJSON && error.responseJSON.error) {
+                errorMessageText = error.responseJSON.error;
+            } else if (error.message) {
+                errorMessageText = error.message;
+            }
+            const errorBox = document.createElement("div");
+            errorBox.classList.add("box", "ai-message");
+            const errorMessageDiv = document.createElement("div");
+            errorMessageDiv.classList.add("messages");
+            errorMessageDiv.innerHTML = `<span style="color: red;">${errorMessageText}</span>`;
+            errorBox.appendChild(errorMessageDiv);
+            document.querySelector("#messages .messages-box").appendChild(errorBox);
+
+            requestAnimationFrame(() => {
+                autoScrollEnabled = true; scrollToBottom();
+                if (typeof adjustChatboxHeight === 'function') adjustChatboxHeight();
+                if (typeof updateScrollButtonVisibility === 'function') updateScrollButtonVisibility();
+            });
+
+            document.getElementById("chat-input").value = "";
+            $("#img-btn").hide();
+            $("#send-btn").show();
         }
 
-        // After description is generated, add the "Image Generating..." message
-        let loadingBox = document.createElement("div");
-        loadingBox.classList.add("box");
-        let loadingMessage = document.createElement("div");
-        loadingMessage.classList.add("messages", "loading-message");
-        loadingMessage.textContent = "Image Generating";
-        loadingBox.appendChild(loadingMessage);
-        document.querySelector("#messages .messages-box").appendChild(loadingBox);
+        // --- NESTED HELPER FUNCTION FOR THIS EVENT ONLY ---
+        // This function is defined INSIDE the image button click handler
+        // because it's only used here.
+        function addSaveImageButton(container, imageUrl) {
+            let saveButton = document.createElement("button");
+            saveButton.innerHTML = '<i class="fas fa-download"></i>';
+            saveButton.classList.add("save-image-button");
 
-        // Animate the loading message
-        let dots = 0;
-        const loadingInterval = setInterval(() => {
-            dots = (dots + 1) % 4;
-            loadingMessage.textContent = "Image Generating" + ".".repeat(dots);
-        }, 500);
+            saveButton.addEventListener("click", function(event) {
+                event.stopPropagation();
+                saveImage(imageUrl); // Calls the nested saveImage
+            });
+            container.appendChild(saveButton);
 
-        // Step 2: Generate the image using the fully streamed artistic description
-        const imageResponse = await $.ajax({
-            url: serverUrl + '/api/generate-flux-image',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ prompt: accumulatedText }),  // Change 'description' to 'prompt'
-            dataType: 'json'
-        });
+            async function saveImage(imageUrlToSave) {
+                // Capacitor and Filesystem are assumed to be available globally if not on web
+                const capPlatform = (typeof Capacitor !== 'undefined') ? Capacitor.getPlatform() : 'web';
+                const now = new Date();
+                const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
+                const fileName = `Olier_artwork_${timestamp}.png`;
 
-        // Clear the loading interval and remove the loading message
-        clearInterval(loadingInterval);
-        loadingBox.remove();
+                try {
+                    const fetchResponse = await fetch(imageUrlToSave);
+                    const blob = await fetchResponse.blob();
 
-            // **Adjust chatbox height after removing loading message**
-
-                adjustChatboxHeight();
-                updateScrollButtonVisibility();
-
-// Create a new box for the image(s)
-let imageBox = document.createElement("div");
-imageBox.classList.add("box", "ai-message");
-let imageMessage = document.createElement("div");
-imageMessage.classList.add("messages");
-imageBox.appendChild(imageMessage);
-
-// Handle potentially multiple images
-imageResponse.images.forEach(image => {
-    // Create a container for the image and button
-    let imageContainer = document.createElement("div");
-    imageContainer.style.display = "inline-block"; // Keep the image and button together
-    imageContainer.style.marginTop = "10px"; // Add space between images
-
-    // Create the image element
-    const img = document.createElement("img");
-    img.src = image.url;
-    img.alt = "Generated Flux Artwork";
-    img.style.maxWidth = "100%";
-    img.style.display = "block"; // Ensure it occupies full width of the container
-
-    // Append the image to the container
-    imageContainer.appendChild(img);
-
-    // **Wait for the image to load before adding the button**
-    img.onload = function() {
-        // Add the save image button after the image
-        addSaveImageButton(imageContainer, image.url);
-    };
-
-    // Optionally, handle image loading errors
-    img.onerror = function() {
-        console.error('Error loading image:', image.url);
-        // You can display an error message or placeholder image here
-    };
-
-    // Append the container to your imageMessage container
-    imageMessage.appendChild(imageContainer);
-});
-
-document.querySelector("#messages .messages-box").appendChild(imageBox);
-
-//––► final nudge once all images are in place
-autoScrollEnabled = true;
-requestAnimationFrame(() => {
-  scrollToBottom();
-  adjustChatboxHeight();
-  updateScrollButtonVisibility();
-});
-
-
-// Focus on the input box after image generation
-
-if (isDesktop) {
-    const chatInput = document.getElementById("chat-input");
-    chatInput.focus();
-    chatInput.setSelectionRange(chatInput.value.length, chatInput.value.length);
-}
-// Hide the image button after generating the image
-$("#img-btn").hide();
-$("#send-btn").show();
-    } catch (error) {
-        let errorMessage = 'An error occurred while generating the image.';
-        if (error.responseJSON && error.responseJSON.error) {
-            errorMessage = error.responseJSON.error;
+                    if (capPlatform === 'web') {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = fileName;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        const originalButtonText = saveButton.innerHTML;
+                        saveButton.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => { saveButton.innerHTML = originalButtonText; }, 2000);
+                    } else {
+                        const { Filesystem } = Capacitor.Plugins; // Assuming Capacitor.Plugins is globally available
+                        if (capPlatform === 'android') { // capPlatform is from the nested scope
+                            let permission = await Filesystem.checkPermissions();
+                            if (permission.publicStorage !== 'granted') {
+                                permission = await Filesystem.requestPermissions();
+                                if (permission.publicStorage !== 'granted') {
+                                    alert('Storage permission denied.'); return;
+                                }
+                            }
+                        }
+                        const reader = new FileReader();
+                        reader.onloadend = async function() {
+                            const base64data = reader.result.split(',')[1];
+                            await Filesystem.writeFile({
+                                path: fileName, data: base64data, directory: 'DOCUMENTS', recursive: true
+                            });
+                            const originalButtonText = saveButton.innerHTML;
+                            saveButton.innerHTML = '<i class="fas fa-check"></i>';
+                            alert(`Image saved as ${fileName} in Documents.`);
+                            setTimeout(() => { saveButton.innerHTML = originalButtonText; }, 2000);
+                        };
+                        reader.readAsDataURL(blob);
+                    }
+                } catch (fetchError) {
+                    console.error('Error saving image:', fetchError);
+                    alert('Failed to save image.');
+                    saveButton.innerHTML = '<i class="fas fa-times"></i>';
+                    setTimeout(() => { saveButton.innerHTML = '<i class="fas fa-download"></i>'; }, 2000);
+                }
+            }
         }
-        alert(errorMessage);
-
-        document.getElementById("chat-input").value = "";
-
-        // Hide buttons if an error occurs
-        $("#img-btn").hide();
-        $("#send-btn").hide();
-    }
-});
+        // --- END OF NESTED HELPER FUNCTION ---
+    });
+    // ===============================================
+    // END OF IMAGE GENERATION EVENT HANDLER
+    // ===============================================
 
 
 // ===============================================

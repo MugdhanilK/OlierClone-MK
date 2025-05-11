@@ -864,40 +864,54 @@ Follow these rules STRICTLY:
 async def generate_description():
     data = await request.get_json()
     user_message = data.get('message', '').strip()
-    preamble = "Briefly outline a simple painting based on the following passage by Sri Aurobindo and the Mother:"
     
     if not user_message:
         return jsonify({'error': 'No message provided.'}), 400
 
-    messages = [
-        {"role": "system", "content": SYSTEM_MESSAGE_PLAIN},
-        {"role": "user", "content": f"{preamble} {user_message}"}
-    ]
+    # The preamble will be used as a system instruction for Gemini
+    preamble_for_gemini = "Your job is to produce a prompt for an image generation AI. Briefly outline a description of a colored painting that represents symbolically the key ideas of the following passage by Sri Aurobindo and the Mother. Be precise about the art style and techniques. Use archetypal images instead of being overly abstract. Your response should only contain the prompt to the image gen AI:"
 
-    logger.debug(f"Full message being sent to Fireworks API: {messages}")
+    logger.debug(f"User message for description generation: {user_message}")
 
-    async def event_stream():
+    # Prepare input for Gemini
+    gemini_contents = [types.Content(role="user", parts=[types.Part(text=user_message)])]
+    
+    # Configure Gemini API call using GenerateContentConfig
+    gemini_config = types.GenerateContentConfig(
+        system_instruction=types.Content(role="system", parts=[types.Part(text=preamble_for_gemini)]),
+        temperature=0.3, 
+        # max_output_tokens=500, # Optional
+    )
+
+    async def event_stream_gemini_description():
         try:
-            stream = fireworks_client.chat.completions.acreate(
-                model=FIREWORKS_FINAL_MODEL,
-                messages=messages,
-                max_tokens=500,
-                n=1,
-                temperature=0.3,
-                stream=True,
+            logger.info(f"Calling Gemini model '{GEMINI_SUMMARY_MODEL_NAME}' for image description generation (streaming).")
+            stream = await gemini_client.aio.models.generate_content_stream(
+                model=GEMINI_SUMMARY_MODEL_NAME, # Using the specified Gemini Flash model
+                contents=gemini_contents,
+                config=gemini_config
             )
             async for chunk in stream:
-                for choice in chunk.choices:
-                    delta = choice.delta
-                    content = delta.content
-                    if content:
-                        yield content
+                # Block check (consistent with your /api/send-message example)
+                if chunk.prompt_feedback and chunk.prompt_feedback.block_reason:
+                    block_message = f"STREAM_ERROR: Content generation blocked by safety settings ({GEMINI_SUMMARY_MODEL_NAME}): {chunk.prompt_feedback.block_reason.name}"
+                    logger.warning(block_message)
+                    yield block_message
+                    return # Stop further processing for this stream
+
+                # Text extraction - Matching the pattern from your /api/send-message
+                if hasattr(chunk, 'text') and chunk.text:
+                    yield chunk.text
+                elif chunk.candidates and chunk.candidates[0].content and chunk.candidates[0].content.parts:
+                    # This ensures we only join part.text if the parts list is not empty and parts exist
+                    yield "".join(part.text for part in chunk.candidates[0].content.parts) # Exact match to your reference
+
         except Exception as e:
-            logger.error(f"An error occurred during chat completion streaming: {e}")
-            yield f"An error occurred: {e}"
+            logger.error(f"An error occurred during Gemini description generation streaming: {e}", exc_info=True)
+            # It's good practice to yield an error message that the client can parse
+            yield f"STREAM_ERROR: An error occurred during description generation: {str(e)}"
 
-    return Response(event_stream(), mimetype='text/event-stream')
-
+    return Response(event_stream_gemini_description(), mimetype='text/event-stream') # text/event-stream is typical for SSE
 @app.route('/api/generate-flux-image', methods=['POST'])
 async def generate_flux_image():
     data = await request.get_json()
