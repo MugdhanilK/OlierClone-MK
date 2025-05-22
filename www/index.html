@@ -711,6 +711,29 @@
                 </div>
 
             </div>-->
+<style>
+    #query{
+  /* visual style copied from chat textarea */
+  line-height:1.5em;
+  min-height:1.5em;               /* 1 line  */
+  max-height:9em;               /* 3 lines */
+  overflow-y:auto;                /* scroll after 3 lines */
+  resize:none;                    /* don’t let the user drag-resize */
+  white-space:pre-wrap;           /* wrap like normal text */
+}
+</style>
+<script>
+    function autoResizeQuery(){
+  const q = document.getElementById('query');
+  const lineH = parseInt(getComputedStyle(q).lineHeight) || 20;
+  const maxH  = lineH * 6;            // ⬅︎ 6 lines instead of 3
+  q.style.height = 'auto';
+  q.style.height = Math.min(q.scrollHeight, maxH) + 'px';
+  q.style.overflowY = q.scrollHeight > maxH ? 'auto' : 'hidden';
+}
+
+    </script>
+
 
             <div class="search-container mt-3">
                 <div class="d-flex justify-content-center mb-3">
@@ -719,10 +742,14 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-                <input autocomplete="off" class="form-control selected-card;" id="query"
-                    onfocus="this.style.textAlign='left'; this.placeholder='';"
-                    onblur="if(this.value===''){ this.style.textAlign='center'; this.placeholder='Find quotes from Sri Aurobindo &amp; the Mother!'; }"
-                    placeholder="Find quotes from Sri Aurobindo &amp; the Mother!" type="text" />
+                <textarea  id="query"
+           class="form-control selected-card;"
+           rows="1"                
+           placeholder="Find quotes from Sri Aurobindo &amp; the Mother!"
+           onfocus="this.style.textAlign='left'; this.placeholder='';"
+           onblur ="if(!this.value){this.style.textAlign='center';
+                                    this.placeholder='Find quotes from Sri Aurobindo &amp; the Mother!';}">
+</textarea>
 
                 <button class="btn btn-primary" id="search-btn">Seek</button>
             </div>
@@ -40719,6 +40746,21 @@
 https://cdn.jsdelivr.net/npm/bowser@2.11.0/es5.min.js
 "></script>
     <script src="static/scripts.js"></script>
+        <script>    /* ------------------  REPLACE select-all logic for #query  ------------------ */
+
+$(function(){                     // runs after DOM *and* scripts.js
+  const $q = $('#query').off('focus mouseup');   // strip old ones
+
+  let once = true;
+  $q.on('focus',   function(){ this.select(); once = true; })
+    .on('mouseup', function(e){
+        if (once){ e.preventDefault(); once = false; }
+    });
+});
+
+
+/* -------------------------------------------------------------------------- */
+</script>
     <script>
         function setDynamicVH() {
             let vh = window.innerHeight * 0.01;
