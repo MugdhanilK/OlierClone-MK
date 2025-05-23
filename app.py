@@ -678,7 +678,7 @@ async def send_message():
                     system_instruction=types.Content(role="system", parts=[types.Part(text=system_message_to_use)]),
                     temperature=GEMINI_TEMPERATURE,
                     tools=[search_tool],
-                    thinking_config=types.ThinkingConfig(include_thoughts=True)
+                    thinking_config=types.ThinkingConfig(include_thoughts=False)
                 )
                 logger.debug(f"Gemini config: temperature={GEMINI_TEMPERATURE}, system_instruction set, tools set.")
 
