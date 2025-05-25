@@ -8,7 +8,7 @@ from collections import Counter
 from qdrant_client import QdrantClient
 from qdrant_client.models import Batch, VectorParams, Distance
 
-secrets = toml.load('/home/olier/DataGenResearch/Datagen/secrets.toml')
+# secrets = toml.load('/home/olier/DataGenResearch/Datagen/secrets.toml')
 
 QDRANT_URL = os.environ.get("QDRANT_URL")
 QDRANT_API_KEY = os.environ.get("QDRANT_API_KEY")
@@ -29,7 +29,7 @@ def load_and_process_jsonl(filepath):
     data = []
     all_ids = []
     long_ids = []
-    with open(filepath, 'r') as f:
+    with open(filepath, 'r', encoding='utf-8') as f:
         for line_number, line in enumerate(f, 1):
             try:
                 record = json.loads(line)
@@ -64,7 +64,7 @@ def string_to_int_id(string_id):
     int_id = int(hash_val, 16) % (2**63 - 1)
     return int_id
 
-def batch_upsert(qdrant_client, collection_name, ids, vectors, payloads, batch_size=1000):
+def batch_upsert(qdrant_client, collection_name, ids, vectors, payloads, batch_size=100):
     total = len(ids)
     for start in range(0, total, batch_size):
         end = start + batch_size
@@ -173,8 +173,8 @@ def main():
     dataset_identifier1 = 'aurocoherecomplete'
     dataset_identifier2 = 'mothercoherecomplete'
 
-    input_filepath1 = '/home/olier/Olierclone/merged_sri_aurobindo_embed.jsonl'
-    input_filepath2 = '/home/olier/Olierclone/merged_the_mother_embed.jsonl'
+    input_filepath1 = '/home/olier/Olierdev/merged_sri_aurobindo_embed.jsonl'
+    input_filepath2 = '/home/olier/Olierdev/merged_the_mother_embed.jsonl'
 
     process_dataset(input_filepath1, dataset_identifier1)
     process_dataset(input_filepath2, dataset_identifier2)
