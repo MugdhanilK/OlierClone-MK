@@ -134,6 +134,7 @@ const chatInput = document.getElementById('chat-input');
 const mainContent = document.querySelector('.container');
 const bottomFlexBox = document.getElementById('bottom-flex-box');
 const $searchToggle = $('#searchToggle');
+const $searchOptionsFrame = $('.search-options-dropdown-frame'); // Cache the new frame
 const $searchBtn = $('#search-btn');
 const $vectorSamples = $('.vector-sample-questions');
 const $keywordSamples = $('.keyword-sample-questions');
@@ -3111,6 +3112,32 @@ titleToggleArea.addEventListener('click', () => {
     // ===============================================
 
 
+
+// ================================================================
+// FUNCTIONS TO UPDATE the dropdown visibility based on the toggle
+// ================================================================
+    // Function to update the dropdown visibility based on the toggle
+// scripts.js - inside updateSearchOptionsDropdown
+function updateSearchOptionsDropdown() {
+    // ... (guard clauses for $searchOptionsFrame and $searchToggle) ...
+    if ($searchToggle.is(':checked')) { // Match mode
+        console.log('[updateSearchOptionsDropdown] Adding hidden-by-toggle');
+        $searchOptionsFrame.addClass('hidden-by-toggle');
+    } else { // Seek mode
+        $searchOptionsFrame.removeClass('hidden-by-toggle');
+    }
+}
+
+    // Call it once on load to set the initial state based on the toggle's default
+    updateSearchOptionsDropdown();
+
+    // Listen for changes on the #searchToggle
+    $searchToggle.on('change', function() {
+        updateSearchOptionsDropdown();
+        // Also update the search button text and sample questions visibility (existing logic)
+        updateSearchMode(); // Assuming updateSearchMode is your existing function for this
+    });
+    
 // ===============================================
 // FUNCTIONS TO UPDATE OTHER ELEMENTS OF MAIN UI
 // ===============================================
