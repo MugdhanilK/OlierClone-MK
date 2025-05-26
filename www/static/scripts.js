@@ -336,8 +336,8 @@ $.post(searchUrl, {
         }
 
         // Conditionally display the relevance score only for vector search
-       /* var relevanceScoreHtml = '';
-        if (isVectorSearch && result.relevance_score !== undefined) {
+        var relevanceScoreHtml = '';
+        /*if (isVectorSearch && result.relevance_score !== undefined) {
             relevanceScoreHtml = `
                 <div class="result-score">
                     Relevance Score: ${result.relevance_score.toFixed(2)}
