@@ -336,14 +336,14 @@ $.post(searchUrl, {
         }
 
         // Conditionally display the relevance score only for vector search
-        var relevanceScoreHtml = '';
+       /* var relevanceScoreHtml = '';
         if (isVectorSearch && result.relevance_score !== undefined) {
             relevanceScoreHtml = `
                 <div class="result-score">
                     Relevance Score: ${result.relevance_score.toFixed(2)}
                 </div>
             `;
-        }
+        }*/
 
         var resultItem = `
             <div class="result-item">
@@ -671,7 +671,7 @@ function replaceReferenceMarkers(text) {
         (match, series, book, chapter) => {
             refCounter++;  // 1, 2, 3, ...
        // *** CRITICAL FIX: Return string on ONE LINE, prefixed with &nbsp; ***
-            return `&nbsp;<a href="#" class="reference-link" data-book-title="${book}" data-chapter-title="${chapter}"><span class="badge badge-secondary">REF${refCounter}</span></a>`; 
+            return `&nbsp;<a href="#" class="reference-link" data-book-title="${book}" data-chapter-title="${chapter}"><span class="badge badge-secondary">R${refCounter}</span></a>`; 
 
         }
     );
