@@ -33,7 +33,7 @@
         }
 
         /* Olier card’s general style */
-        .style-card-olier{
+        .style-card-olier {
             background: #fff;
             border: 1px solid #f1ecec;
             border-radius: 6px;
@@ -44,7 +44,7 @@
             transition: box-shadow 0.6s ease;
             cursor: pointer;
             /* so user sees it's clickable */
-            
+
         }
 
         /* Seeking card’s general style */
@@ -53,13 +53,14 @@
             border: 1px solid #f1ecec;
             border-radius: 6px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-            width: 350px;
+            width: 250px;
+           
             padding: 1.5rem;
             text-align: center;
             transition: box-shadow 0.6s ease;
             cursor: pointer;
             /* so user sees it's clickable */
-            
+
         }
 
         .style-card:hover {
@@ -84,16 +85,24 @@
             margin-bottom: 1rem;
         }
 
-        /* This is the “golden glow” for the selected card */
-        .selected-card {
-            background-color: #fffae5;
-            /* pale gold background */
-            border-color: #e8c800;
-            /* more golden border, optional */
-            box-shadow: 0 4px 8px rgba(232, 200, 0, 0.4);
-            /* subtle golden shadow */
-        }
-
+    /* This is the “golden glow” for the selected card (original definition) */
+    .selected-card {
+        background-color: #fffae5;
+        /* pale gold background */
+        border-color: #e8c800;
+        /* more golden border, optional */
+        box-shadow: 0 4px 8px rgba(232, 200, 0, 0.4);
+        /* subtle golden shadow */
+    }
+  /* ADD THIS NEW RULE for the Seek scope cards when selected */
+    .search-options-dropdown-frame .style-card2.style-cards.selected-card {
+        background-color: #fffae5; /* Consistent pale gold background */
+        border: 1px solid #e8c800; /* Explicitly set the full golden border */
+        /* Optional: For a more prominent glow, you could use a thicker border: */
+        /* border: 2px solid #e8c800; */
+        transition: box-shadow 0.6s ease;
+        box-shadow: 0 4px 8px rgba(232, 200, 0, 0.4); /* Consistent golden shadow */
+    }
         /* Define the spin animation */
         @keyframes spin {
             from {
@@ -138,10 +147,9 @@
                     const mainMenuBtn = document.getElementById("main-menu-btn");
                     if (mainMenuBtn) {
                         mainMenuBtn.addEventListener("click", function () {
-                            document.getElementById("main-menu-btn").addEventListener("click", function () {
-                                window.open("https://youtu.be/otECbl2kOuc&autoplay=1", "_blank");
-                            });
-                            console.log("Main menu button clicked - video link placeholder");
+                            // Open the window directly on the first click
+                            window.open("https://youtu.be/otECbl2kOuc&autoplay=1", "_blank");
+                            console.log("Main menu button clicked - opening video link");
                         });
                     }
                 </script>
@@ -210,66 +218,7 @@
                     </div>
                 </div>
                 <!-- ─────────────────────────  SEEK SCOPE  ───────────────────────── -->
-                <div class="card mb-3">
-                    <div class="card-header">
-                        Search Options <!--<span class="badge badge-secondary">Beta</span>-->
-                    </div>
-                    <!-- CHOOSE YOUR OLIER STYLE HEADER -->
-                    <h4 class="olier-style-header">Select Texts to "Seek"</h4>
-                    <!--<h2 class="section-title">Seek Scope</h2>-->
-
-                    <div class="style-cards-row">
-
-                        <!-- ▸  All Works  -->
-                        <label class="style-card style-cards" id="scope-all-card">
-                            <input type="radio" name="searchScope" value="all" hidden checked>
-
-                            <div class="card-body">
-                                <!-- reuse your existing avatar-circle utility -->
-                                <div class="style-avatar"
-                                    style="background-image:url('static/Maa - Sri Aurobindo.png');"></div>
-                                <h5>All Works</h5>
-                                <hr />
-                                <p>The Mother &amp; Sri Aurobindo <br />🪷 </p>
-                            </div>
-                        </label>
-
-
-
-                        <!-- ▸  The Mother only  -->
-                        <label class="style-card style-cards" id="scope-mother-card">
-                            <input type="radio" name="searchScope" value="mother" hidden>
-
-                            <div class="card-body">
-                                <div class="style-avatar" style="background-image:url('static/the_mother.png');"></div>
-                                <h5>The Mother</h5>
-                                <hr />
-                                <p>CWM &amp; Mother’s Agenda<br />🪷</p>
-
-                               <!-- <p>Collected Works<br /> of The Mother (CWM)<br /> &amp;<br /> The Mother’s Agenda<br /><br />🪷</p>-->
-                            </div>
-                        </label>
-
-                        <!-- ▸  Sri Aurobindo only  -->
-                        <label class="style-card style-cards" id="scope-aurobindo-card">
-                            <input type="radio" name="searchScope" value="aurobindo" hidden>
-
-                            <div class="card-body">
-                                <div class="style-avatar" style="background-image:url('static/sri_aurobindo 1.png');">
-                                </div>
-                                <h5>Sri Aurobindo</h5>
-                                <hr />
-                                <p>CWSA &amp;  SABCL<sup><span
-                                    class="badge badge-secondary">Beta</span></sup> <br />🪷</p>
-                               <!-- <p>Complete Works of Sri Aurobindo (CWSA)<br /> &amp;<br /> <span
-                                        class="badge badge-secondary">Beta</span> Sri Aurobindo Birth Centenary Library
-                                    (SABCL) <br />🪷</p>-->
-                            </div>
-                        </label>
-                    </div><!-- /.style-cards-row -->
-                    <input type="hidden" id="selectedScope" name="selectedScope" value="all">
-
-                </div><!-- /.settings-section -->
+                <!-- /.settings-section -->
 
                 <!-- Hidden input if needed -->
                 <!--==================================-->
@@ -711,28 +660,33 @@
                 </div>
 
             </div>-->
-<style>
-    #query{
-  /* visual style copied from chat textarea */
-  line-height:1.5em;
-  min-height:1.5em;               /* 1 line  */
-  max-height:9em;               /* 3 lines */
-  overflow-y:auto;                /* scroll after 3 lines */
-  resize:none;                    /* don’t let the user drag-resize */
-  white-space:pre-wrap;           /* wrap like normal text */
-}
-</style>
-<script>
-    function autoResizeQuery(){
-  const q = document.getElementById('query');
-  const lineH = parseInt(getComputedStyle(q).lineHeight) || 20;
-  const maxH  = lineH * 6;            // ⬅︎ 6 lines instead of 3
-  q.style.height = 'auto';
-  q.style.height = Math.min(q.scrollHeight, maxH) + 'px';
-  q.style.overflowY = q.scrollHeight > maxH ? 'auto' : 'hidden';
-}
+            <style>
+                #query {
+                    /* visual style copied from chat textarea */
+                    line-height: 1.5em;
+                    min-height: 1.5em;
+                    /* 1 line  */
+                    max-height: 9em;
+                    /* 3 lines */
+                    overflow-y: auto;
+                    /* scroll after 3 lines */
+                    resize: none;
+                    /* don’t let the user drag-resize */
+                    white-space: pre-wrap;
+                    /* wrap like normal text */
+                }
+            </style>
+            <script>
+                function autoResizeQuery() {
+                    const q = document.getElementById('query');
+                    const lineH = parseInt(getComputedStyle(q).lineHeight) || 20;
+                    const maxH = lineH * 6;            // ⬅︎ 6 lines instead of 3
+                    q.style.height = 'auto';
+                    q.style.height = Math.min(q.scrollHeight, maxH) + 'px';
+                    q.style.overflowY = q.scrollHeight > maxH ? 'auto' : 'hidden';
+                }
 
-    </script>
+            </script>
 
 
             <div class="search-container mt-3">
@@ -742,17 +696,207 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-                <textarea  id="query"
-           class="form-control selected-card;"
-           rows="1"                
-           placeholder="Find quotes from Sri Aurobindo &amp; the Mother!"
-           onfocus="this.style.textAlign='left'; this.placeholder='';"
-           onblur ="if(!this.value){this.style.textAlign='center';
+                <textarea id="query" class="form-control selected-card;" rows="1"
+                    placeholder="Find quotes from Sri Aurobindo &amp; the Mother!"
+                    onfocus="this.style.textAlign='left'; this.placeholder='';" onblur="if(!this.value){this.style.textAlign='center';
                                     this.placeholder='Find quotes from Sri Aurobindo &amp; the Mother!';}">
 </textarea>
+<style>
 
-                <button class="btn btn-primary" id="search-btn">Seek</button>
+    .search-options-dropdown-frame {
+    background: rgba(255, 255, 255, 0.9); /* Lightly transparent white background */
+    border: 1px solid #ddd;
+    border-radius: 8px; /* Rounded corners for the entire frame */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    overflow: hidden; /* Crucial for the max-height animation */
+    max-height: 700px; /* Adjust to fit content; can be a large enough value */
+    transition: max-height 0.4s ease-out, opacity 0.3s ease-out, padding 0.4s ease-out, margin 0.4s ease-out, border 0.4s ease-out;
+    opacity: 1;
+    margin-top: 15px; /* Space above the dropdown */
+    padding: 10px; /* Inner padding for the content */
+}
+
+.search-options-dropdown-frame.hidden-by-toggle {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    border-width: 0; /* Collapse border when hidden */
+    box-shadow: none; /* Remove shadow when hidden */
+}
+
+/* Ensure the card-header and olier-style-header within the frame look good */
+.search-options-dropdown-frame .card-header {
+    background-color: transparent; /* Make it blend with the frame's background */
+    border-bottom: 1px solid #eee; /* Light separator */
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.search-options-dropdown-frame .olier-style-header {
+    margin-top: 1rem; /* Adjust spacing */
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    color: #444;
+}
+/* === Styles for Search Options Dropdown Frame Cards (Revised) === */
+
+/* Style for the row containing the cards */
+.search-options-dropdown-frame .style-cards-row {
+    display: flex;
+    flex-wrap: nowrap;       /* --- Key: Prevent cards from wrapping to the next line --- */
+    justify-content: flex-start; /* Align cards to the start (good for scrolling) */
+    gap: 1.5rem;             /* Space between cards */
+    margin-top: 1rem;
+    overflow-x: auto;        /* --- Key: Allow horizontal scrolling for the row --- */
+    padding-left: 1rem;      /* Optional: padding if cards are too close to edge */
+    padding-right: 1rem;
+    padding-bottom: 1rem;    /* Add some padding at the bottom for scrollbar visibility */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Style for each card (using .style-card2.style-cards as per your HTML) */
+.search-options-dropdown-frame .style-card2.style-cards {
+    background: #fff;
+    border: 1px solid #f1ecec;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    
+    /* --- Sizing for cards to fit content and enable horizontal scroll --- */
+    flex-basis: auto;        /* Card bases its width on its content */
+    flex-shrink: 0;          /* Prevent cards from shrinking smaller than content width */
+    /* Optionally, set a min-width if you don't want them too narrow: */
+    /* min-width: 200px; */
+
+    min-height: auto;
+    height: auto;            /* Height is flexible based on content */
+    padding: 0.8rem 1rem;    /* Adjusted padding for a more compact horizontal layout */
+    transition: box-shadow 0.3s ease;
+    cursor: pointer;
+    display: flex;           /* For aligning .card-body */
+    align-items: center;
+}
+
+/* Styles for the .card-body (direct child of the label/card) */
+.search-options-dropdown-frame .style-card2.style-cards .card-body {
+    display: flex;
+    flex-direction: row;     /* Avatar and text-content side-by-side */
+    align-items: center;     /* Vertically center avatar and the text block */
+    width: 100%;
+    text-align: left;
+}
+
+/* Styles for the avatar */
+.search-options-dropdown-frame .style-card2.style-cards .style-avatar {
+    width: 3.5rem;           /* e.g., 56px */
+    height: 3.5rem;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    margin-right: 0.75rem;   /* Space between avatar and text content */
+    flex-shrink: 0;
+}
+
+/* Styles for the text-content block (wrapper for h5, hr, p) */
+.search-options-dropdown-frame .style-card2.style-cards .text-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    flex-grow: 1;            /* Allows .text-content to take remaining space */
+    min-width: 0;            /* Important for flex items with nowrap children */
+}
+
+/* Styles for the title (h5) within .text-content */
+.search-options-dropdown-frame .style-card2.style-cards .text-content h5 {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 0.2rem;
+    color: #333;
+    white-space: nowrap;     /* Keep title on one line */
+    overflow: hidden;        /* Hide overflow for title */
+    text-overflow: ellipsis; /* Add ellipsis for long titles */
+}
+
+/* Styles for the horizontal rule (hr) */
+.search-options-dropdown-frame .style-card2.style-cards .text-content hr {
+    width: 100%;
+    border: 0;
+    border-top: 1px solid #eee;
+    margin-top: 0.2rem;
+    margin-bottom: 0.3rem;
+}
+
+/* Styles for the descriptive paragraph (p) - ensure single line, full visibility */
+.search-options-dropdown-frame .style-card2.style-cards .text-content p {
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.3;
+    margin-bottom: 0;
+    white-space: nowrap;     /* --- Key: Force paragraph to be a single line --- */
+    /* No overflow: hidden or text-overflow: ellipsis, as full text is desired */
+}
+
+/* Override any conflicting global .style-card2 properties if needed */
+.search-options-dropdown-frame label.style-card2 {
+    max-height: none !important; 
+    min-width: auto !important; 
+    text-align: left !important; 
+    width: auto !important; /* Ensure width is not constrained by global .style-card2 */
+}
+    </style>
+
+<div class="search-options-dropdown-frame">
+    <div class="card-header">
+       Select Works to "Seek"
+    </div>
+    <div class="style-cards-row">
+
+        <label class="style-card2 style-cards" id="scope-all-card">
+             <input type="radio" name="searchScope" value="all" hidden checked>
+            <div class="card-body">
+                <div class="style-avatar" style="background-image:url('static/Maa - Sri Aurobindo.png');"></div>
+                <div class="text-content"> 
+                    <h5>All Works</h5>
+                    <hr>
+                    <p>The Mother &amp; Sri Aurobindo 🪷 </p>
+                </div>
             </div>
+        </label>
+
+        <label class="style-card2 style-cards" id="scope-mother-card">
+            <input type="radio" name="searchScope" value="mother" hidden="">
+            <div class="card-body">
+                <div class="style-avatar" style="background-image:url('static/the_mother.png');"></div>
+                <div class="text-content"> 
+                    <h5>The Mother</h5>
+                    <hr>
+                    <p>CWM &amp; Mother’s Agenda 🪷</p>
+                </div>
+            </div>
+        </label>
+
+        <label class="style-card2 style-cards" id="scope-aurobindo-card">
+            <input type="radio" name="searchScope" value="aurobindo" hidden="">
+            <div class="card-body">
+                <div class="style-avatar" style="background-image:url('static/sri_aurobindo 1.png');"></div>
+                <div class="text-content"> 
+                    <h5>Sri Aurobindo</h5>
+                    <hr>
+                    <p>CWSA &amp; SABCL<sup><span class="badge badge-secondary">Beta</span></sup> 🪷</p>
+                </div>
+            </div>
+        </label>
+    </div>
+<input type="hidden" id="selectedScope" name="selectedScopeDropdown" value="all"></div></div><br/>
+                <button class="btn btn-primary" id="search-btn">Seek</button>
+            
+
+
+
+
 
             <!--Summarise-->
             <div class="summary-controls mt-3 mb-3 text-center">
@@ -34169,482 +34313,483 @@
                     </ul>
                 </ul>
             </li>
-             <li class="book-item" data-file-path="static/HTML/Record of Yoga_modified.html" role="menuitem">
-    <div class="book-title" tabindex="0">
-        <span>
-        Record of Yoga
-        </span>
-        <span class="expand-icon">
-        </span>
-    </div>
-    <ul class="nested-list">
-        <li class="nested-item">
-        <a class="cover-link" href="#">
-        Cover
-        </a>
-        </li>
-        <ul class="nested-list">
-        <li class="nested-item has-children">
-        <div class="part-title" tabindex="0">
-        <span class="expand-icon">
-        </span>
-        Introduction: Sapta Chatusthaya
-        </div>
-        <ul class="nested-list">
-        <li class="nested-item">
-            <a class="chapter-link" href="#sapta-chatusthaya">
-            Sapta Chatusthaya
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#outline-of-the-seven-chatusthayas-revised-order">
-            Outline of the Seven Chatusthayas (Revised Order)
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#incomplete-notes-on-the-first-chatusthaya">
-            Incomplete Notes on the First Chatusthaya
-            </a>
-        </li>
-        </ul>
-        </li>
-        <li class="nested-item has-children">
-        <div class="part-title" tabindex="0">
-        <span class="expand-icon">
-        </span>
-        Part One: Diary Entries 1909-1912
-        </div>
-        <ul class="nested-list">
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-17-25-june-1909">
-            17 - 25 June 1909
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-28-january-17-february-1911">
-            28 January - 17 February 1911
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-13-january-8-february-1912">
-            13 January - 8 February 1912
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-1-25-july-1912">
-            1 - 25 July 1912
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-12-october-26-november-1912">
-            12 October - 26 November 1912
-            </a>
-        </li>
-        </ul>
-        </li>
-        <li class="nested-item has-children">
-        <div class="part-title" tabindex="0">
-        <span class="expand-icon">
-        </span>
-        Part Two: Record of Yoga 1912-1920
-        </div>
-        <ul class="nested-list">
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-26-november-31-december-1912">
-            26 November - 31 December 1912
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-1-31-january-1913">
-            1 - 31 January 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-1-14-february-1913">
-            1 - 14 February 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-1-and-12-april-19-and-21-may-1913">
-            1 and 12 April, 19 and 21 May 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-4-30-june-1913">
-            4 - 30 June 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-1-11-july-1913">
-            1 - 11 July 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-5-21-september-1913">
-            5 - 21 September 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-22-30-september-1913">
-            22 - 30 September 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-11-23-november-1913">
-            11 - 23 November 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-24-november-2-december-1913">
-            24 November - 2 December 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-1-12-december-1913">
-            1 - 12 December 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-12-21-december-1913">
-            12 - 21 December 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-22-december-1913-15-january-1914">
-            22 December 1913 - 15 January 1914
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-12-march-14-april-1914">
-            12 March - 14 April 1914
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-15-april-1-june-1914">
-            15 April - 1 June 1914
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-10-june-29-september-1914">
-            10 June - 29 September 1914
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-29-30-september-31-december-1914">
-            29 - 30 September - 31 December 1914
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-1-january-27-february-1915">
-            1 January - 27 February 1915
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-22-april-26-august-1915">
-            22 April - 26 August 1915
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-19-february-20-march-1916">
-            19 February - 20 March 1916
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-9-january-14-february-1917">
-            9 January - 14 February 1917
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-15-february-31-march-1917">
-            15 February - 31 March 1917
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-15-august-28-september-1917">
-            15 August - 28 September 1917
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-14-28-february-1918">
-            14 - 28 February 1918
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-3-27-march-1918">
-            3 - 27 March 1918
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-20-april-20-may-1918">
-            20 April - 20 May 1918
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-21-may-1-july-1918">
-            21 May - 1 July 1918
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-24-june-14-july-1919">
-            24 June - 14 July 1919
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-15-26-july-1919">
-            15 - 26 July 1919
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-27-july-13-august-1919">
-            27 July - 13 August 1919
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-14-august-24-september-1919">
-            14 August - 24 September 1919
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-1-29-february-1920">
-            1 - 29 February 1920
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-1-march-10-april-1920">
-            1 March - 10 April 1920
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-7-26-june-1920">
-            7 - 26 June 1920
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-17-19-october-1920">
-            17 - 19 October 1920
-            </a>
-        </li>
-        </ul>
-        </li>
-        <li class="nested-item has-children">
-        <div class="part-title" tabindex="0">
-        <span class="expand-icon">
-        </span>
-        Part Three: Record of Yoga 1926-1927
-        </div>
-        <ul class="nested-list">
-        <li class="nested-item">
-            <a class="chapter-link" href="#december-1926-6-january-1927-1">
-            December 1926 - 6 January 1927
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-7-january-1-february-1927">
-            7 January - 1 February 1927
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-7-22-april-1927">
-            7 - 22 April 1927
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#c-24-31-october-1927">
-            24 - 31 October 1927
-            </a>
-        </li>
-        </ul>
-        </li>
-        <li class="nested-item has-children">
-        <div class="part-title" tabindex="0">
-        <span class="expand-icon">
-        </span>
-        Part Four: Materials Written by Sri Aurobindo Related Directly to Record of Yoga, c. 1910-1931
-        </div>
-        <ul class="nested-list">
-        <li class="nested-item">
-            <a class="chapter-link" href="#undated-record-and-record-related-notes">
-            Undated Record and Record - Related Notes
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#sortileges-of-may-and-june-1912">
-            Sortileges of May and June 1912
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#undated-notes-c-november-1912">
-            Undated Notes, c. November 1912
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#draft-programme-of-3-december-1912">
-            Draft Programme of 3 December 1912
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#undated-or-partly-dated-script-1912-1913">
-            Undated or Partly Dated Script, 1912 - 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#sortilege-of-15-march-1913">
-            Sortilege of 15 March [1913]
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#accounts-of-31-may-15-june-1913">
-            Accounts of 31 May - 15 June 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#record-notes-13-and-15-september-1913">
-            Record Notes, 13 and 15 September 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#vedic-experience-14-and-15-december-1913">
-            Vedic Experience, 14 and 15 December 1913
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#undated-notes-c-1914">
-            Undated Notes, c. 1914
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#notes-on-images-seen-in-march-1914">
-            Notes on Images Seen in March 1914
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#undated-script-c-1920">
-            Undated Script, c. 1920
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#undated-notes-c-december-1926">
-            Undated Notes, c. December 1926
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#undated-notes-c-january-1927">
-            Undated Notes, c. January 1927
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#notes-on-physical-transformation">
-            Notes on Physical Transformation
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#diagrams-c-january-1927">
-            Diagrams, c. January 1927
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#miscellaneous-notations">
-            Miscellaneous Notations
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#record-of-drishti-30-july-1927">
-            Record of Drishti, 30 July 1927
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#undated-script-c-1927">
-            Undated Script, c. 1927
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#undated-script-c-1927-1928">
-            Undated Script, c. 1927 - 1928
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#notes-on-prophetic-vision-1929">
-            Notes on Prophetic Vision, 1929
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#diagrams-c-1931">
-            Diagrams, c. 1931
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#undated-script-jottings">
-            Undated Script Jottings
-            </a>
-        </li>
-        </ul>
-        </li>
-        <li class="nested-item has-children">
-        <div class="part-title" tabindex="0">
-        <span class="expand-icon">
-        </span>
-        Part Five: Automatic Writing
-        </div>
-        <ul class="nested-list">
-        <li class="nested-item">
-            <a class="chapter-link" href="#the-scribblings-c-1907">
-            "The Scribblings", c. 1907
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#yogic-sadhan">
-            Yogic Sadhan
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#automatic-writings-c-1914-first-set">
-            Automatic Writings, c. 1914 (First Set)
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#automatic-writings-c-1914-second-set">
-            Automatic Writings, c. 1914 (Second Set)
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#automatic-writing-c-1920">
-            Automatic Writing, c. 1920
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#automatic-writings-c-1920">
-            Automatic Writings, c. 1920
-            </a>
-        </li>
-        </ul>
-        </li>
-        <li class="nested-item has-children">
-        <div class="part-title" tabindex="0">
-        <span class="expand-icon">
-        </span>
-        Appendixes: Material from Disciples' Notebooks
-        </div>
-        <ul class="nested-list">
-        <li class="nested-item">
-            <a class="chapter-link" href="#miscellaneous-notes-c-1914">
-            Miscellaneous Notes, c. 1914
-            </a>
-        </li>
-        <li class="nested-item">
-            <a class="chapter-link" href="#sapta-chatusthaya-scribal-version">
-            Sapta Chatusthaya - Scribal Version
-            </a>
-        </li>
-        </ul>
-        </li>
-        <li class="nested-item">
-        <a class="chapter-link" href="#note-on-the-texts">
-        Note on the Texts
-        </a>
-        </li>
-        </ul>
-    </ul>
-    </li> 
+            <li class="book-item" data-file-path="static/HTML/Record of Yoga_modified.html" role="menuitem">
+                <div class="book-title" tabindex="0">
+                    <span>
+                        Record of Yoga
+                    </span>
+                    <span class="expand-icon">
+                    </span>
+                </div>
+                <ul class="nested-list">
+                    <li class="nested-item">
+                        <a class="cover-link" href="#">
+                            Cover
+                        </a>
+                    </li>
+                    <ul class="nested-list">
+                        <li class="nested-item has-children">
+                            <div class="part-title" tabindex="0">
+                                <span class="expand-icon">
+                                </span>
+                                Introduction: Sapta Chatusthaya
+                            </div>
+                            <ul class="nested-list">
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#sapta-chatusthaya">
+                                        Sapta Chatusthaya
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#outline-of-the-seven-chatusthayas-revised-order">
+                                        Outline of the Seven Chatusthayas (Revised Order)
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#incomplete-notes-on-the-first-chatusthaya">
+                                        Incomplete Notes on the First Chatusthaya
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nested-item has-children">
+                            <div class="part-title" tabindex="0">
+                                <span class="expand-icon">
+                                </span>
+                                Part One: Diary Entries 1909-1912
+                            </div>
+                            <ul class="nested-list">
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-17-25-june-1909">
+                                        17 - 25 June 1909
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-28-january-17-february-1911">
+                                        28 January - 17 February 1911
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-13-january-8-february-1912">
+                                        13 January - 8 February 1912
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-1-25-july-1912">
+                                        1 - 25 July 1912
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-12-october-26-november-1912">
+                                        12 October - 26 November 1912
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nested-item has-children">
+                            <div class="part-title" tabindex="0">
+                                <span class="expand-icon">
+                                </span>
+                                Part Two: Record of Yoga 1912-1920
+                            </div>
+                            <ul class="nested-list">
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-26-november-31-december-1912">
+                                        26 November - 31 December 1912
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-1-31-january-1913">
+                                        1 - 31 January 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-1-14-february-1913">
+                                        1 - 14 February 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-1-and-12-april-19-and-21-may-1913">
+                                        1 and 12 April, 19 and 21 May 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-4-30-june-1913">
+                                        4 - 30 June 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-1-11-july-1913">
+                                        1 - 11 July 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-5-21-september-1913">
+                                        5 - 21 September 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-22-30-september-1913">
+                                        22 - 30 September 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-11-23-november-1913">
+                                        11 - 23 November 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-24-november-2-december-1913">
+                                        24 November - 2 December 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-1-12-december-1913">
+                                        1 - 12 December 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-12-21-december-1913">
+                                        12 - 21 December 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-22-december-1913-15-january-1914">
+                                        22 December 1913 - 15 January 1914
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-12-march-14-april-1914">
+                                        12 March - 14 April 1914
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-15-april-1-june-1914">
+                                        15 April - 1 June 1914
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-10-june-29-september-1914">
+                                        10 June - 29 September 1914
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-29-30-september-31-december-1914">
+                                        29 - 30 September - 31 December 1914
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-1-january-27-february-1915">
+                                        1 January - 27 February 1915
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-22-april-26-august-1915">
+                                        22 April - 26 August 1915
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-19-february-20-march-1916">
+                                        19 February - 20 March 1916
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-9-january-14-february-1917">
+                                        9 January - 14 February 1917
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-15-february-31-march-1917">
+                                        15 February - 31 March 1917
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-15-august-28-september-1917">
+                                        15 August - 28 September 1917
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-14-28-february-1918">
+                                        14 - 28 February 1918
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-3-27-march-1918">
+                                        3 - 27 March 1918
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-20-april-20-may-1918">
+                                        20 April - 20 May 1918
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-21-may-1-july-1918">
+                                        21 May - 1 July 1918
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-24-june-14-july-1919">
+                                        24 June - 14 July 1919
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-15-26-july-1919">
+                                        15 - 26 July 1919
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-27-july-13-august-1919">
+                                        27 July - 13 August 1919
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-14-august-24-september-1919">
+                                        14 August - 24 September 1919
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-1-29-february-1920">
+                                        1 - 29 February 1920
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-1-march-10-april-1920">
+                                        1 March - 10 April 1920
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-7-26-june-1920">
+                                        7 - 26 June 1920
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-17-19-october-1920">
+                                        17 - 19 October 1920
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nested-item has-children">
+                            <div class="part-title" tabindex="0">
+                                <span class="expand-icon">
+                                </span>
+                                Part Three: Record of Yoga 1926-1927
+                            </div>
+                            <ul class="nested-list">
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#december-1926-6-january-1927-1">
+                                        December 1926 - 6 January 1927
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-7-january-1-february-1927">
+                                        7 January - 1 February 1927
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-7-22-april-1927">
+                                        7 - 22 April 1927
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#c-24-31-october-1927">
+                                        24 - 31 October 1927
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nested-item has-children">
+                            <div class="part-title" tabindex="0">
+                                <span class="expand-icon">
+                                </span>
+                                Part Four: Materials Written by Sri Aurobindo Related Directly to Record of Yoga, c.
+                                1910-1931
+                            </div>
+                            <ul class="nested-list">
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#undated-record-and-record-related-notes">
+                                        Undated Record and Record - Related Notes
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#sortileges-of-may-and-june-1912">
+                                        Sortileges of May and June 1912
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#undated-notes-c-november-1912">
+                                        Undated Notes, c. November 1912
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#draft-programme-of-3-december-1912">
+                                        Draft Programme of 3 December 1912
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#undated-or-partly-dated-script-1912-1913">
+                                        Undated or Partly Dated Script, 1912 - 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#sortilege-of-15-march-1913">
+                                        Sortilege of 15 March [1913]
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#accounts-of-31-may-15-june-1913">
+                                        Accounts of 31 May - 15 June 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#record-notes-13-and-15-september-1913">
+                                        Record Notes, 13 and 15 September 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#vedic-experience-14-and-15-december-1913">
+                                        Vedic Experience, 14 and 15 December 1913
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#undated-notes-c-1914">
+                                        Undated Notes, c. 1914
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#notes-on-images-seen-in-march-1914">
+                                        Notes on Images Seen in March 1914
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#undated-script-c-1920">
+                                        Undated Script, c. 1920
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#undated-notes-c-december-1926">
+                                        Undated Notes, c. December 1926
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#undated-notes-c-january-1927">
+                                        Undated Notes, c. January 1927
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#notes-on-physical-transformation">
+                                        Notes on Physical Transformation
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#diagrams-c-january-1927">
+                                        Diagrams, c. January 1927
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#miscellaneous-notations">
+                                        Miscellaneous Notations
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#record-of-drishti-30-july-1927">
+                                        Record of Drishti, 30 July 1927
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#undated-script-c-1927">
+                                        Undated Script, c. 1927
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#undated-script-c-1927-1928">
+                                        Undated Script, c. 1927 - 1928
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#notes-on-prophetic-vision-1929">
+                                        Notes on Prophetic Vision, 1929
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#diagrams-c-1931">
+                                        Diagrams, c. 1931
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#undated-script-jottings">
+                                        Undated Script Jottings
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nested-item has-children">
+                            <div class="part-title" tabindex="0">
+                                <span class="expand-icon">
+                                </span>
+                                Part Five: Automatic Writing
+                            </div>
+                            <ul class="nested-list">
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#the-scribblings-c-1907">
+                                        "The Scribblings", c. 1907
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#yogic-sadhan">
+                                        Yogic Sadhan
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#automatic-writings-c-1914-first-set">
+                                        Automatic Writings, c. 1914 (First Set)
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#automatic-writings-c-1914-second-set">
+                                        Automatic Writings, c. 1914 (Second Set)
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#automatic-writing-c-1920">
+                                        Automatic Writing, c. 1920
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#automatic-writings-c-1920">
+                                        Automatic Writings, c. 1920
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nested-item has-children">
+                            <div class="part-title" tabindex="0">
+                                <span class="expand-icon">
+                                </span>
+                                Appendixes: Material from Disciples' Notebooks
+                            </div>
+                            <ul class="nested-list">
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#miscellaneous-notes-c-1914">
+                                        Miscellaneous Notes, c. 1914
+                                    </a>
+                                </li>
+                                <li class="nested-item">
+                                    <a class="chapter-link" href="#sapta-chatusthaya-scribal-version">
+                                        Sapta Chatusthaya - Scribal Version
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nested-item">
+                            <a class="chapter-link" href="#note-on-the-texts">
+                                Note on the Texts
+                            </a>
+                        </li>
+                    </ul>
+                </ul>
+            </li>
             <li class="book-item" data-file-path="static/HTML/Savitri_modified.html" role="menuitem">
                 <div class="book-title" tabindex="0">
                     <span>
@@ -40669,11 +40814,11 @@
                         </a>
                     </li>
 
-                    <li class="nested-item" data-file-path="/home/olier/textprocess/Original/SA/10-11RecordOfYoga.pdf">
+                    <!--<li class="nested-item" data-file-path="/home/olier/textprocess/Original/SA/10-11RecordOfYoga.pdf">
                         <a class="chapter-link pdf-cover-link" href="#">
                             Record of Yoga (PDF)
                         </a>
-                    </li>
+                    </li>-->
 
                     <li class="nested-item"
                         data-file-path="/home/olier/textprocess/Original/SA/14VedicAndPhilologicalStudies.pdf">
@@ -40746,21 +40891,17 @@
 https://cdn.jsdelivr.net/npm/bowser@2.11.0/es5.min.js
 "></script>
     <script src="static/scripts.js"></script>
-        <script>    /* ------------------  REPLACE select-all logic for #query  ------------------ */
+    <script>
+        $(function () {                     // runs after DOM *and* scripts.js
+            const $q = $('#query').off('focus mouseup');   // strip old ones
 
-$(function(){                     // runs after DOM *and* scripts.js
-  const $q = $('#query').off('focus mouseup');   // strip old ones
-
-  let once = true;
-  $q.on('focus',   function(){ this.select(); once = true; })
-    .on('mouseup', function(e){
-        if (once){ e.preventDefault(); once = false; }
-    });
-});
-
-
-/* -------------------------------------------------------------------------- */
-</script>
+            let once = true;
+            $q.on('focus', function () { this.select(); once = true; })
+                .on('mouseup', function (e) {
+                    if (once) { e.preventDefault(); once = false; }
+                });
+        });
+    </script>
     <script>
         function setDynamicVH() {
             let vh = window.innerHeight * 0.01;
