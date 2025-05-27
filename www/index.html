@@ -54,7 +54,7 @@
             border-radius: 6px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
             width: 250px;
-           
+
             padding: 1.5rem;
             text-align: center;
             transition: box-shadow 0.6s ease;
@@ -85,24 +85,29 @@
             margin-bottom: 1rem;
         }
 
-    /* This is the “golden glow” for the selected card (original definition) */
-    .selected-card {
-        background-color: #fffae5;
-        /* pale gold background */
-        border-color: #e8c800;
-        /* more golden border, optional */
-        box-shadow: 0 4px 8px rgba(232, 200, 0, 0.4);
-        /* subtle golden shadow */
-    }
-  /* ADD THIS NEW RULE for the Seek scope cards when selected */
-    .search-options-dropdown-frame .style-card2.style-cards.selected-card {
-        background-color: #fffae5; /* Consistent pale gold background */
-        border: 1px solid #e8c800; /* Explicitly set the full golden border */
-        /* Optional: For a more prominent glow, you could use a thicker border: */
-        /* border: 2px solid #e8c800; */
-        transition: box-shadow 0.6s ease;
-        box-shadow: 0 4px 8px rgba(232, 200, 0, 0.4); /* Consistent golden shadow */
-    }
+        /* This is the “golden glow” for the selected card (original definition) */
+        .selected-card {
+            background-color: #fffae5;
+            /* pale gold background */
+            border-color: #e8c800;
+            /* more golden border, optional */
+            box-shadow: 0 4px 8px rgba(232, 200, 0, 0.4);
+            /* subtle golden shadow */
+        }
+
+        /* ADD THIS NEW RULE for the Seek scope cards when selected */
+        .search-options-dropdown-frame .style-card2.style-cards.selected-card {
+            background-color: #fffae5;
+            /* Consistent pale gold background */
+            border: 1px solid #e8c800;
+            /* Explicitly set the full golden border */
+            /* Optional: For a more prominent glow, you could use a thicker border: */
+            /* border: 2px solid #e8c800; */
+            transition: box-shadow 0.6s ease;
+            box-shadow: 0 4px 8px rgba(232, 200, 0, 0.4);
+            /* Consistent golden shadow */
+        }
+
         /* Define the spin animation */
         @keyframes spin {
             from {
@@ -701,198 +706,276 @@
                     onfocus="this.style.textAlign='left'; this.placeholder='';" onblur="if(!this.value){this.style.textAlign='center';
                                     this.placeholder='Find quotes from Sri Aurobindo &amp; the Mother!';}">
 </textarea>
-<style>
+                <style>
+         .search-options-dropdown-frame {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid #ddd; /* Keep the defined border for the shown state */
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        
+        width: auto; /* Your current width setup */
+        max-width: 85%; /* Your current max-width constraint */
+        box-sizing: border-box;
+        margin-left: auto;
+        margin-right: auto;
+        
+        padding: 0.625rem;    /* Keep the defined padding for the shown state */
+        margin-top: 0.9375rem; /* Defined margin-top for the shown state */
+        
+        position: relative;
+        overflow: hidden; /* ESSENTIAL for the max-height transition to clip content */
+        
+        /* Initial state for when it's shown */
+        max-height: 43.75rem; /* A large enough value to accommodate content, or dynamically set height */
+        opacity: 1;
+        visibility: visible;
 
-    .search-options-dropdown-frame {
-    background: rgba(255, 255, 255, 0.9); /* Lightly transparent white background */
-    border: 1px solid #ddd;
-    border-radius: 8px; /* Rounded corners for the entire frame */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    overflow: hidden; /* Crucial for the max-height animation */
-    max-height: 700px; /* Adjust to fit content; can be a large enough value */
-    transition: max-height 0.4s ease-out, opacity 0.3s ease-out, padding 0.4s ease-out, margin 0.4s ease-out, border 0.4s ease-out;
-    opacity: 1;
-    margin-top: 15px; /* Space above the dropdown */
-    padding: 10px; /* Inner padding for the content */
-}
+        /* Adjusted transition properties */
+        transition: max-height 0.4s ease-out, /* Handles the "slide up/down" */
+                    opacity 0.3s ease-out,   /* Handles the "fade in/out" (can be slightly faster) */
+                    margin-top 0.4s ease-out, /* Allows the margin to collapse/expand with height */
+                    visibility 0s linear 0.4s; /* Delays visibility change until after the transition ends */
+        /* We REMOVED padding, border-width, and width from this transition list,
+           as their target values in the hidden state will no longer be 0 (except for width, which isn't set to 0).
+        */
+    }
 
-.search-options-dropdown-frame.hidden-by-toggle {
-    max-height: 0;
-    opacity: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    margin-top: 0;
-    border-width: 0; /* Collapse border when hidden */
-    box-shadow: none; /* Remove shadow when hidden */
-}
+                    .search-options-dropdown-frame.hidden-by-toggle {
+                /* Properties for the "hidden" state */
+        max-height: 0;
+        opacity: 0;
+        margin-top: 0;
+        visibility: hidden; /* Target state */
+        
+        box-shadow: none;
 
-/* Ensure the card-header and olier-style-header within the frame look good */
-.search-options-dropdown-frame .card-header {
-    background-color: transparent; /* Make it blend with the frame's background */
-    border-bottom: 1px solid #eee; /* Light separator */
-    padding: 0.75rem 1rem;
-    font-size: 1.1rem;
-    color: #333;
-}
-
-.search-options-dropdown-frame .olier-style-header {
-    margin-top: 1rem; /* Adjust spacing */
-    margin-bottom: 1.5rem;
-    font-size: 1.2rem;
-    color: #444;
-}
-/* === Styles for Search Options Dropdown Frame Cards (Revised) === */
-
-/* Style for the row containing the cards */
-.search-options-dropdown-frame .style-cards-row {
-    display: flex;
-    flex-wrap: nowrap;       /* --- Key: Prevent cards from wrapping to the next line --- */
-    justify-content: flex-start; /* Align cards to the start (good for scrolling) */
-    gap: 1.5rem;             /* Space between cards */
-    margin-top: 1rem;
-    overflow-x: auto;        /* --- Key: Allow horizontal scrolling for the row --- */
-    padding-left: 1rem;      /* Optional: padding if cards are too close to edge */
-    padding-right: 1rem;
-    padding-bottom: 1rem;    /* Add some padding at the bottom for scrollbar visibility */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-}
-
-/* Style for each card (using .style-card2.style-cards as per your HTML) */
-.search-options-dropdown-frame .style-card2.style-cards {
-    background: #fff;
-    border: 1px solid #f1ecec;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        /* Transitions that apply when .hidden-by-toggle is ADDED (i.e., hiding) */
+        /* This rule overrides the base transition behavior when this class becomes active */
+        transition: max-height 0.4s ease-out,
+                    opacity 0.3s ease-out,
+                    margin-top 0.4s ease-out,
+                    visibility 0s linear 0.4s; /* Delay visibility:hidden until other animations complete */
+                                              /* The 0.4s delay should match the longest other transition (max-height or margin-top) */
     
-    /* --- Sizing for cards to fit content and enable horizontal scroll --- */
-    flex-basis: auto;        /* Card bases its width on its content */
-    flex-shrink: 0;          /* Prevent cards from shrinking smaller than content width */
-    /* Optionally, set a min-width if you don't want them too narrow: */
-    /* min-width: 200px; */
+    }
 
-    min-height: auto;
-    height: auto;            /* Height is flexible based on content */
-    padding: 0.8rem 1rem;    /* Adjusted padding for a more compact horizontal layout */
-    transition: box-shadow 0.3s ease;
-    cursor: pointer;
-    display: flex;           /* For aligning .card-body */
-    align-items: center;
-}
+                    /* Ensure the card-header and olier-style-header within the frame look good */
+                    .search-options-dropdown-frame .card-header {
+                        background-color: transparent;
+                        /* Make it blend with the frame's background */
+                        border-bottom: 1px solid #eee;
+                        /* Light separator */
+                        padding: 0.75rem 1rem;
+                        font-size: 1.1rem;
+                        color: #333;
+                        text-align: center;
+                        /* Explicitly center the header text */
+                    }
 
-/* Styles for the .card-body (direct child of the label/card) */
-.search-options-dropdown-frame .style-card2.style-cards .card-body {
-    display: flex;
-    flex-direction: row;     /* Avatar and text-content side-by-side */
-    align-items: center;     /* Vertically center avatar and the text block */
-    width: 100%;
-    text-align: left;
-}
+                    .search-options-dropdown-frame .olier-style-header {
+                        margin-top: 1rem;
+                        /* Adjust spacing */
+                        margin-bottom: 1.5rem;
+                        font-size: 1.2rem;
+                        color: #444;
+                    }
 
-/* Styles for the avatar */
-.search-options-dropdown-frame .style-card2.style-cards .style-avatar {
-    width: 3.5rem;           /* e.g., 56px */
-    height: 3.5rem;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    margin-right: 0.75rem;   /* Space between avatar and text content */
-    flex-shrink: 0;
-}
+                    /* === Styles for Search Options Dropdown Frame Cards (Revised for Square Buttons) === */
 
-/* Styles for the text-content block (wrapper for h5, hr, p) */
-.search-options-dropdown-frame .style-card2.style-cards .text-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center; 
-    flex-grow: 1;            /* Allows .text-content to take remaining space */
-    min-width: 0;            /* Important for flex items with nowrap children */
-}
+                    /* Style for the row containing the cards */
+                        .search-options-dropdown-frame .style-cards-row {
+        display: flex;
+        flex-wrap: wrap; 
+        justify-content: center; /* CHANGED: 'center' often looks better when items wrap to multiple lines */
+        gap: 1rem;               
+        margin-top: 1rem;        
+        padding-left: 0.5rem;  /* Optional: Adjust internal padding if needed */
+        padding-right: 0.5rem; /* Optional: Adjust internal padding if needed */
+        padding-bottom: 1rem;    
+    }
 
-/* Styles for the title (h5) within .text-content */
-.search-options-dropdown-frame .style-card2.style-cards .text-content h5 {
-    font-size: 1rem;
-    font-weight: bold;
-    margin-top: 0;
-    margin-bottom: 0.2rem;
-    color: #333;
-    white-space: nowrap;     /* Keep title on one line */
-    overflow: hidden;        /* Hide overflow for title */
-    text-overflow: ellipsis; /* Add ellipsis for long titles */
-}
+                    /* Style for each card (button) */
+                    .search-options-dropdown-frame .style-card2.style-cards {
+                        background: #fff;
+                        border: 1px solid #c4eaf3;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
-/* Styles for the horizontal rule (hr) */
-.search-options-dropdown-frame .style-card2.style-cards .text-content hr {
-    width: 100%;
-    border: 0;
-    border-top: 1px solid #eee;
-    margin-top: 0.2rem;
-    margin-bottom: 0.3rem;
-}
+                        width: 11.25rem;
+                        /* CHANGED from 180px */
+                        height: 9.375rem;
+                        /* CHANGED from 150px */
 
-/* Styles for the descriptive paragraph (p) - ensure single line, full visibility */
-.search-options-dropdown-frame .style-card2.style-cards .text-content p {
-    font-size: 0.85rem;
-    color: #555;
-    line-height: 1.3;
-    margin-bottom: 0;
-    white-space: nowrap;     /* --- Key: Force paragraph to be a single line --- */
-    /* No overflow: hidden or text-overflow: ellipsis, as full text is desired */
-}
+                        padding: 0.5rem;
+                        /* Adjusted padding for a more compact square layout */
+                        transition: box-shadow 0.3s ease;
+                        cursor: pointer;
+                        display: flex;
+                        /* For aligning .card-body */
+                        flex-direction: column;
+                        /* Stack avatar and text vertically */
+                        align-items: center;
+                        /* Center items horizontally */
+                        justify-content: center;
+                        /* Center items vertically */
+                        text-align: center;
+                        /* Center text within the card */
+                        flex-grow: 0;
+                        /* Prevent cards from growing */
+                        flex-shrink: 0;
+                        /* Prevent cards from shrinking */
+                    }
 
-/* Override any conflicting global .style-card2 properties if needed */
-.search-options-dropdown-frame label.style-card2 {
-    max-height: none !important; 
-    min-width: auto !important; 
-    text-align: left !important; 
-    width: auto !important; /* Ensure width is not constrained by global .style-card2 */
-}
-    </style>
+                    /* Styles for the .card-body (direct child of the label/card) */
+                    .search-options-dropdown-frame .style-card2.style-cards .card-body {
+                        display: flex;
+                        flex-direction: column;
+                        /* Avatar and text-content stacked vertically */
+                        align-items: center;
+                        /* Center avatar and text block horizontally */
+                        justify-content: center;
+                        /* Center content vertically */
+                        width: 100%;
+                        height: 100%;
+                        /* Ensure card-body takes full height of the card */
+                    }
 
-<div class="search-options-dropdown-frame">
-    <div class="card-header">
-       Select Works to "Seek"
-    </div>
-    <div class="style-cards-row">
+                    /* Styles for the avatar */
+                    .search-options-dropdown-frame .style-card2.style-cards .style-avatar {
+                        width: 3rem;
+                        /* e.g., 48px */
+                        height: 3rem;
+                        border-radius: 50%;
+                        background-size: cover;
+                        background-position: center;
+                        margin: 0 auto 0.5rem auto;
+                        /* Center avatar and add space below */
+                        flex-shrink: 0;
+                        box-shadow: 0 6px 15px rgba(0, 209, 232, 0.3);
+                        /* Adjusted shadow */
+                    }
 
-        <label class="style-card2 style-cards" id="scope-all-card">
-             <input type="radio" name="searchScope" value="all" hidden checked>
-            <div class="card-body">
-                <div class="style-avatar" style="background-image:url('static/Maa - Sri Aurobindo.png');"></div>
-                <div class="text-content"> 
-                    <h5>All Works</h5>
-                    <hr>
-                    <p>The Mother &amp; Sri Aurobindo 🪷 </p>
+                    /* Styles for the text-content block (wrapper for h5, hr, p) */
+                    .search-options-dropdown-frame .style-card2.style-cards .text-content {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        /* Center text content */
+                        flex-grow: 1;
+                        min-width: 0;
+                        width: 100%;
+                        /* Ensure text content can use available width */
+                    }
+
+                    /* Styles for the title (h5) within .text-content */
+                    .search-options-dropdown-frame .style-card2.style-cards .text-content h5 {
+                        font-size: 0.9rem;
+                        /* Adjusted font size */
+                        font-weight: bold;
+                        margin-top: 0;
+                        margin-bottom: 0.2rem;
+                        color: #333;
+                        white-space: nowrap;
+                        /* Allow title to wrap */
+                        text-align: center;
+                    }
+
+                    /* Styles for the horizontal rule (hr) */
+                    .search-options-dropdown-frame .style-card2.style-cards .text-content hr {
+                        width: 80%;
+                        /* Make hr slightly shorter */
+                        border: 0;
+                        border-top: 1px solid #eee;
+                        margin-top: 0.2rem;
+                        margin-bottom: 0.3rem;
+                    }
+
+                    /* Styles for the descriptive paragraph (p) */
+                    .search-options-dropdown-frame .style-card2.style-cards .text-content p {
+                        font-size: 0.70rem;
+                        /* Already rem, good */
+                        color: #555;
+                        line-height: 1.2;
+                        margin-bottom: 0;
+                        white-space: nowrap;
+                        text-align: center;
+
+                    }
+
+                    /* Override any conflicting global .style-card2 properties if needed */
+                    .search-options-dropdown-frame label.style-card2 {
+                        max-height: none !important;
+                        min-width: auto !important;
+                        text-align: center !important;
+                        width: 10.25rem !important;
+                        /* CHANGED from 180px */
+                        height: 8.375rem !important;
+                        /* CHANGED from 150px */
+                    }
+
+                    /* Ensure selected card styles are applied correctly */
+                    .search-options-dropdown-frame .style-card2.style-cards.selected-card {
+                        background-color: #fffae5;
+                        /* Consistent pale gold background */
+                        border-color: #e8c800;
+                        /* Explicitly set the full golden border */
+                        box-shadow: 0 4px 8px rgba(232, 200, 0, 0.4);
+                        /* Consistent golden shadow */
+                    }
+                </style>
+
+                <div class="search-options-dropdown-frame">
+                    <div class="card-header">
+                        Select Works to "Seek"
+                    </div>
+                    <div class="style-cards-row">
+
+                        <label class="style-card2 style-cards" id="scope-all-card">
+                            <input type="radio" name="searchScope" value="all" hidden checked>
+                            <div class="card-body">
+                                <div class="style-avatar" style="background-image:url('static/Joint Symbol.png');">
+                                </div>
+                                <div class="text-content">
+                                    <h5>All Works</h5>
+                                    <hr>
+                                    <p>The Mother &amp; Sri Aurobindo<br />🪷 </p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="style-card2 style-cards" id="scope-mother-card">
+                            <input type="radio" name="searchScope" value="mother" hidden="">
+                            <div class="card-body">
+                                <div class="style-avatar" style="background-image:url('static/Symbol-the-Mother.jpg');">
+                                </div>
+                                <div class="text-content">
+                                    <h5>The Mother</h5>
+                                    <hr>
+                                    <p>CWM &amp; Mother’s Agenda<br />🪷</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="style-card2 style-cards" id="scope-aurobindo-card">
+                            <input type="radio" name="searchScope" value="aurobindo" hidden="">
+                            <div class="card-body">
+                                <div class="style-avatar"
+                                    style="background-image:url('static/Symbol-of-Sri-Aurobindo.jpg');"></div>
+                                <div class="text-content">
+                                    <h5>Sri Aurobindo</h5>
+                                    <hr>
+                                    <p>CWSA &amp; SABCL<sup><span
+                                                class="badge badge-secondary">Beta</span></sup><br />🪷</p>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    <input type="hidden" id="selectedScope" name="selectedScopeDropdown" value="all">
                 </div>
-            </div>
-        </label>
+            </div><br />
+            <button class="btn btn-primary" id="search-btn">Seek</button>
 
-        <label class="style-card2 style-cards" id="scope-mother-card">
-            <input type="radio" name="searchScope" value="mother" hidden="">
-            <div class="card-body">
-                <div class="style-avatar" style="background-image:url('static/the_mother.png');"></div>
-                <div class="text-content"> 
-                    <h5>The Mother</h5>
-                    <hr>
-                    <p>CWM &amp; Mother’s Agenda 🪷</p>
-                </div>
-            </div>
-        </label>
-
-        <label class="style-card2 style-cards" id="scope-aurobindo-card">
-            <input type="radio" name="searchScope" value="aurobindo" hidden="">
-            <div class="card-body">
-                <div class="style-avatar" style="background-image:url('static/sri_aurobindo 1.png');"></div>
-                <div class="text-content"> 
-                    <h5>Sri Aurobindo</h5>
-                    <hr>
-                    <p>CWSA &amp; SABCL<sup><span class="badge badge-secondary">Beta</span></sup> 🪷</p>
-                </div>
-            </div>
-        </label>
-    </div>
-<input type="hidden" id="selectedScope" name="selectedScopeDropdown" value="all"></div></div><br/>
-                <button class="btn btn-primary" id="search-btn">Seek</button>
-            
 
 
 
