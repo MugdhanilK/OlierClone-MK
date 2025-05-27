@@ -144,6 +144,119 @@ const fullText = document.getElementById('full-text');
 let readingModeActivated = false; // Global flag to track if reading mode is active
 
 
+// From your scripts.js
+const seekOptionsHeader = document.querySelector('.search-options-dropdown-frame .seek-options-header');
+const seekOptionsContent = document.querySelector('.search-options-dropdown-frame .seek-options-content');
+const dropdownFrame = document.querySelector('.search-options-dropdown-frame');
+
+if (seekOptionsHeader && seekOptionsContent && dropdownFrame) {
+
+    function openSeekOptions() {
+        seekOptionsContent.classList.add('open');
+        seekOptionsHeader.classList.remove('collapsed');
+        dropdownFrame.classList.remove('inner-collapsed'); // Correct: removes class on open
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                const requiredHeight = seekOptionsContent.scrollHeight + 0;
+                seekOptionsContent.style.maxHeight = requiredHeight + "px";
+            });
+        });
+    }
+
+    function closeSeekOptions() {
+        seekOptionsContent.classList.remove('open');
+        seekOptionsHeader.classList.add('collapsed');
+        dropdownFrame.classList.add('inner-collapsed'); // Correct: adds class on close
+        seekOptionsContent.style.maxHeight = '0';
+    }
+
+    // Initial state:
+    if (seekOptionsHeader.classList.contains('collapsed')) {
+        closeSeekOptions();
+    } else {
+        openSeekOptions(); // Default to open, so inner-collapsed is removed.
+    }
+
+    seekOptionsHeader.addEventListener('click', function() {
+        if (seekOptionsContent.classList.contains('open')) {
+            closeSeekOptions();
+        } else {
+            openSeekOptions();
+        }
+    });
+}
+
+    // Settings Menu Toggle (if you have one, or adapt)
+    const settingsMenuBtn = document.getElementById("settings-menu-btn");
+    const settingsMenuDropdown = document.getElementById("settings-menu-dropdown");
+    const closeSettingsMenuBtn = settingsMenuDropdown ? settingsMenuDropdown.querySelector(".close-menu-btn") : null;
+
+    if (settingsMenuBtn && settingsMenuDropdown) {
+        settingsMenuBtn.addEventListener("click", function (event) {
+            event.stopPropagation();
+            settingsMenuDropdown.classList.toggle("active");
+            settingsMenuBtn.setAttribute('aria-expanded', settingsMenuDropdown.classList.contains('active'));
+        });
+    }
+
+    if (closeSettingsMenuBtn) {
+        closeSettingsMenuBtn.addEventListener("click", function () {
+            settingsMenuDropdown.classList.remove("active");
+            if (settingsMenuBtn) {
+                settingsMenuBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    // Main Menu Toggle (from your existing scripts.js)
+    const mainMenuBtn = document.getElementById("main-menu-btn"); // Assuming this is for the book list
+    const mainMenuDropdown = document.getElementById("main-menu-dropdown");
+    const closeMainMenuBtn = mainMenuDropdown ? mainMenuDropdown.querySelector(".close-menu-btn") : null;
+
+    // Existing main menu button (logo button) functionality - adapted
+    // Ensure the main-menu-btn is the correct one (your logo button)
+    const mainMenuLogoBtn = document.querySelector(".search-image #main-menu-btn"); // More specific selector for the logo button
+    if (mainMenuLogoBtn && mainMenuDropdown) { // Ensure mainMenuDropdown is not null
+        mainMenuLogoBtn.addEventListener("click", function (event) {
+            // This button's primary role seems to be opening a new window.
+            // If it's ALSO supposed to toggle the main menu, that logic needs to be here.
+            // For now, keeping its original JS functionality of opening a link.
+            // window.open("https://youtu.be/otECbl2kOuc&autoplay=1", "_blank");
+            // console.log("Main menu (logo) button clicked - opening video link");
+
+            // If you want it to ALSO toggle the book menu, uncomment and adapt:
+            /*
+            event.stopPropagation();
+            mainMenuDropdown.classList.toggle("active");
+            mainMenuLogoBtn.setAttribute('aria-expanded', mainMenuDropdown.classList.contains('active'));
+            */
+        });
+    }
+
+
+    if (closeMainMenuBtn) {
+        closeMainMenuBtn.addEventListener("click", function () {
+            if (mainMenuDropdown) { // Check if mainMenuDropdown exists
+                mainMenuDropdown.classList.remove("active");
+            }
+            if (mainMenuLogoBtn) { // Check if mainMenuLogoBtn exists
+                 mainMenuLogoBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    // Close dropdowns if clicked outside
+    document.addEventListener("click", function (event) {
+        if (mainMenuDropdown && !mainMenuDropdown.contains(event.target) && mainMenuLogoBtn && !mainMenuLogoBtn.contains(event.target)) {
+            mainMenuDropdown.classList.remove("active");
+            if (mainMenuLogoBtn) mainMenuLogoBtn.setAttribute('aria-expanded', 'false');
+        }
+        if (settingsMenuDropdown && !settingsMenuDropdown.contains(event.target) && settingsMenuBtn && !settingsMenuBtn.contains(event.target)) {
+            settingsMenuDropdown.classList.remove("active");
+            if (settingsMenuBtn) settingsMenuBtn.setAttribute('aria-expanded', 'false');
+        }
+    });
 
 
 
