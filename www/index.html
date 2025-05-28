@@ -905,11 +905,11 @@
 
                     /* Styles for the title (h5) within .text-content */
                     .search-options-dropdown-frame .style-card2.style-cards .text-content h5 {
-                        font-size: 0.7rem;
+                        font-size: 0.6rem;
                         /* Adjusted font size */
                         font-weight: bold;
                         margin-top: 0;
-                        margin-bottom: 0.2rem;
+                        margin-bottom: 0rem;
                         color: #333;
                         white-space: nowrap;
                         /* Allow title to wrap */
@@ -1022,9 +1022,74 @@
                         /* Add padding when open */
                         padding-top: 0rem;
                         /* Or your desired padding */
-                        padding-bottom: 2rem;
+                        padding-bottom: 0.1rem;
                         /* Or your desired padding */
                     }
+                    /* === Media Query for Mobile Screens (Single Line, Smaller, Scrollable Cards) === */
+@media (max-width: 1300px) {
+
+    .search-options-dropdown-frame {
+        /* Allow the frame to use more of the mobile screen width */
+        max-width: 95%;
+        /* Let width be determined by content and the new max-width */
+        width: auto;
+        padding: 0.5rem 0.25rem; /* Adjust frame padding for mobile if needed */
+    }
+
+    .search-options-dropdown-frame .card-header.seek-options-header {
+        /* Adjust header padding for mobile to give text more space */
+        padding: 0.5rem 0.5rem 0.5rem 2.25rem; /* Reduced left padding */
+        font-size: 0.9rem; /* Optionally reduce header font size slightly */
+    }
+
+    .search-options-dropdown-frame .card-header.seek-options-header .dropdown-icon {
+        left: 0.6rem; /* Adjust icon position due to changed header padding */
+        font-size: 0.7em; /* Optionally make icon slightly smaller */
+    }
+
+    .search-options-dropdown-frame .style-cards-row.seek-options-content {
+        /* flex-wrap: nowrap;  -- Inherited, already set */
+        /* justify-content: flex-start; -- Inherited, already set */
+        padding-left: 0.25rem;  /* Slightly reduce padding if needed */
+        padding-right: 0.25rem;
+    }
+
+    .search-options-dropdown-frame .seek-options-content.open {
+        /* overflow-x: auto; -- Inherited, crucial for scrolling on mobile */
+    }
+
+    .search-options-dropdown-frame .style-card2.style-cards {
+        /* Make cards smaller for mobile screens */
+        width: 7.6rem;    /* ADJUSTED: Smaller width for cards */
+        height: 6.5rem;   /* ADJUSTED: Smaller height, or 'auto' if content dictates */
+        padding: 0.3rem;  /* ADJUSTED: Reduced padding inside cards */
+        /* flex-shrink: 0; -- Inherited, still important */
+    }
+
+    /* Adjust internal content sizes for smaller cards on mobile */
+    .search-options-dropdown-frame .style-card2.style-cards .style-avatar {
+        width: 2rem;      /* ADJUSTED: Smaller avatar */
+        height: 2rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .search-options-dropdown-frame .style-card2.style-cards .text-content h5 {
+        font-size: 0.7rem;  /* ADJUSTED: Smaller heading text */
+        margin-bottom: 0.1rem;
+    }
+
+    .search-options-dropdown-frame .style-card2.style-cards .text-content p {
+        font-size: 0.55rem; /* ADJUSTED: Smaller paragraph text */
+        line-height: 1.2; /* Adjust line height for small text */
+        /* Consider hiding this on very small cards if it's too much: */
+        /* display: none; */
+    }
+
+    .search-options-dropdown-frame .style-card2.style-cards .text-content hr.custom-hr {
+        margin-top: 0.1rem;    /* Adjust HR margin */
+        margin-bottom: 0.15rem;
+    }
+}
                 </style>
 
                 <div class="search-options-dropdown-frame">
