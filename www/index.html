@@ -665,6 +665,7 @@
                 </div>
 
             </div>-->
+            
             <style>
                 #query {
                     /* visual style copied from chat textarea */
@@ -706,41 +707,60 @@
                     onfocus="this.style.textAlign='left'; this.placeholder='';" onblur="if(!this.value){this.style.textAlign='center';
                                     this.placeholder='Find quotes from Sri Aurobindo &amp; the Mother!';}">
 </textarea>
+
+                <button class="btn btn-primary" id="search-btn">Seek</button>
+
                 <style>
                     /* In your index.html <style> section or static/styles.css */
-                    .search-options-dropdown-frame {
-                        background: transparent !important; 
-                        border: 1px solid #ddd;
-                        border-radius: 8px;
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                        width: auto;
-                        max-width: 85%;
-                        box-sizing: border-box;
-                        margin-left: auto;
-                        margin-right: auto;
-                        padding: 0.625rem;
-                        /* Default padding (10px) for top, bottom, left, right */
-                        transition: max-height 0.4s ease-out,
-                    opacity 0.3s ease-out,
-                    margin-top 0.4s ease-out,
-                    padding-bottom 0.4s ease-out, /* This makes the padding-bottom change smooth */
-                    visibility 0s linear 0.4s;
-                        margin-top: 0.9375rem;
-                        position: relative;
-                        overflow: hidden;
-                        max-height: 43.75rem;
-                        opacity: 1;
-                        visibility: visible;
-                        transition: max-height 0.4s ease-out,
-                            opacity 0.3s ease-out,
-                            margin-top 0.4s ease-out,
-                            padding-bottom 0.4s ease-out,
-                            /* <<< ADD THIS LINE (or add padding-bottom to the list) */
-                            visibility 0s linear 0.4s;
-                    }
+    .search-options-dropdown-frame {
+        
+    background: transparent !important; 
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+     width: calc( (10.15rem * 3) + (0.5rem * 2) + (0.625rem * 2) );
+    max-width: 55%; /* Existing constraint */  
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0.625rem;
+     
+    transition: max-height 0.4s ease-out,
+                opacity 0.3s ease-out,
+                margin-top 0.4s ease-out,
+                padding-bottom 0.4s ease-out,
+                visibility 0s linear 0.4s;
+    margin-top: 0.8375rem;
+    position: relative;
+    /* overflow: hidden; /* This is primarily for the vertical collapse animation.
+                         If min-width makes it wider than 65%, page scroll will handle it. */
+    max-height: 41.75rem; /* Existing max-height for when it's open */
+    opacity: 1;
+    visibility: visible;
+    border-radius: 0.5rem; /* Changed from 8px to be font-size responsive */
+ transition: all 0.4s ease-in-out;
+}
+.search-options-dropdown-frame .style-cards-row.seek-options-content {
+    display: flex;
+    flex-wrap: wrap; /* MODIFIED: Ensures cards stay in one line */
+    justify-content: center; /* Centers the group of cards if the container is wider */
+    gap: 0.5rem; 
+    padding-left: 0rem;
+    padding-right: 0rem;
+    padding-bottom: 1rem;
+    
+    
+    /* Styles for collapse/expand animation - kept from original */
+    max-height: 0; 
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden; /* Hides vertical overflow during transition */
+   
+    transition: max-height 0.4s ease-out, padding-top 0.4s ease-out, padding-bottom 0.4s ease-out;
+}
 
                     .search-options-dropdown-frame.inner-collapsed {
                         padding-bottom: 0;
+                        
                     }
 
                     .search-options-dropdown-frame.hidden-by-toggle {
@@ -771,14 +791,14 @@
                         border-bottom: 1px solid #eee;
                         /* Light separator */
                         padding: 0.75rem 1rem;
-                        font-size: 1.1rem;
-                        color: #333;
+                        font-size: 1.0rem;
+                        color: #737272; /* Color for Select Works to "Seek" Header*/
                         text-align: center;
                         /* Explicitly center the header text */
                     }
 
                     .search-options-dropdown-frame .olier-style-header {
-                        margin-top: 1rem;
+                        margin-top: 0.1rem;
                         /* Adjust spacing */
                         margin-bottom: 1.5rem;
                         font-size: 1.2rem;
@@ -815,30 +835,30 @@
                         border-radius: 8px;
                         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
-                        width: 11.25rem;
+                        width: 10.15rem;
                         /* CHANGED from 180px */
-                        height: 9.375rem;
+                        height: 8.375rem;
                         /* CHANGED from 150px */
-
                         padding: 0.5rem;
-                        /* Adjusted padding for a more compact square layout */
+                       
                         transition: box-shadow 0.3s ease;
                         cursor: pointer;
-                        display: flex;
-                        /* For aligning .card-body */
+                        display: flex; 
                         flex-direction: column;
-                        /* Stack avatar and text vertically */
                         align-items: center;
-                        /* Center items horizontally */
                         justify-content: center;
-                        /* Center items vertically */
                         text-align: center;
-                        /* Center text within the card */
-                        flex-grow: 0;
-                        /* Prevent cards from growing */
-                        flex-shrink: 0;
-                        /* Prevent cards from shrinking */
-                    }
+                        flex-shrink: 0; /* ADDED: Prevents cards from shrinking below their defined width */
+                        flex-grow: 0;   /* Existing: good, prevents them from growing unnecessarily */
+}
+.search-options-dropdown-frame label.style-card2.style-cards { /* Made selector more specific */
+    /* These !important might be needed if other global styles for label.style-card2 interfere */
+    width: 7.45rem !important; 
+    height: 6.5rem !important;
+    max-height: none !important; /* Ensure it doesn't get overridden */
+    min-width: auto !important;  /* Ensure it doesn't get overridden */
+    text-align: center !important; /* Ensure it doesn't get overridden */
+}
 
                     /* Styles for the .card-body (direct child of the label/card) */
                     .search-options-dropdown-frame .style-card2.style-cards .card-body {
@@ -856,9 +876,9 @@
 
                     /* Styles for the avatar */
                     .search-options-dropdown-frame .style-card2.style-cards .style-avatar {
-                        width: 3rem;
+                        width: 2rem;
                         /* e.g., 48px */
-                        height: 3rem;
+                        height: 2rem;
                         border-radius: 50%;
                         background-size: cover;
                         background-position: center;
@@ -867,6 +887,7 @@
                         flex-shrink: 0;
                         box-shadow: 0 6px 15px rgba(0, 209, 232, 0.3);
                         /* Adjusted shadow */
+                        
                     }
 
                     /* Styles for the text-content block (wrapper for h5, hr, p) */
@@ -884,7 +905,7 @@
 
                     /* Styles for the title (h5) within .text-content */
                     .search-options-dropdown-frame .style-card2.style-cards .text-content h5 {
-                        font-size: 0.9rem;
+                        font-size: 0.7rem;
                         /* Adjusted font size */
                         font-weight: bold;
                         margin-top: 0;
@@ -897,17 +918,18 @@
 
                     /* Styles for the horizontal rule (hr) */
                     .search-options-dropdown-frame .style-card2.style-cards .text-content hr {
-                        width: 80%;
+                        width: 60%;
                         /* Make hr slightly shorter */
                         border: 0;
                         border-top: 1px solid #eee;
                         margin-top: 0.2rem;
                         margin-bottom: 0.3rem;
+                        
                     }
 
                     /* Styles for the descriptive paragraph (p) */
                     .search-options-dropdown-frame .style-card2.style-cards .text-content p {
-                        font-size: 0.70rem;
+                        font-size: 0.50rem;
                         /* Already rem, good */
                         color: #555;
                         line-height: 1.2;
@@ -952,8 +974,15 @@
                         padding: 0.5rem ;
                         border-bottom: 1px solid #eee;
                         /* This is the line you want to hide up to */
+                        transition: border-bottom-width 0.2s ease-in-out, border-bottom-color 0.2s ease-in-out;
                     }
 
+                    .search-options-dropdown-frame .card-header.seek-options-header:hover {
+                          border-bottom-width: 2px;     /* Make the line slightly thicker */
+    border-bottom-color: #bbb;    /* Make the line slightly darker for more prominence */
+                                  /* You can adjust this color, e.g., #aaa or a theme color */
+                                  
+}
                     .search-options-dropdown-frame .card-header.seek-options-header .dropdown-icon {
                         font-size: 0.8em;
                         /* Adjust icon size as needed */
@@ -1002,7 +1031,7 @@
                     <div class="card-header seek-options-header"> <span class="dropdown-icon">▼</span>
                         Select Works to "Seek"
                     </div>
-                    <div class="style-cards-row seek-options-content">
+                    <div class="style-cards-row seek-options-content" style="margin-top: 4px;">
 
                         <label class="style-card2 style-cards" id="scope-all-card">
                             <input type="radio" name="searchScope" value="all" hidden checked>
@@ -1045,8 +1074,7 @@
                         </label>
                     </div>
                     <input type="hidden" id="selectedScope" name="selectedScopeDropdown" value="all">
-                </div><br />
-                <button class="btn btn-primary" id="search-btn">Seek</button>
+                </div>
 </div>
 
 
