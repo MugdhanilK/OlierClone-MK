@@ -173,9 +173,9 @@ if (seekOptionsHeader && seekOptionsContent && dropdownFrame) {
 
     // Initial state:
     if (seekOptionsHeader.classList.contains('collapsed')) {
-        closeSeekOptions();
+        openSeekOptions();
     } else {
-        openSeekOptions(); // Default to open, so inner-collapsed is removed.
+        closeSeekOptions(); // Default to open, so inner-collapsed is removed.
     }
 
     seekOptionsHeader.addEventListener('click', function() {
