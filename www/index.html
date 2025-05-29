@@ -830,8 +830,9 @@
 
                     /* Style for each card (button) */
                     .search-options-dropdown-frame .style-card2.style-cards {
-                        background: #fff;
+                        background: #f0f0f0;
                         border: 1px solid #c4eaf3;
+                        
                         border-radius: 8px;
                         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
@@ -858,6 +859,8 @@
     max-height: none !important; /* Ensure it doesn't get overridden */
     min-width: auto !important;  /* Ensure it doesn't get overridden */
     text-align: center !important; /* Ensure it doesn't get overridden */
+   
+
 }
 
                     /* Styles for the .card-body (direct child of the label/card) */
@@ -954,10 +957,11 @@
                     .search-options-dropdown-frame .style-card2.style-cards.selected-card {
                         background-color: #fffae5;
                         /* Consistent pale gold background */
-                        border-color: #e8c800;
+                        border-color: #ffdd00;
                         /* Explicitly set the full golden border */
-                        box-shadow: 0 4px 8px rgba(232, 200, 0, 0.4);
+                        box-shadow: 0 4px 10px rgba(232, 200, 0, 0.4);
                         /* Consistent golden shadow */
+                         border: 2px solid #ffdd00;
                     }
 
                     .search-options-dropdown-frame .card-header.seek-options-header {
@@ -1054,10 +1058,6 @@
         padding-right: 0.25rem;
     }
 
-    .search-options-dropdown-frame .seek-options-content.open {
-        /* overflow-x: auto; -- Inherited, crucial for scrolling on mobile */
-    }
-
     .search-options-dropdown-frame .style-card2.style-cards {
         /* Make cards smaller for mobile screens */
         width: 7.6rem;    /* ADJUSTED: Smaller width for cards */
@@ -1075,7 +1075,10 @@
 
     .search-options-dropdown-frame .style-card2.style-cards .text-content h5 {
         font-size: 0.7rem;  /* ADJUSTED: Smaller heading text */
-        margin-bottom: 0.1rem;
+        margin-top: 0.5rem;
+        text-align: center; /* Center text for smaller cards */
+        white-space: nowrap; /* Prevent wrapping for headings */
+        
     }
 
     .search-options-dropdown-frame .style-card2.style-cards .text-content p {
