@@ -801,7 +801,7 @@
                         margin-top: 0.1rem;
                         /* Adjust spacing */
                         margin-bottom: 1.5rem;
-                        font-size: 1.2rem;
+                        font-size: 0.7rem;
                         color: #444;
                     }
 
@@ -829,6 +829,13 @@
                     }
 
                     /* Style for each card (button) */
+                    .search-options-dropdown-frame .style-card2.style-cards:hover {
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        /* Subtle shadow on hover */
+                        background-color: #e6f7ff;
+                        /* Light blue background on hover */
+
+                    }
                     .search-options-dropdown-frame .style-card2.style-cards {
                         background: #f0f0f0;
                         border: 1px solid #c4eaf3;
@@ -982,8 +989,9 @@
                     }
 
                     .search-options-dropdown-frame .card-header.seek-options-header:hover {
-                          border-bottom-width: 2px;     /* Make the line slightly thicker */
-    border-bottom-color: #bbb;    /* Make the line slightly darker for more prominence */
+                          border-bottom-width: 3px;     /* Make the line slightly thicker */
+                          border-bottom-color: #bbb;    /* Make the line slightly darker for more prominence */
+                          box-shadow: 0 4px 10px rgba(232, 200, 0, 0.4);
                                   /* You can adjust this color, e.g., #aaa or a theme color */
                                   
 }
@@ -1034,7 +1042,7 @@
 
     .search-options-dropdown-frame {
         /* Allow the frame to use more of the mobile screen width */
-        max-width: 70%;
+        max-width: 72%;
         /* Let width be determined by content and the new max-width */
         width: auto;
         padding: 0.5rem 0.25rem; /* Adjust frame padding for mobile if needed */
@@ -1042,8 +1050,8 @@
 
     .search-options-dropdown-frame .card-header.seek-options-header {
         /* Adjust header padding for mobile to give text more space */
-        padding: 0.5rem 0.5rem 0.5rem 2.25rem; /* Reduced left padding */
-        font-size: 0.9rem; /* Optionally reduce header font size slightly */
+        padding: 0.5rem 0.5rem 0.5rem 1.00rem; /* Reduced left padding */
+        font-size: 0.8rem; /* Optionally reduce header font size slightly */
     }
 
     .search-options-dropdown-frame .card-header.seek-options-header .dropdown-icon {
@@ -1099,7 +1107,7 @@
 @media (max-width: 767px) {
 .search-options-dropdown-frame {
         /* Allow the frame to use more of the mobile screen width */
-        max-width: 70%;}
+        max-width: 65%;}
 
     .search-options-dropdown-frame .style-cards-row.seek-options-content.open {
         max-height: 20rem !important; /* Force height to accommodate 3 stacked cards */
@@ -1126,7 +1134,7 @@
     .search-options-dropdown-frame .style-card2.style-cards,
     .search-options-dropdown-frame label.style-card2.style-cards {
         width: 100% !important;
-        max-width: 480px;
+        max-width: 580px;
         height: auto !important;
         min-height: 0.5rem; /* Adjusted min-height slightly as text content might be more compact horizontally */
         margin-bottom: 0 !important;
@@ -1135,7 +1143,7 @@
         flex-direction: row !important; /* Avatar and text-content side-by-side */
         align-items: center !important;
         justify-content: flex-start !important;
-        text-align: left !important;
+        text-align: center !important;
         /* ... other card styles like border, background, etc. ... */
     }
 
@@ -1146,7 +1154,7 @@
         justify-content: flex-start !important;
         width: 100% !important;
         padding: 0 !important;
-        text-align: left !important;
+        text-align: center !important;
     }
 
     .search-options-dropdown-frame .style-card2.style-cards .style-avatar {
@@ -1184,6 +1192,7 @@
         margin: 0 !important;               /* Remove default margins */
         padding: 0 !important;
         flex-shrink: 0; /* Prevents H5 from shrinking if P is long */
+        text-align: center;
     }
 
     /* Remove the horizontal rule (<hr>) */
@@ -1199,6 +1208,8 @@
         white-space: normal !important;     /* Allows paragraph text to wrap to multiple lines if needed */
         margin: 0 !important;               /* Remove default margins */
         padding: 0 !important;
+        text-align: center;
+        padding-left: 50px;
         /* The paragraph will take the remaining space and wrap as necessary */
     }
 
