@@ -38,7 +38,8 @@
             border: 1px solid #f1ecec;
             border-radius: 6px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-            width: 250px;
+            width: 240px;
+            height: 190px;
             padding: 1.5rem;
             text-align: center;
             transition: box-shadow 0.6s ease;
@@ -208,16 +209,17 @@
                     <br />
                     <!-- Speedy Mode Toggle -->
                     <div class="text-center">
-                        <label class="mb-0 align-items-center">
+                       <!-- <label class="mb-0 align-items-center">
                             <input type="checkbox" name="speedy-mode" value="speedy" />
-                            Speedy Mode <!--<span class="badge badge-secondary">Beta</span>-->
-                        </label>
+                            Speedy Mode 
+                        </label>-->
+                       <!-- <label class="mb-0 align-items-center">
                         <br />
                         <small class="text-muted">
                             In speedy mode, Olier answers faster but less comprehensively and accurately. Olier is
                             unable to search online in this mode.
                         </small>
-                        <br />
+                        <br />-->
                         <!-- Hidden input if needed -->
                         <input type="hidden" id="selectedStyle" value="poetic" />
                     </div>
@@ -858,17 +860,17 @@
                         text-align: center;
                         flex-shrink: 0; /* ADDED: Prevents cards from shrinking below their defined width */
                         flex-grow: 0;   /* Existing: good, prevents them from growing unnecessarily */
-}
-.search-options-dropdown-frame label.style-card2.style-cards { /* Made selector more specific */
-    /* These !important might be needed if other global styles for label.style-card2 interfere */
-    width: 7.45rem !important; 
-    height: 6.5rem !important;
-    max-height: none !important; /* Ensure it doesn't get overridden */
-    min-width: auto !important;  /* Ensure it doesn't get overridden */
-    text-align: center !important; /* Ensure it doesn't get overridden */
-   
+     }
+                    .search-options-dropdown-frame label.style-card2.style-cards { /* Made selector more specific */
+                        /* These !important might be needed if other global styles for label.style-card2 interfere */
+                        width: 7.45rem !important; 
+                        height: 6.5rem !important;
+                        max-height: none !important; /* Ensure it doesn't get overridden */
+                        min-width: auto !important;  /* Ensure it doesn't get overridden */
+                        text-align: center !important; /* Ensure it doesn't get overridden */
+                    
 
-}
+                    }
 
                     /* Styles for the .card-body (direct child of the label/card) */
                     .search-options-dropdown-frame .style-card2.style-cards .card-body {
@@ -980,7 +982,7 @@
                         /* Vertically align icon and text */
                         justify-content: center;
                         /* Center the content */
-                        position: relative;
+                        vertical-align: middle;
                         /* For positioning the icon */
                         padding: 0.5rem 0.75rem 0.5rem 1rem;     
                         border-bottom: 1px solid #eee;
@@ -1040,65 +1042,130 @@
                     /* === Media Query for Mobile Screens (Single Line, Smaller, Scrollable Cards) === */
 @media (max-width: 1300px) {
 
-    .search-options-dropdown-frame {
-        /* Allow the frame to use more of the mobile screen width */
-        max-width: 72%;
-        /* Let width be determined by content and the new max-width */
-        width: auto;
-        padding: 0.5rem 0.25rem; /* Adjust frame padding for mobile if needed */
+.search-options-dropdown-frame .style-cards-row.seek-options-content.open {
+        max-height: 20rem !important; /* Force height to accommodate 3 stacked cards */
+                                   /* Adjust this value if needed based on actual content */
     }
-
-    .search-options-dropdown-frame .card-header.seek-options-header {
-        /* Adjust header padding for mobile to give text more space */
-        padding: 0.5rem 0.5rem 0.5rem 2.25rem; /* Reduced left padding */
-        font-size: 0.8rem; /* Optionally reduce header font size slightly */
-    }
-
-    .search-options-dropdown-frame .card-header.seek-options-header .dropdown-icon {
-        left: 0.6rem; /* Adjust icon position due to changed header padding */
-        font-size: 0.7em; /* Optionally make icon slightly smaller */
-    }
-
+    /* --- Styles for the container of the three cards (ensure they stack) --- */
     .search-options-dropdown-frame .style-cards-row.seek-options-content {
-        /* flex-wrap: nowrap;  -- Inherited, already set */
-        /* justify-content: flex-start; -- Inherited, already set */
-        padding-left: 0.25rem;  /* Slightly reduce padding if needed */
-        padding-right: 0.25rem;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        gap: 0.5rem !important; 
     }
-
-    .search-options-dropdown-frame .style-card2.style-cards {
-        /* Make cards smaller for mobile screens */
-        width: 7.6rem;    /* ADJUSTED: Smaller width for cards */
-        height: 6.5rem;   /* ADJUSTED: Smaller height, or 'auto' if content dictates */
-        padding: 0.3rem;  /* ADJUSTED: Reduced padding inside cards */
-        /* flex-shrink: 0; -- Inherited, still important */
+.search-options-dropdown-frame .style-card2.style-cards#scope-all-card .text-content p .lotus-emoji {
+        display: none !important;
     }
-
-    /* Adjust internal content sizes for smaller cards on mobile */
-    .search-options-dropdown-frame .style-card2.style-cards .style-avatar {
-        width: 1rem;      /* ADJUSTED: Smaller avatar */
-        height: 1rem;
-        margin-bottom: 0.5rem;
+    .search-options-dropdown-frame .style-card2.style-cards#scope-mother-card .text-content p .lotus-emoji {
+        display: none !important;
     }
-
-    .search-options-dropdown-frame .style-card2.style-cards .text-content h5 {
-        font-size: 0.7rem;  /* ADJUSTED: Smaller heading text */
-        margin-top: 0.5rem;
-        text-align: center; /* Center text for smaller cards */
-        white-space: nowrap; /* Prevent wrapping for headings */
+        .search-options-dropdown-frame .style-card2.style-cards#scope-aurobindo-card .text-content p .lotus-emoji {
+        display: none !important;
+    }
+    /* --- Styles for the individual cards (making them wide) --- */
+    .search-options-dropdown-frame .style-card2.style-cards,
+    .search-options-dropdown-frame label.style-card2.style-cards {
+        width: 100% !important;
+        max-width: 350px;
+        height: auto !important;
+        min-height: 0.5rem; /* Adjusted min-height slightly as text content might be more compact horizontally */
+        margin-bottom: 0 !important;
         
+        display: flex !important;
+        flex-direction: row !important; /* Avatar and text-content side-by-side */
+        align-items: center !important;
+        justify-content: flex-start !important;
+        text-align: center !important;
+        /* ... other card styles like border, background, etc. ... */
     }
 
+    .search-options-dropdown-frame .style-card2.style-cards .card-body {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
+        padding: 0 !important;
+        text-align: center !important;
+    }
+
+    .search-options-dropdown-frame .style-card2.style-cards .style-avatar {
+        width: 1rem !important; /* Adjusted avatar size slightly */
+        height: 1rem !important;
+        margin: 0 0.75rem 0 0 !important; /* Adjusted margin for tighter layout */
+        flex-shrink: 0 !important;
+        /* ... other avatar styles ... */
+    }
+
+    /* --------------------------------------------------------------------
+    START: MODIFIED TEXT FORMATS FOR SINGLE LINE (max-width: 767px)
+    --------------------------------------------------------------------
+    This section targets the text elements within your wide cards.
+    H5 and P will be on the same line, HR is removed.
+    */
+
+    /* --- Text Content Area --- */
+    .search-options-dropdown-frame .style-card2.style-cards .text-content {
+        display: flex !important;
+        flex-direction: row !important;    /* Lays out H5 and P side-by-side */
+        align-items: baseline !important;  /* Aligns H5 and P along their text baseline */
+        justify-content: center !important; 
+        flex-grow: 1 !important;
+        gap: 0.4rem !important;            /* Space between H5 and P */
+        overflow: hidden;                  /* Prevents content from breaking out if too long */
+    }
+
+    /* Style for the card titles (<h5>) - now inline with <p> */
+    .search-options-dropdown-frame .style-card2.style-cards .text-content h5 {
+        font-size: 0.7rem !important;
+        font-weight: bold !important;
+        color: #2c3e50 !important;
+        white-space: nowrap !important;     /* Prevents the H5 text itself from wrapping */
+        margin: 0 !important;               /* Remove default margins */
+        padding: 0 !important;
+        flex-shrink: 0; /* Prevents H5 from shrinking if P is long */
+        text-align: center;
+    }
+
+    /* Remove the horizontal rule (<hr>) */
+    .search-options-dropdown-frame .style-card2.style-cards .text-content hr {
+        display: none !important;
+    }
+
+    /* Style for the card descriptions (<p>) - now inline with <h5> */
     .search-options-dropdown-frame .style-card2.style-cards .text-content p {
-        font-size: 0.55rem; /* ADJUSTED: Smaller paragraph text */
-        line-height: 1.2; /* Adjust line height for small text */
-        /* Consider hiding this on very small cards if it's too much: */
-         /*display: none; */
+        font-size: 0.5rem !important;
+        line-height: 1.3 !important;        /* Normal line-height for potentially wrapped text */
+        color: #34495e !important;
+        white-space: nowrap !important;
+        margin: 0 !important;               /* Remove default margins */
+        padding: 0 !important;
+        text-align: center;
+        padding-left: 50px;
+        /* The paragraph will take the remaining space and wrap as necessary */
     }
 
-    .search-options-dropdown-frame .style-card2.style-cards .text-content hr.custom-hr {
-        margin-top: 0.1rem;    /* Adjust HR margin */
-        margin-bottom: 0.15rem;
+    /* Style for the Beta badge (<sup><span class="badge">) inside paragraphs */
+    .search-options-dropdown-frame .style-card2.style-cards .text-content p sup .badge {
+        font-size: 0.7em !important;
+        vertical-align: baseline; /* Adjust if 'super' looks off with baseline alignment */
+        position: relative;
+        top: -0.3em; /* Fine-tune vertical position of badge */
+        padding: 0.15em 0.3em !important;
+    }
+
+    /* ------------------------------------------------------------------
+    END: MODIFIED TEXT FORMATS FOR SINGLE LINE (max-width: 767px)
+    ------------------------------------------------------------------
+    */
+
+    /* Ensure selected card styles are still effective */
+    .search-options-dropdown-frame .style-card2.style-cards.selected-card {
+        /* ... same selected styles as before ... */
+        background-color: #fffae5 !important;
+        border-color: #e8c800 !important;
+        box-shadow: 0 4px 8px rgba(232, 200, 0, 0.4) !important;
     }
 }
 /* Make sure this entire block is within your <style> tags, 
@@ -1151,7 +1218,7 @@
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
-        justify-content: flex-start !important;
+        justify-content: center !important;
         width: 100% !important;
         padding: 0 !important;
         text-align: center !important;
@@ -1162,6 +1229,7 @@
         height: 1rem !important;
         margin: 0 0.75rem 0 0 !important; /* Adjusted margin for tighter layout */
         flex-shrink: 0 !important;
+        justify-content: center !important;
         /* ... other avatar styles ... */
     }
 
@@ -1177,7 +1245,7 @@
         display: flex !important;
         flex-direction: row !important;    /* Lays out H5 and P side-by-side */
         align-items: baseline !important;  /* Aligns H5 and P along their text baseline */
-        justify-content: flex-start !important;
+        justify-content: center !important;
         flex-grow: 1 !important;
         gap: 0.4rem !important;            /* Space between H5 and P */
         overflow: hidden;                  /* Prevents content from breaking out if too long */
@@ -1205,7 +1273,7 @@
         font-size: 0.5rem !important;
         line-height: 1.3 !important;        /* Normal line-height for potentially wrapped text */
         color: #34495e !important;
-        white-space: normal !important;     /* Allows paragraph text to wrap to multiple lines if needed */
+        white-space: nowrap !important; 
         margin: 0 !important;               /* Remove default margins */
         padding: 0 !important;
         text-align: center;
