@@ -1,6 +1,6 @@
 $(document).ready(function() {
     const serverUrl = 'https://8c31be54e6fac00f.ngrok.app/';
-    
+     let hasBeenInReadingModeThisSession = false; // <<< NEW GLOBAL FLAG
 // ===============================================
     // PLATFORM DETECTION
 // ===============================================
@@ -3318,6 +3318,17 @@ function toggleOlierButton() {
 
     if (!olierButton || !zoomToTopButton || !chatbox) return; // Exit if elements not found
 
+ // --- NEW: PRIORITY 1 - If user has entered reading mode this session, always hide these floating buttons ---
+    if (hasBeenInReadingModeThisSession) {
+        olierButton.classList.add('vanish'); // Use 'vanish' to hide and disable pointer events
+        zoomToTopButton.classList.add('vanish');
+        olierButton.classList.remove('hidden'); // Clean up other potential hiding class
+        zoomToTopButton.classList.remove('hidden');
+        // lastScrollTop might not need updating here if they are always vanished
+        return; // Exit early, these buttons remain vanished
+    }
+    // --- END NEW ---
+
     let currentScrollTop = window.scrollY || window.pageYOffset;
     const isChatboxOpen = chatbox.classList.contains('open');
 
@@ -3574,13 +3585,13 @@ function applyReadingMode() {
     // Activate bottom-flex-box
     if (bottomFlexBox) bottomFlexBox.style.display = 'flex';
 
-    // Use toggleButtonVisibility to hide both buttons
-    toggleButtonVisibility(true);
-
-    // Set the reading mode flag to true
+    // Set the reading mode flags
     readingModeActivated = true;
-    // Synchronize isSearchVisible with UI state
-    isSearchVisible = false;
+    hasBeenInReadingModeThisSession = true; // <<< SET THE NEW PERSISTENT FLAG
+    isSearchVisible = false; // From your toggle_search logic
+
+    // Call toggleOlierButton to hide floating buttons based on the new logic
+    toggleOlierButton(); //
 }
 
 // Ensure isSearchVisible is accessible
