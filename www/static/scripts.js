@@ -407,58 +407,48 @@ var searchUrl = isVectorSearch ? serverUrl + '/api/search' : serverUrl + '/api/k
 console.log("Search URL:", searchUrl);
 
 $.post(searchUrl, {
-    query:  query,
-    scope:  $('#selectedScope').val() || 'all'   // <-- NEW LINE
+    query: query,
+    scope: $('#selectedScope').val() || 'all'
 }, function (data) {
     console.log("Search results received", data);
     stopLoaderAnimation();
 
-    // If no results are found, show a message and re-display sample questions
+    // Ensure we're not in reading mode when search results are displayed
+    readingModeActivated = false;
+
     if (!data || data.length === 0) {
         $('#results').html('<p>No results found. Please try a different query.</p>');
         $('.sample-questions').show();
         $('#summarize-results-btn').hide();
-        $('#results').removeData('fullResultsData'); // Clear stored data
-         // **** ADD THIS LINE ****
-         $('#info-message').removeClass('hidden');
-         // **********************
+        $('#results').removeData('fullResultsData');
+        $('#info-message').removeClass('hidden');
+
+        // --- ADD THIS BLOCK for "NO RESULTS" ---
+        window.scrollTo(0, 0); // Scroll to the top of the page
+        lastScrollTop = 0;     // Reset scroll state for toggleOlierButton
+        toggleOlierButton();   // Update button visibility
+        // --- END ADDED BLOCK ---
         return;
     }
- // Store the full results data for potential summarization
- $('#results').data('fullResultsData', data);
- console.log("Stored full results data.");
+
+    // Store the full results data
+    $('#results').data('fullResultsData', data);
+    console.log("Stored full results data.");
 
     var $resultsContainer = $('<div id="top-results"></div>');
 
     data.forEach(function(result, index) {
-        // Use highlighted_text for preview, fallback to text if not available
+        // ... (your existing code for creating and appending resultItem) ...
         var preview = result.highlighted_text || result.text;
-        
-        // --- START OF ADDED CODE ---
-    // Remove specific bracketed strings (like [CWSA - ...]) from the preview
-    if (preview) { // Ensure preview is not null or undefined
-        preview = preview.replace(/\s*\[(CWSA|CWM|Mother['’]s Agenda)\s*[-–]\s*'([^']+)'\s*,\s*'([^']+)'\]\s*/g, '');
-    }
-    // --- END OF ADDED CODE ---
-        
+        if (preview) {
+            preview = preview.replace(/\s*\[(CWSA|CWM|Mother['’]s Agenda)\s*[-–]\s*'([^']+)'\s*,\s*'([^']+)'\]\s*/g, '');
+        }
         preview = preview.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
-
-        // Truncate the preview to approximately 100 words, preserving HTML tags
         var previewWords = preview.split(" ");
         if (previewWords.length > 100) {
             preview = previewWords.slice(0, 100).join(" ") + "...";
         }
-
-        // Conditionally display the relevance score only for vector search
         var relevanceScoreHtml = '';
-        /*if (isVectorSearch && result.relevance_score !== undefined) {
-            relevanceScoreHtml = `
-                <div class="result-score">
-                    Relevance Score: ${result.relevance_score.toFixed(2)}
-                </div>
-            `;
-        }*/
-
         var resultItem = `
             <div class="result-item">
                 <div class="result-preview">${preview}</div>
@@ -487,31 +477,37 @@ $.post(searchUrl, {
                 </div>
             </div>
         `;
-
-        // Append the resultItem to the results container
         $resultsContainer.append(resultItem);
     });
 
-    // Append the results container to the results section
     $('#results').append($resultsContainer);
 
- // ***** Show the Summarize button IF there are results *****
- if (data.length > 0) {
-    $('#summarize-results-btn').show();
-    console.log("Summarize button shown."); // Debug log
-}
+    if (data.length > 0) {
+        $('#summarize-results-btn').show();
+        console.log("Summarize button shown.");
+    }
+
+    // --- ADD THIS BLOCK for SUCCESSFUL RESULTS ---
+    window.scrollTo(0, 0); // Scroll to the top to show results from the start
+    lastScrollTop = 0;     // Reset scroll state for toggleOlierButton
+    toggleOlierButton();   // Call to update button visibility based on current state
+    // --- END ADDED BLOCK ---
 
 }).fail(function(jqXHR, textStatus, errorThrown) {
-    // --- Failure Callback ---
     console.log("Search request failed", textStatus, errorThrown);
-    stopLoaderAnimation(); // Stop loader animation
+    stopLoaderAnimation();
     $('#results').prepend('<p>An error occurred while searching. Please try again.</p>');
-    $('.sample-questions').show(); // Show sample questions again
-    $('#summarize-results-btn').hide(); // Hide button on failure
-    // Clear any previously stored results data
+    $('.sample-questions').show();
+    $('#summarize-results-btn').hide();
     $('#results').removeData('fullResultsData');
-     // Optionally show the message on failure too
-     $('#info-message').removeClass('hidden');
+    $('#info-message').removeClass('hidden');
+
+    // --- ADD THIS BLOCK for FAILURE CASE ---
+    readingModeActivated = false; // Ensure not in reading mode
+    window.scrollTo(0, 0);    // Scroll to top
+    lastScrollTop = 0;        // Reset scroll state
+    toggleOlierButton();      // Update button visibility
+    // --- END ADDED BLOCK ---
 });
 });
 
@@ -2644,11 +2640,7 @@ async function sendMessage() {
     }
 }
 
-   // ===============================================
-    // COPY BUTTON HELPER FUNCTIONS (SHARED)
-    // These stay where they are, defined globally or in a shared scope.
-    // DO NOT MOVE THESE INSIDE THE IMAGE BUTTON CLICK HANDLER.
-    // ===============================================
+
 
 // Function to add copy button (Adjusted to exclude card container)
 function removeAllCopyButtons() {
@@ -2869,12 +2861,10 @@ titleToggleArea.addEventListener('click', () => {
 // --- END UPDATED ---
 
 
-
-
-    // ===============================================
-    // IMAGE GENERATION EVENT HANDLER
-    // REPLACE YOUR ENTIRE EXISTING $('#img-btn').on('click', ...) BLOCK WITH THIS NEW ONE:
-    // ===============================================
+// ===============================================
+// IMAGE GENERATION EVENT HANDLER
+// REPLACE YOUR ENTIRE EXISTING $('#img-btn').on('click', ...) BLOCK WITH THIS NEW ONE:
+// ===============================================
     $('#img-btn').on('click', async function() {
         $('#info-message').addClass('hidden');
 
