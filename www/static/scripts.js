@@ -3244,21 +3244,19 @@ function updateSearchOptionsDropdown() {
 // ===============================================
 // FUNCTIONS TO UPDATE OTHER ELEMENTS OF MAIN UI
 // ===============================================
-    function updateSearchMode() {
-        if ($searchToggle.is(':checked')) {
-            // Keyword Search Mode
-            $searchBtn.text('Match');
-            $searchBtn.addClass('match-mode'); // Make button blue
-            $vectorSamples.hide();
-            $keywordSamples.show();
-        } else {
-            // Vector Search Mode
-            $searchBtn.text('Seek');
-            $searchBtn.removeClass('match-mode'); // Revert button to default
-            $vectorSamples.show();
-            $keywordSamples.hide();
-        }
+   function updateSearchMode() {
+    if ($searchToggle.is(':checked')) { // Match mode
+        $searchBtn.text('Match');
+        $searchBtn.addClass('match-mode'); // Make button blue
+        $vectorSamples.hide(); // This sets display: none on the vector samples div
+        $keywordSamples.css('display', 'grid'); // Explicitly set keyword samples to display: grid
+    } else { // Seek (Vector Search) Mode
+        $searchBtn.text('Seek');
+        $searchBtn.removeClass('match-mode'); // Revert button to default
+        $vectorSamples.css('display', 'grid'); // Explicitly set vector samples to display: grid
+        $keywordSamples.hide(); // This sets display: none on the keyword samples div
     }
+}
 
     // Initialize UI on page load
     updateSearchMode();
@@ -3293,15 +3291,12 @@ function updateSearchOptionsDropdown() {
 
     $searchInput.on('blur', function() {
         if (isMobile) {
-           if (readingModeActivated) {
-                // If reading mode is active, the buttons should remain vanished.
-                // Explicitly ensure they are vanished.
-                toggleButtonVisibility(true);
-            } else {
-                // If reading mode is NOT active, then it's safe to allow them to un-vanish
-                // (e.g., user was typing a regular search, then blurred).
-                toggleButtonVisibility(false);
-            }
+            // When search input blurs on mobile (e.g., keyboard hides),
+            // the layout might change or a slight scroll might occur.
+            // We need to re-evaluate the floating buttons' visibility.
+            // toggleOlierButton() will correctly apply .vanish if hasBeenInReadingModeThisSession is true.
+            // A short delay helps ensure any UI reflow/scroll due to keyboard hiding has settled.
+            setTimeout(toggleOlierButton, 100); // 100ms delay, then re-evaluate
         }
         // For desktop, blur usually doesn't trigger the same overlap issue with floating buttons.
         // If you find it necessary for consistency, you could add:
