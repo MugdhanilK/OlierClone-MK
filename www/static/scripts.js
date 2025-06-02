@@ -3293,12 +3293,15 @@ function updateSearchOptionsDropdown() {
 
     $searchInput.on('blur', function() {
         if (isMobile) {
-            // When search input blurs on mobile (e.g., keyboard hides),
-            // the layout might change or a slight scroll might occur.
-            // We need to re-evaluate the floating buttons' visibility.
-            // toggleOlierButton() will correctly apply .vanish if hasBeenInReadingModeThisSession is true.
-            // A short delay helps ensure any UI reflow/scroll due to keyboard hiding has settled.
-            setTimeout(toggleOlierButton, 100); // 100ms delay, then re-evaluate
+           if (readingModeActivated) {
+                // If reading mode is active, the buttons should remain vanished.
+                // Explicitly ensure they are vanished.
+                toggleButtonVisibility(true);
+            } else {
+                // If reading mode is NOT active, then it's safe to allow them to un-vanish
+                // (e.g., user was typing a regular search, then blurred).
+                toggleButtonVisibility(false);
+            }
         }
         // For desktop, blur usually doesn't trigger the same overlap issue with floating buttons.
         // If you find it necessary for consistency, you could add:
