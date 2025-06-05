@@ -3355,31 +3355,38 @@ function toggleOlierButton() {
 
     // --- Scroll Direction Handling (uses .hidden) ---
 
-    // Always show buttons if chatbox is open AND user is near the top (or scrolls up to near top)
-     if (isChatboxOpen && currentScrollTop <= 10) {
-         olierButton.classList.add('hidden'); // Chat button stays hidden when chatbox open
-         zoomToTopButton.classList.remove('hidden'); // Show Books button
-     }
-     // Always show buttons if chatbox is closed AND user is near the top (or scrolls up to near top)
-     else if (!isChatboxOpen && currentScrollTop <= 10) {
-        olierButton.classList.remove('hidden');
-        zoomToTopButton.classList.remove('hidden');
-     }
-     // Handle scrolling down (hide buttons)
-     else if (currentScrollTop > lastScrollTop) {
+     // **** MODIFICATION START ****
+    // If the chatbox is open (on desktop), the main floating Olier button should always be hidden.
+    // The visibility of the Books button (zoomToTopButton) will then be determined by scroll.
+    if (isChatboxOpen) { // This implies !isMobile due to the check above
         olierButton.classList.add('hidden');
-        zoomToTopButton.classList.add('hidden');
-     }
-     // Handle scrolling up (show buttons, respecting chatbox state)
-     else if (currentScrollTop < lastScrollTop) {
-         if (!isChatboxOpen) { // Show both if chatbox closed
-             olierButton.classList.remove('hidden');
-             zoomToTopButton.classList.remove('hidden');
-         } else { // If chatbox open, only show Books button when scrolling up
-            olierButton.classList.add('hidden');
+
+        // Handle Books button (zoomToTopButton) visibility based on scroll
+        if (currentScrollTop <= 10) { // At the top
             zoomToTopButton.classList.remove('hidden');
-         }
-     }
+        } else if (currentScrollTop > lastScrollTop) { // Scrolling down
+            zoomToTopButton.classList.add('hidden');
+        } else if (currentScrollTop < lastScrollTop) { // Scrolling up
+            zoomToTopButton.classList.remove('hidden');
+        }
+        // If no scroll change and not at the top, zoomToTopButton retains its current state
+        // or you might want to default it to hidden/shown if preferred.
+        // Example: else { zoomToTopButton.classList.add('hidden'); } (Defaults to hidden if no scroll change)
+
+    } else { // Chatbox is closed
+        // Original logic for when the chatbox is closed
+        if (currentScrollTop <= 10) {
+            olierButton.classList.remove('hidden');
+            zoomToTopButton.classList.remove('hidden');
+        } else if (currentScrollTop > lastScrollTop) { // Scrolling down
+            olierButton.classList.add('hidden');
+            zoomToTopButton.classList.add('hidden');
+        } else if (currentScrollTop < lastScrollTop) { // Scrolling up
+            olierButton.classList.remove('hidden');
+            zoomToTopButton.classList.remove('hidden');
+        }
+    }
+    // **** MODIFICATION END ****
 
     // Update last scroll position for the next event
     lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // For Mobile or negative scrolling
