@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+
+    "ionic:build": "echo \"static build already in www/\"",
+    "dev:copy":    "npx cap copy android",
+    "sync":        "npx cap sync android",
+    "android":     "npm run sync && npx cap open android",
+    "test":        "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
