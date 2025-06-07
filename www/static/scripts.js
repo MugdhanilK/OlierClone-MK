@@ -247,7 +247,7 @@ if (seekOptionsHeader && seekOptionsContent && dropdownFrame) {
     }
 
     // Close dropdowns if clicked outside
-    document.addEventListener("click", function (event) {
+    /*document.addEventListener("click", function (event) {
         if (mainMenuDropdown && !mainMenuDropdown.contains(event.target) && mainMenuLogoBtn && !mainMenuLogoBtn.contains(event.target)) {
             mainMenuDropdown.classList.remove("active");
             if (mainMenuLogoBtn) mainMenuLogoBtn.setAttribute('aria-expanded', 'false');
@@ -256,7 +256,7 @@ if (seekOptionsHeader && seekOptionsContent && dropdownFrame) {
             settingsMenuDropdown.classList.remove("active");
             if (settingsMenuBtn) settingsMenuBtn.setAttribute('aria-expanded', 'false');
         }
-    });
+    });*/
 
 
 
@@ -4080,18 +4080,29 @@ $('#main-menu-btn').on('click', function(event) {
 
 
 // Updated document click handler
+// =========================================================
+// UNIFIED DOCUMENT CLICK HANDLER (for closing menus)
+// =========================================================
 $(document).on('click', function(event) {
-    if (!$(event.target).closest('#main-menu-dropdown').length && 
-        !$(event.target).closest('#font-change-container').length) {
-        
-        // Hide the font size adjuster container
-        $('#font-change-container').hide();
-        
-        // Close the main menu dropdown
-        $('#main-menu-dropdown').removeClass('active');
+    const $target = $(event.target);
 
-        // Reset ARIA expanded states
-        $('#main-menu-btn').attr('aria-expanded', 'false');
+    // --- Logic for Settings Menu ---
+    // If the click is NOT inside the settings menu OR on its trigger button...
+    if (!$target.closest('#settings-menu-dropdown, #settings-menu-btn').length) {
+        // ...then close the settings menu.
+        $('#settings-menu-dropdown').removeClass('active');
+        $('#settings-menu-btn').attr('aria-expanded', 'false');
+    }
+
+    // --- Logic for Main Menu (Books Menu) ---
+    // If the click is NOT inside the main menu OR any of its known triggers...
+    // Triggers include: the logo button, the floating books button, the center button in the flex bar.
+    if (!$target.closest('#main-menu-dropdown, #main-menu-btn, .zoom_to_top, .flex-box-center-content').length) {
+        // ...then close the main menu.
+        $('#main-menu-dropdown').removeClass('active');
+        
+        // Also reset the ARIA states of all its potential triggers.
+        $('#main-menu-btn, .zoom_to_top, .flex-box-center-content').attr('aria-expanded', 'false');
     }
 });
 
