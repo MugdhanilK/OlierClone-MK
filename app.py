@@ -15,7 +15,11 @@ from google.genai import types
 
 # Initialize Quart App
 app = Quart(__name__, static_folder='www', static_url_path='')
-app = cors(app, allow_origin="*")
+app = cors(app, allow_origin=[
+    "capacitor://localhost",
+    "http://localhost",
+    # They should also add the URL of the live web app here to be safe
+])
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
